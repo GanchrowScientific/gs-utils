@@ -10,7 +10,7 @@ Object.keys(utils).forEach(utilName => {
   Object.defineProperty(ex, utilName, { value: utils[utilName] });
 });
 
-export default Object.defineProperties(ex, {
+module.exports = Object.defineProperties(ex, {
   Chunker: { value: Chunker },
   gsLogger: { value: gsLogger }
 });
