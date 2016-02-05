@@ -1,5 +1,10 @@
-  node_modules
-  target
-  npm-debug.log
-  *.js
-  *.map
+*.js
+*.map
+*.swp
+node_modules
+target
+npm-debug.log
+gs-utils.sublime-project
+gs-utils.sublime-workspace
+.vscode
+patch.diff
