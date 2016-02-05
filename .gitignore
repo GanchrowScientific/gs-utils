@@ -1,6 +1,6 @@
-*.js
 *.map
 *.swp
+*.js
 node_modules
 target
 npm-debug.log

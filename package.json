@@ -4,6 +4,7 @@
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
   "version": "0.1.1",
   "main": "lib/src/__main__.js",
+  "files": ["lib/src"],
   "dependencies": {
     "source-map-support": "0.4.0",
     "chalk": "1.1.1"
