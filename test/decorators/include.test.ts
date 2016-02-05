@@ -5,7 +5,7 @@
 
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
-import {include} from '../../src/decorators/include';
+import {include} from '../../decorators/include';
 
 module.exports = {
   setUp(callback) {

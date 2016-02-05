@@ -13,12 +13,9 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "prepublish": "scripts/post-install.sh",
+    "prepublish": "exit 0;node_modules/.bin/tsc && node_modules/.bin/tslint *.ts test/*.ts",
     "test": "scripts/test.sh",
-    "clean": "scripts/clean.sh",
-    "coverage": "scripts/coverage.sh",
-    "format": "scripts/format.sh",
-    "test-skeleton": "scripts/test-skeleton.sh"
+    "clean": "rm *.js && rm *.map && rm -rf test/test-reports && rm test/*.js && rm test/*.map"
   },
   "devDependencies": {
     "istanbul": "0.4.2",

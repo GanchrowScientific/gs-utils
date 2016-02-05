@@ -1,7 +1,7 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../typings/chalk/chalk.d.ts" />
+/// <reference path="typings/chalk/chalk.d.ts" />
 
 import * as chalk from 'chalk';
 

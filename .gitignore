@@ -1,6 +1,7 @@
 *.map
 *.swp
 *.js
+test
 node_modules
 target
 npm-debug.log

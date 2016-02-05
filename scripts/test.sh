@@ -6,20 +6,14 @@ cd $PROJECT_PATH
 echo Running tests in `pwd`
 echo
 
-if [ ! -d "target/dist" ]; then
-	echo
-	echo "target/dist directory not found. Must compile source with \`npm install\` before running tests."
-	echo
-	exit 1;
-fi
-
-mkdir -p target/test-reports
+mkdir -p test
+mkdir -p test/test-reports
 
 NODEUNIT="node_modules/.bin/nodeunit"
-NUOPTS="--reporter junit --output target/test-reports"
-TESTDIR="target/dist/test"
+NUOPTS="--reporter junit --output test/test-reports"
+TESTDIR="test"
 
-for f in $(find $TESTDIR -type f -name '*.test.js');
+for f in $(find $TESTDIR -type f -name *.test.js);
 do
   echo "TEST: $f";
   $NODEUNIT $NUOPTS $f;
