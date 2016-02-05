@@ -7,6 +7,9 @@
   "files": [
     "lib/src"
   ],
+  "directories": {
+    "lib": "lib/src"
+  },
   "dependencies": {
     "source-map-support": "0.4.0",
     "chalk": "1.1.1"
