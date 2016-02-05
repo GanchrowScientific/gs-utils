@@ -1,0 +1,229 @@
+/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+'use strict';
+
+/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
+/// <reference path="../../typings/sinon/sinon.d.ts"/>
+/// <reference path="../typings/chalk/chalk.d.ts" />
+
+// include this line to fix stack traces
+import 'source-map-support/register';
+
+import * as sinon from 'sinon';
+
+import * as chalk from 'chalk';
+import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
+from '../../src/utils/gsLogger';
+
+let mockConsole: Sinon.SinonMock;
+let originalISOString = Date.prototype.toISOString;
+
+module.exports = {
+  setUp(callback) {
+    setGlobalLogLevel(Level.DEBUG);
+    mockConsole = sinon.mock(console);
+    Date.prototype.toISOString = function() {
+      return 'NotADate';
+    };
+    callback();
+  },
+
+  testLogLevel(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz', Level.DEBUG);
+    test.equal(logger.logLevel, Level.DEBUG);
+    test.equal(logger.label, 'hucairz');
+
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- debug!`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- info!`);
+    mockConsole.expects('log').withExactArgs(`WARN [NotADate #${process.pid}] hucairz --- warn!`);
+    mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
+    mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
+
+    logger.info('info!', Emphasis.NORMAL);
+    logger.debug('debug!', Emphasis.NORMAL);
+    logger.warn('warn!', Emphasis.NORMAL);
+    logger.error('error!', Emphasis.NORMAL);
+
+    logger = getLogger('hucairz', Level.ERROR);
+    test.equal(logger.logLevel, Level.ERROR);
+
+    logger.info('info!', Emphasis.NORMAL);
+    logger.debug('debug!', Emphasis.NORMAL);
+    logger.warn('warn!', Emphasis.NORMAL);
+    logger.error('error!', Emphasis.NORMAL);
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testPrefix(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz');
+    test.equal(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] hucairz --- `);
+
+    logger = getLogger('other');
+    test.equal(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] other --- `);
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testColorMessage(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz');
+
+    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.DEFAULT)), 'xxx');
+    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.NORMAL)), 'xxx');
+    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.MEDIUM)), 'xxx');
+    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.STRONG)), 'xxx');
+    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.VERY_STRONG)), 'xxx');
+    test.done();
+  },
+
+  testNonString(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz', Level.DEBUG);
+    let obj = generateObject();
+    let maxDebugMessageLength = logger.maxDebugMessageLength;
+
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- ${JSON.stringify(obj)}`);
+    mockConsole.expects('log').withExactArgs(
+      `DEBUG [NotADate #${process.pid}] hucairz --- ${JSON.stringify(obj).substr(0, maxDebugMessageLength)}`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- 1`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- undefined`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- null`);
+
+    logger.info(obj, Emphasis.NORMAL);
+    logger.debug(obj, Emphasis.NORMAL);
+    logger.info(1, Emphasis.NORMAL);
+    logger.info(undefined, Emphasis.NORMAL);
+    logger.info(null, Emphasis.NORMAL);
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testMaxDebugMessageLength(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz', Level.DEBUG, 1);
+    test.equal(logger.maxDebugMessageLength, 1);
+
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- X`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- XXX`);
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- XX`);
+    mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- XXX`);
+
+    logger.debug('XXX');
+    logger.info('XXX');
+
+    logger.maxDebugMessageLength = 2;
+    test.equal(logger.maxDebugMessageLength, 2);
+
+    logger.debug('XXX');
+    logger.info('XXX');
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testLoggerOptions(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz', Level.DEBUG);
+    test.equal(logger.logLevel, Level.DEBUG);
+    test.equal(logger.label, 'hucairz');
+
+    let maxDebugMessageLength = logger.maxDebugMessageLength;
+    let options: LoggerOptions = {
+      logPrefix: '|logPrefix|',
+      emphasis: Emphasis.NORMAL,
+      maxLength: maxDebugMessageLength
+    };
+
+    let longObject = {
+      foo: 'a long string to make on object whose string representation should exceed the default prefix length',
+      bar: 'another nice long string to make sure'
+    };
+
+
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- |logPrefix| debug with options`);
+    mockConsole.expects('log').withExactArgs(
+      logger.colorMessage(`DEBUG [NotADate #${process.pid}] hucairz --- |logPrefix| debug with options`, Emphasis.VERY_STRONG));
+    mockConsole.expects('log').withExactArgs(
+      `DEBUG [NotADate #${process.pid}] hucairz --- |logPrefix| ${JSON.stringify(longObject).substr(0, maxDebugMessageLength)}`);
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- |logPrefix| ${JSON.stringify(longObject)}`);
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- empty options`);
+
+    logger.debug('debug with options', options);
+
+    options.emphasis = Emphasis.VERY_STRONG;
+    logger.debug('debug with options', options);
+
+    options.emphasis = Emphasis.NORMAL;
+    logger.debug(longObject, options);
+    options.maxLength = MSG_LEN_UNLIMITED;
+    logger.debug(longObject, options);
+    logger.debug('empty options', {});
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testStringify(test: nodeunit.Test) {
+    let logger: any = getLogger('hucairz');
+    let e = new Error('message');
+    let obj = { a: 123 };
+    test.equals(logger.stringify(undefined), 'undefined');
+    test.equals(logger.stringify(e), `${e.message}\n${e.stack}`);
+    test.equals(logger.stringify('message'), 'message');
+    test.equals(logger.stringify(1), '1');
+    test.equals(logger.stringify(obj, 3), JSON.stringify(obj).substr(0, 3));
+    test.equals(logger.stringify(obj, -1), JSON.stringify(obj));
+
+    test.done();
+  },
+
+  testSetGlobalLogLevelEnum(test: nodeunit.Test) {
+    let logger = getLogger('hucairz', Level.WARN);
+    mockConsole.expects('log').twice();
+
+    setGlobalLogLevel(Level.WARN);
+    logger.warn('hi');
+
+    setGlobalLogLevel(Level.ERROR);
+    logger.warn('hi');
+
+    setGlobalLogLevel(Level.WARN);
+    logger.warn('hi');
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testSetGlobalLogLevelString(test: nodeunit.Test) {
+    let logger = getLogger('hucairz', Level.WARN);
+    mockConsole.expects('log').twice();
+
+    setGlobalLogLevel('WARN');
+    logger.warn('hi');
+
+    setGlobalLogLevel('ERROR');
+    logger.warn('hi');
+
+    setGlobalLogLevel('WARN');
+    logger.warn('hi');
+
+    test.throws(() => setGlobalLogLevel('NOTALOGLEVEL'), Error, 'Invalid default log level NOTALOGLEVEL');
+    test.throws(() => setGlobalLogLevel(<any>false), Error, 'Invalid default log level false');
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  tearDown(callback) {
+    mockConsole.restore();
+    Date.prototype.toISOString = originalISOString;
+    callback();
+  }
+};
+
+function generateObject(): number[] {
+  let array = [];
+  for (let i = 0; i < 100; i++) {
+    array.push(i);
+  }
+  return array;
+}
