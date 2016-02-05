@@ -1,5 +1,5 @@
 #!/bin/bash
-
+exit 0
 PROJECT_PATH="$(dirname $0)/../"
 FILES=$(/bin/bash -c "find {src,test} -follow -name *.ts")
 

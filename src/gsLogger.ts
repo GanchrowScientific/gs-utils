@@ -2,6 +2,7 @@
 'use strict';
 
 /// <reference path="../typings/chalk/chalk.d.ts" />
+
 import * as chalk from 'chalk';
 
 export const MSG_LEN_UNLIMITED = -1;
