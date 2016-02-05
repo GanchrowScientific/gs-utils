@@ -1,0 +1,6 @@
+scripts
+src
+test
+typings
+tsconfig.json
+tslint.json

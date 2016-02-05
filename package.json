@@ -3,9 +3,7 @@
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
   "version": "0.0.2",
-  "dirs": [
-    "target/dist/src"
-  ],
+  "main": "lib/__main__.js",
   "dependencies": {
     "source-map-support": "0.4.0",
     "chalk": "1.1.1"
