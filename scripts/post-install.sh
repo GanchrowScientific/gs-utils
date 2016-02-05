@@ -19,4 +19,8 @@ echo Copy package.json...
 cp -a package.json target/dist/
 COPYING_PACKAGE=$?
 
-exit $(( $COMPILATION + $LINTING + $COPYING_PACKAGE ))
+echo Copy README...
+cp -a README.md target/dist/
+COPYING_README=$?
+
+exit $(( $COMPILATION + $LINTING + $COPYING_PACKAGE + $COPYING_README ))

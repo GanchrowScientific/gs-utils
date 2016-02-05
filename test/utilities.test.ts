@@ -1,13 +1,13 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../../typings/node/node.d.ts"/>
-/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
+/// <reference path="../typings/node/node.d.ts"/>
+/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../../src/utils/utilities';
+import {BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {

@@ -1,8 +1,8 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
-/// <reference path="../../typings/sinon/sinon.d.ts"/>
+/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
+/// <reference path="../typings/sinon/sinon.d.ts"/>
 /// <reference path="../typings/chalk/chalk.d.ts" />
 
 // include this line to fix stack traces
@@ -12,7 +12,7 @@ import * as sinon from 'sinon';
 
 import * as chalk from 'chalk';
 import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
-from '../../src/utils/gsLogger';
+from '../src/gsLogger';
 
 let mockConsole: Sinon.SinonMock;
 let originalISOString = Date.prototype.toISOString;

@@ -1,12 +1,12 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
+/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {Chunker} from '../../src/utils/chunker';
+import {Chunker} from '../src/chunker';
 
 module.exports = {
   testChunker: function(test: nodeunit.Test) {

@@ -4,7 +4,8 @@
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
   "version": "0.0.1",
   "dependencies": {
-    "source-map-support": "0.4.0"
+    "source-map-support": "0.4.0",
+    "chalk": "1.1.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
@@ -25,5 +26,8 @@
     "tslint": "3.1.1",
     "typescript": "1.7.3",
     "typescript-formatter": "1.2.0"
+  },
+  "engines": {
+    "node": ">=5.5.0"
   }
 }

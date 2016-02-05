@@ -6,7 +6,7 @@
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
 
-import {classify, S_CLASSIFY} from '../../../src/utils/decorators/classify';
+import {classify, S_CLASSIFY} from '../../src/decorators/classify';
 
 const ID_VAL = '271828';
 const FIRST_NAME_VAL = 'Leonhard';
