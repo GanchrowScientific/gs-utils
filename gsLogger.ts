@@ -1,4 +1,7 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+
+/// <reference path="node_modules/typescript/lib/lib.es6.d.ts"/>
+
 'use strict';
 
 /// <reference path="typings/chalk/chalk.d.ts" />

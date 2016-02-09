@@ -6,11 +6,11 @@ cd $PROJECT_PATH
 echo Running tests in `pwd`
 echo
 
-mkdir -p test
-mkdir -p test/test-reports
+mkdir -p target
+mkdir -p target/test-reports
 
 NODEUNIT="node_modules/.bin/nodeunit"
-NUOPTS="--reporter junit --output test/test-reports"
+NUOPTS="--reporter junit --output target/test-reports"
 TESTDIR="test"
 
 for f in $(find $TESTDIR -type f -name *.test.js);
