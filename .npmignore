@@ -3,4 +3,3 @@ test
 typings
 tsconfig.json
 tslint.json
-*.ts
