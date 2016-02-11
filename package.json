@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
-  "version": "0.3.4-0",
+  "version": "0.3.4-2",
   "main": "index.js",
   "dependencies": {
     "source-map-support": "0.4.0",
@@ -13,9 +13,9 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "prepublish": "node_modules/.bin/tsc && node_modules/.bin/tslint *.ts test/*.ts && npm test",
+    "prepublish": "node_modules/.bin/tslint *.ts test/*.ts && node_modules/.bin/tsc && npm test",
     "test": "scripts/test.sh",
-    "clean": "rm *.js && rm *.map && rm -rf test/test-reports && rm test/*.js && rm test/*.map"
+    "clean": "rm -f *.js *.map *.d.ts decorators/*.d.ts test/*.js test/*.map && rm -rf test/test-reports" 
   },
   "devDependencies": {
     "istanbul": "0.4.2",

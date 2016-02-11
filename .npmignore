@@ -3,3 +3,6 @@ test
 typings
 tsconfig.json
 tslint.json
+*.js.map
+*.ts
+!*.d.ts
