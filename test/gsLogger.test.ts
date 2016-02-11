@@ -12,7 +12,7 @@ import * as sinon from 'sinon';
 
 import * as chalk from 'chalk';
 import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
-from '../gsLogger';
+from '../src/gsLogger';
 
 let mockConsole: Sinon.SinonMock;
 let originalISOString = Date.prototype.toISOString;

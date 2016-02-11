@@ -6,7 +6,7 @@
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
 
-import {setOnce} from '../../decorators/setOnce';
+import {setOnce} from '../../src/decorators/setOnce';
 
 const NO_VALUE_SET_ERROR = new Error('No value set!');
 const SOME_VALUE = 'Norton';

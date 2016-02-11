@@ -7,7 +7,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../utilities';
+import {BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {

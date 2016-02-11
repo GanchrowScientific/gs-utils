@@ -6,7 +6,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {Chunker} from '../chunker';
+import {Chunker} from '../src/chunker';
 
 module.exports = {
   testChunker: function(test: nodeunit.Test) {

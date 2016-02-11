@@ -7,7 +7,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import '../extensions';
+import '../src/extensions';
 
 module.exports = {
   setUp: function(callback) {

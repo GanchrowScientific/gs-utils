@@ -3,11 +3,13 @@
     "module" : "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "outDir": "./",
+    "outDir": "./target/dist",
     "experimentalDecorators": true,
     "declaration": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "target",
+    "lib"
   ]
 }
