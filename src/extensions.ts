@@ -1,6 +1,5 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
-/// <reference path="typings/node/node.d.ts"/>
 
 Object.defineProperties(Array.prototype, {
   compact: {

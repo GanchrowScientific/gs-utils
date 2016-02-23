@@ -1,7 +1,5 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 
-/// <reference path="../../node_modules/typescript/lib/lib.es6.d.ts"/>
-
 'use strict';
 
 export const S_CLASSIFY = Symbol('classify');

@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
-  "version": "0.5.0-0",
+  "version": "0.5.1-0",
   "dependencies": {
     "bufferpack": "0.0.6",
     "chalk": "1.1.1",
