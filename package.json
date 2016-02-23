@@ -2,11 +2,11 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
-  "version": "0.4.0-0",
-  "main": "index.js",
+  "version": "0.5.0-0",
   "dependencies": {
-    "source-map-support": "0.4.0",
-    "chalk": "1.1.1"
+    "bufferpack": "0.0.6",
+    "chalk": "1.1.1",
+    "source-map-support": "0.4.0"
   },
   "publishConfig": {
     "registry": "http://ashley:4873/"
@@ -15,7 +15,7 @@
   "scripts": {
     "prepublish": "scripts/post-install.sh",
     "test": "scripts/test.sh",
-    "clean": "rm -rf target lib" 
+    "clean": "rm -rf target lib"
   },
   "devDependencies": {
     "istanbul": "0.4.2",

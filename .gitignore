@@ -2,7 +2,6 @@
 *.swp
 *.js
 *.d.ts
-test
 node_modules
 target
 npm-debug.log
