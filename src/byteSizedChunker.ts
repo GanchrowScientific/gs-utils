@@ -9,7 +9,7 @@ export class ByteSizedChunker {
   private partial: Buffer;
 
   constructor(private bufferHeaderLength: number, private packFormat: string) {
-    this.partial = new Buffer('', 'ascii');
+    this.partial = new Buffer(0);
   }
 
   public forEachCompleteChunk(dataBuf: Buffer, cb: (string) => void): void {
@@ -29,9 +29,9 @@ export class ByteSizedChunker {
     return bufferpack.unpack(this.packFormat, data.slice(0, this.bufferHeaderLength))[0];
   }
 
-  private getMessage(data: Buffer): string {
+  private getMessage(data: Buffer): Buffer {
     return data.slice(this.bufferHeaderLength,
-      this.bufferHeaderLength + this.getExpectedMessageSize(data)).toString('ascii');
+      this.bufferHeaderLength + this.getExpectedMessageSize(data));
   }
 
   private getNextPartial(data: Buffer): Buffer {
