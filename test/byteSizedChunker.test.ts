@@ -118,5 +118,5 @@ function createASCIIMessages(...msgs: string[]): Buffer {
 function createMessages(...msgs: Buffer[]): Buffer {
   return msgs.reduce((result: Buffer|string, msg: Buffer) => {
     return Buffer.concat([result, bufferpack.pack('L>', [msg.length]), msg]);
-  }, new Buffer('', 'utf-8'));
+  }, new Buffer(0));
 }
