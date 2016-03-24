@@ -7,11 +7,29 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../src/utilities';
+import {SimpleStore, BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {
     callback();
+  },
+
+  testFetchSimpleStore(test: nodeunit.Test) {
+    let ss = new SimpleStore();
+    test.equals(ss.fetch(5), 5);
+    test.done();
+  },
+
+  testStoreReturnValueSimpleStore(test: nodeunit.Test) {
+    let ss = new SimpleStore();
+    test.equals(ss.store(5, 7), 7);
+    test.done();
+  },
+
+  testStoreAndFetchSimpleStore(test: nodeunit.Test) {
+    let ss = new SimpleStore();
+    test.equals(ss.store(6, 3), ss.fetch(6));
+    test.done();
   },
 
   testBasicObject: function(test: nodeunit.Test) {

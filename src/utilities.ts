@@ -65,6 +65,23 @@ export class BasicObject extends null {
   }
 }
 
+export class SimpleStore {
+  private obj = {};
+
+  public fetch(keyOrValue: any): any {
+    return this.obj[keyOrValue] || keyOrValue;
+  }
+
+  public store(currentValue: any, nextValue: any): any {
+    let finalValue = currentValue;
+    if (nextValue) {
+      this.obj[currentValue] = nextValue;
+      finalValue = nextValue;
+    }
+    return finalValue;
+  }
+}
+
 export function toArray<T>(obj?: T[] | T): T[] {
   return Array.isArray(obj) ? obj : obj === undefined ? [] : [obj];
 }
