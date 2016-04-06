@@ -41,6 +41,7 @@ export interface LoggerOptions {
   maxLength?: number;
   logPrefix?: string;
   emphasis?: Emphasis;
+  suppressTag?: boolean;
 }
 
 export class Logger {
@@ -56,6 +57,7 @@ export class Logger {
     let emphasis: Emphasis;
     let maxLength: number;
     let logPrefix: string;
+    let suppressTag: boolean;
 
     if (typeof options === 'number') {
       emphasis = <Emphasis>options;
@@ -63,10 +65,11 @@ export class Logger {
       emphasis = options.emphasis;
       maxLength = options.maxLength;
       logPrefix = options.logPrefix;
+      suppressTag = options.suppressTag;
     }
     maxLength = typeof maxLength === 'number' ? maxLength : this.maxDebugMessageLength;
 
-    this.logInternal(message, emphasis, Level.DEBUG, maxLength, logPrefix);
+    this.logInternal(message, emphasis, Level.DEBUG, maxLength, logPrefix, suppressTag);
   }
 
   public info(message: any, emphasis = Emphasis.NORMAL) {
@@ -81,13 +84,12 @@ export class Logger {
     this.logInternal(message, emphasis, Level.ERROR);
   }
 
-  private logInternal(
-    message: any, emphasis: Emphasis = Emphasis.DEFAULT, level: Level,
-    maxLength = MSG_LEN_UNLIMITED, logPrefix?: string
-  ) {
+  private logInternal(message: any, emphasis: Emphasis = Emphasis.DEFAULT,
+    level: Level, maxLength = MSG_LEN_UNLIMITED, logPrefix?: string,
+    suppressTag?: boolean) {
     if (level >= this.getActualLogLevel()) {
       let stringMessage = this.stringify(message, maxLength);
-      let fullMessage = this.generatePrefix(level, logPrefix) + stringMessage;
+      let fullMessage = this.generatePrefix(level, logPrefix, suppressTag) + stringMessage;
       let logMessage = this.colorMessage(fullMessage, emphasis);
       /* tslint:disable:no-console */
       console.log(logMessage);
@@ -131,9 +133,13 @@ export class Logger {
     }
   }
 
-  private generatePrefix(level: Level, logPrefix = ''): string {
+  private generatePrefix(level: Level, logPrefix = '',
+    suppressTag = false): string {
     logPrefix = logPrefix ? `${logPrefix} ` : '';
-    return `${Level[level]} [${new Date().toISOString()} #${process.pid}] ${this.label} --- ${logPrefix}`;
+    let messageTag = suppressTag ? '' :
+        `${Level[level]} [${new Date().toISOString()} #${process.pid}] ${this.label} --- `;
+
+    return `${messageTag}${logPrefix}`;
   }
 
   private getActualLogLevel(): Level {

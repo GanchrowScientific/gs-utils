@@ -213,6 +213,19 @@ module.exports = {
     test.done();
   },
 
+  testSuppressTag(test: nodeunit.Test) {
+    let logger = getLogger('hucairz', Level.DEBUG);
+
+    mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- with tag`);
+    mockConsole.expects('log').withExactArgs(`suppress tag`);
+
+    logger.debug('with tag');
+    logger.debug('suppress tag', { suppressTag: true });
+
+    mockConsole.verify();
+    test.done();
+  },
+
   tearDown(callback) {
     mockConsole.restore();
     Date.prototype.toISOString = originalISOString;
