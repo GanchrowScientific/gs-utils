@@ -109,3 +109,13 @@ export function valuesAtCreate(...keys: any[]): (obj: Object) => Array<any> {
      return keys.map(key => obj[key]);
    };
 }
+
+export function allArrayItemTypesMatch(array: Array<any>): boolean {
+  return array.every(isSameTypeOf(array[0]));
+}
+
+export function isSameTypeOf(chkVal): (val) => boolean {
+  return (val) => {
+    return typeof chkVal === typeof val;
+  };
+}

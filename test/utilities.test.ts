@@ -7,7 +7,9 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {SimpleStore, BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup, valuesAtCreate} from '../src/utilities';
+import {SimpleStore, BasicObject, isObject,
+  toArray, deepFreeze, isJSON, isXML, dup,
+  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {
@@ -134,6 +136,44 @@ module.exports = {
 
     test.equals(emptyThunk(o).length, 0);
 
+    test.done();
+  },
+
+  testIsSameTypeOf: function(test) {
+    let undefinedType = isSameTypeOf(undefined);
+    let objectType = isSameTypeOf({});
+    let numberType = isSameTypeOf(1);
+    /* tslint:disable:no-empty */
+    let funcType = isSameTypeOf(() => {});
+    /* tslint:enable:no-empty */
+    let strType = isSameTypeOf('foobar');
+    test.ok(undefinedType(undefined));
+    test.ok(!undefinedType(null));
+    test.ok(objectType({}));
+    test.ok(objectType([]));
+    test.ok(objectType(null));
+    test.ok(!objectType(5));
+    test.ok(!objectType('foo'));
+    test.ok(numberType(0));
+    test.ok(numberType(NaN));
+    test.ok(!numberType('foo'));
+    test.ok(funcType((b) => b));
+    test.ok(!funcType('foo'));
+    test.ok(!funcType({}));
+    test.ok(strType('the horse jumps higher than the elephant'));
+    test.ok(!strType(undefined));
+    test.ok(!strType(5));
+    test.done();
+  },
+
+  testAllArrayItemTypesMatch: function(test) {
+    test.ok(allArrayItemTypesMatch([0, 1, 2, 3]));
+    test.ok(!allArrayItemTypesMatch([null, 0, 1]));
+    test.ok(!allArrayItemTypesMatch([0, 'hey', null]));
+    test.ok(allArrayItemTypesMatch(['foo', 'bar', 'shabaz']));
+    /* tslint:disable:no-construct */
+    test.ok(allArrayItemTypesMatch([new Number(), {}, [], null]));
+    /* tslint:enable:no-construct */
     test.done();
   },
 
