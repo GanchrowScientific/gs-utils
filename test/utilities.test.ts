@@ -7,7 +7,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {SimpleStore, BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup} from '../src/utilities';
+import {SimpleStore, BasicObject, isObject, toArray, deepFreeze, isJSON, isXML, dup, valuesAtCreate} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {
@@ -113,6 +113,27 @@ module.exports = {
       this.hey = 6;
     });
     test.deepEqual(dup(p), {foo: 5, hey: 6});
+    test.done();
+  },
+
+  testValuesAtCreate: function(test) {
+    let o = {1: 2, 3: 34, 5: 6};
+    let emptyThunk = valuesAtCreate();
+    let partialValuesThunk = valuesAtCreate(5, 6);
+    let otherPartialValuesThunk = valuesAtCreate(1, 2);
+    let allValuesThunk = valuesAtCreate(1, 3, 5);
+    let noValuesThunk = valuesAtCreate(7, 8, 9);
+
+    test.equals(typeof emptyThunk, 'function');
+    test.ok(Array.isArray(emptyThunk(o)));
+
+    test.deepEqual(noValuesThunk(o), [undefined, undefined, undefined]);
+    test.deepEqual(allValuesThunk(o), [2, 34, 6]);
+    test.deepEqual(partialValuesThunk(o), [6, undefined]);
+    test.deepEqual(otherPartialValuesThunk(o), [2, undefined]);
+
+    test.equals(emptyThunk(o).length, 0);
+
     test.done();
   },
 

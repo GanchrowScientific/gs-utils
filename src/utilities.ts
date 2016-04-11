@@ -103,3 +103,9 @@ export function deepFreeze<T>(obj: T): T {
 export function dup<T>(obj: T): Object {
   return JSON.parse(JSON.stringify(obj));
 }
+
+export function valuesAtCreate(...keys: any[]): (obj: Object) => Array<any> {
+   return (obj) => {
+     return keys.map(key => obj[key]);
+   };
+}
