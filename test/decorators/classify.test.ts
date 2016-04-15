@@ -5,6 +5,7 @@
 
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
+import * as sinon from 'sinon';
 
 import {classify, S_CLASSIFY} from '../../src/decorators/classify';
 
@@ -13,23 +14,32 @@ const FIRST_NAME_VAL = 'Leonhard';
 const LAST_NAME_VAL = 'Euler';
 const FUNC_VAL = 'Gamma';
 
-let clTarget: ClassifyTarget;
-let clFuncTarget: ClassifyFuncTarget;
-
 module.exports = {
   setUp(callback) {
-    clTarget = new ClassifyTarget();
-    clFuncTarget = new ClassifyFuncTarget();
+    this.clTarget = new ClassifyTarget();
+    this.clFuncTarget = new ClassifyFuncTarget();
+    this.clTargetEmpty = new ClassifyTargetWithEmpty();
+    this.originalLog = console.log;
+    console.log = sinon.spy();
     callback();
   },
 
   testClassify(test: nodeunit.Test) {
-    test.equals(clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
-    test.equals(clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
+    test.equals(this.clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
+    test.equals(this.clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
+    test.done();
+  },
+
+  testClassifyWithMissingKey(test: nodeunit.Test) {
+    delete this.clTarget.first_name;
+    test.equals(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
+    test.equals((<Sinon.SinonSpy>console.log).callCount, 1);
+    test.ok((<Sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
     test.done();
   },
 
   tearDown(callback) {
+    console.log = this.originalLog;
     callback();
   }
 };
@@ -46,6 +56,22 @@ class ClassifyTarget {
 
   get last_name() {
     return LAST_NAME_VAL;
+  }
+}
+
+
+@classify('id', 'last_name')
+class ClassifyTargetWithEmpty {
+  get id() {
+    return ID_VAL;
+  }
+
+  get first_name() {
+    return FIRST_NAME_VAL;
+  }
+
+  get last_name() {
+    return null;
   }
 }
 
