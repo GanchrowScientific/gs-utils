@@ -1,7 +1,11 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-export function lowercaseArguments(taget: any, propertyName: string, descriptor?: TypedPropertyDescriptor<any>) {
+/*
+ * Transforms string arguments to lowercase
+ */
+
+export function lowercaseArguments(target: any, propertyName: string, descriptor?: TypedPropertyDescriptor<any>) {
   if (descriptor && typeof descriptor.value === 'function') {
     let oldfunc = descriptor.value;
     descriptor.value = function() {
