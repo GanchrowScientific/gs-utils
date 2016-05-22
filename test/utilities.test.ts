@@ -70,6 +70,9 @@ module.exports = {
     test.ok(isXML('</>'));
     let xml = '<superheroes><aquaman title="OMG">NODE VALUES</aquaman></superheroes>';
     test.ok(isXML(xml));
+    let xmlMultiLine = '<supervillains>\n  <villain name="Lex Luthor">1940</villain>\n' +
+      '  <villain name="Harley Quinn">1992</villain>\n</supervillains>';
+    test.ok(isXML(xmlMultiLine));
     test.done();
   },
 
@@ -108,13 +111,13 @@ module.exports = {
   },
 
   testDup: function(test: nodeunit.Test) {
-    let o = {5: 4, 3: 2, foobar: 'foobar', func: (function() { /**/ })};
-    test.deepEqual(dup(o), {5: 4, 3: 2, foobar: 'foobar'});
+    let o = { 5: 4, 3: 2, foobar: 'foobar', func: (function() { /**/ }) };
+    test.deepEqual(dup(o), { 5: 4, 3: 2, foobar: 'foobar' });
     let p = new (function Test() {
       this.foo = 5;
       this.hey = 6;
     });
-    test.deepEqual(dup(p), {foo: 5, hey: 6});
+    test.deepEqual(dup(p), { foo: 5, hey: 6 });
     test.done();
   },
 

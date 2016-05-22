@@ -49,7 +49,7 @@ export const isXML = Object.defineProperties(function(str: Bing): boolean {
   throw new TypeError('Argument is neither string nor Buffer');
 },
   {
-    XML_REGEXP: { value: /^<.*>$/ },
+    XML_REGEXP: { value: /^<[\s\S]*>$/ },
     BUFFER_BEGIN_XML: { value: '<'.codePointAt(0) },
     BUFFER_END_XML: { value: '>'.codePointAt(0) }
   }
