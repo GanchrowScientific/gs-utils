@@ -1,9 +1,9 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/// <reference path="../typings/custom/bufferpack.d.ts" />
 
-// tsc is not able to find bufferpack
-/* tslint:disable:no-require-imports */
-let bufferpack = require('bufferpack');
-/* tslint:enable:no-require-imports */
+'use strict';
+
+import * as bufferpack from 'bufferpack';
 
 export class ByteSizedChunker {
   private partial: Buffer;

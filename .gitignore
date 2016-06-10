@@ -2,6 +2,7 @@
 *.swp
 *.js
 *.d.ts
+!typings/custom/**/*.d.ts
 node_modules
 target
 npm-debug.log
