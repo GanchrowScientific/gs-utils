@@ -4,6 +4,7 @@
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
   "version": "1.0.0",
   "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "dependencies": {
     "bufferpack": "0.0.6",
     "chalk": "1.1.1",
