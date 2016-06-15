@@ -9,11 +9,23 @@ import 'source-map-support/register';
 
 import {SimpleStore, BasicObject, isObject,
   toArray, deepFreeze, isJSON, isXML, dup,
-  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch} from '../src/utilities';
+  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket} from '../src/utilities';
 
 module.exports = {
   setUp: function(callback) {
     callback();
+  },
+
+  testCaseInsensitiveBucket(test: nodeunit.Test) {
+    let is = new CaseInsensitiveBucket('Hos', 'aKa');
+    test.ok(is.has('hos'));
+    test.ok(is.has('Hos'));
+    test.ok(is.has('HoS'));
+    test.ok(is.has('aka'));
+    test.ok(is.has('aKa'));
+    test.ok(is.has('AKA'));
+    test.ok(!is.has('a'));
+    test.done();
   },
 
   testFetchSimpleStore(test: nodeunit.Test) {

@@ -119,3 +119,16 @@ export function isSameTypeOf(chkVal): (val) => boolean {
     return typeof chkVal === typeof val;
   };
 }
+
+export class CaseInsensitiveBucket {
+  private obj = new Set();
+  constructor(...args: string[]) {
+    args.forEach(arg => {
+      this.obj.add(String(arg).toLowerCase());
+    });
+  }
+
+  public has(key: string): boolean {
+    return this.obj.has(String(key).toLowerCase());
+  }
+}
