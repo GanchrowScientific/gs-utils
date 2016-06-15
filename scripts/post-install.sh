@@ -12,6 +12,10 @@ echo Running tsc...
 node_modules/.bin/tsc
 COMPILATION=$?
 
+echo Patching compilation...
+sed -i '1d' target/dist/src/index.d.ts
+COMPILATION_PATCHING=$?
+
 echo Running tslint..
 node_modules/.bin/tslint --rules-dir target/dist/tslint-rules $FILES
 LINTING=$?
@@ -20,4 +24,4 @@ echo Copying compiled source to lib folder
 mkdir -p lib
 cp -r target/dist/src/* lib
 
-exit $(( $COMPILATION + $LINTING ))
+exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING ))
