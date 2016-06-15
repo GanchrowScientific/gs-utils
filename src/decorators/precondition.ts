@@ -1,3 +1,5 @@
+/* Copyright © 2015-2016 Ganchrow Scientific, SA all rights reserved */
+
 'use strict';
 
 export function precondition(message: string, condition: (...args: any[]) => boolean) {

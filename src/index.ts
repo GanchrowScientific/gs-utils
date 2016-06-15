@@ -1,4 +1,6 @@
-/// <reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
+/* Copyright © 2015-2016 Ganchrow Scientific, SA all rights reserved */
+/// <reference path="../typings/index.d.ts" />
+
 'use strict';
 
 import * as utils from './utilities';

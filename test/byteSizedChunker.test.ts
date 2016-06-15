@@ -1,7 +1,6 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 
-/// <reference path="../typings/node/node.d.ts"/>
-/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
 
 'use strict';
 

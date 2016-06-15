@@ -1,0 +1,8 @@
+{
+  "globalDependencies": {
+    "chalk": "registry:dt/chalk#0.4.0+20160317120654",
+    "node": "registry:dt/node#6.0.0+20160613154055",
+    "nodeunit": "registry:dt/nodeunit#0.0.0+20160316155526",
+    "sinon": "registry:dt/sinon#1.16.0+20160517064723"
+  }
+}

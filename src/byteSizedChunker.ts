@@ -1,5 +1,4 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
-/// <reference path="../typings/custom/bufferpack.d.ts" />
 
 'use strict';
 

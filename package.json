@@ -24,10 +24,13 @@
     "nodeunit": "0.9.1",
     "proxyquire": "1.7.3",
     "remap-istanbul": "0.5.1",
-    "sinon": "1.17.2",
+    "sinon": "1.17.4",
     "temp": "0.8.3",
-    "tslint": "3.1.1",
-    "typescript": "1.7.3",
-    "typescript-formatter": "1.2.0"
+    "tslint": "3.10.2",
+    "typescript": "1.8.10",
+    "typescript-formatter": "2.2.0"
+  },
+  "engines": {
+    "node": ">=6.0"
   }
 }

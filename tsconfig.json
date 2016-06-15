@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module" : "commonjs",
-    "target": "es5",
+    "target": "es6",
     "sourceMap": true,
     "outDir": "./target/dist",
     "experimentalDecorators": true,
@@ -9,6 +9,7 @@
   },
   "exclude": [
     "node_modules",
+    "typings",
     "target",
     "lib"
   ]
