@@ -11,6 +11,14 @@ export class ByteSizedChunker {
     this.partial = new Buffer(0);
   }
 
+  public prepare(data: Buffer|string, dataType = 'ascii'): Buffer {
+    let dataBuf = Buffer.isBuffer(data) ? data : new Buffer(data, dataType);
+    return Buffer.concat([
+      bufferpack.pack(this.packFormat, [dataBuf.length]),
+      dataBuf
+    ]);
+  }
+
   public forEachCompleteChunk(dataBuf: Buffer, cb: (string) => void): void {
     this.partial = Buffer.concat([this.partial, dataBuf]);
 

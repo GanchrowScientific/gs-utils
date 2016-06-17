@@ -25,6 +25,20 @@ module.exports = {
     cb();
   },
 
+  testPrepareMessage: function(test: nodeunit.Test) {
+    test.deepEqual([bsc.prepare('test')],
+      [Buffer.concat([new Buffer([0, 0, 0, 4]), new Buffer('test')])]
+    );
+    test.done();
+  },
+
+  testPrepareMessageBuffer: function(test: nodeunit.Test) {
+    test.deepEqual([bsc.prepare(new Buffer('test'))],
+      [Buffer.concat([new Buffer([0, 0, 0, 4]), new Buffer('test')])]
+    );
+    test.done();
+  },
+
   testChunkerOneFullMessage: function(test: nodeunit.Test) {
     // full message in one chunk
     bsc.forEachCompleteChunk(createASCIIMessages('msg1'), f);
