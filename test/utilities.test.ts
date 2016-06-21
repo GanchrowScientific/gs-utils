@@ -9,10 +9,10 @@ import 'source-map-support/register';
 
 import {SimpleStore, BasicObject, isObject,
   toArray, deepFreeze, isJSON, isXML, dup,
-  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket} from '../src/utilities';
+  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket, isNumeric} from '../src/utilities';
 
 module.exports = {
-  setUp: function(callback) {
+  setUp: function (callback) {
     callback();
   },
 
@@ -46,7 +46,7 @@ module.exports = {
     test.done();
   },
 
-  testBasicObject: function(test: nodeunit.Test) {
+  testBasicObject: function (test: nodeunit.Test) {
     let b = new BasicObject();
 
     test.equals(typeof b, 'object');
@@ -57,7 +57,7 @@ module.exports = {
     test.done();
   },
 
-  testIsJSON: function(test: nodeunit.Test) {
+  testIsJSON: function (test: nodeunit.Test) {
     test.throws(() => isJSON(5), 'Should throw -- Argument is neither string nor Buffer');
     test.throws(() => isJSON(null), 'Should throw -- Argument is neither string nor Buffer');
     test.throws(() => isJSON({}), 'Should throw -- Argument is neither string nor Buffer');
@@ -69,7 +69,7 @@ module.exports = {
     test.done();
   },
 
-  testIsXML: function(test: nodeunit.Test) {
+  testIsXML: function (test: nodeunit.Test) {
     test.throws(() => isXML(5), 'Should throw -- Argument is neither string nor Buffer');
     test.throws(() => isXML(null), 'Should throw -- Argument is neither string nor Buffer');
     test.throws(() => isXML({}), 'Should throw -- Argument is neither string nor Buffer');
@@ -88,7 +88,7 @@ module.exports = {
     test.done();
   },
 
-  testIsObject: function(test: nodeunit.Test) {
+  testIsObject: function (test: nodeunit.Test) {
     test.ok(isObject([]), 'isObject([]) === true');
     test.ok(isObject({}), 'isObject({}) === true');
     test.ok(!isObject('foo'), 'isObject(\'foo\') === false');
@@ -99,7 +99,7 @@ module.exports = {
     test.done();
   },
 
-  testToArray: function(test: nodeunit.Test) {
+  testToArray: function (test: nodeunit.Test) {
     let o = {};
     let ota = toArray(o);
 
@@ -114,7 +114,7 @@ module.exports = {
     test.done();
   },
 
-  testDeepFreeze: function(test: nodeunit.Test) {
+  testDeepFreeze: function (test: nodeunit.Test) {
     let o = { a: { b: [{}] } };
     deepFreeze(o);
     test.ok(Object.isFrozen(o.a.b[0]));
@@ -122,8 +122,8 @@ module.exports = {
     test.done();
   },
 
-  testDup: function(test: nodeunit.Test) {
-    let o = { 5: 4, 3: 2, foobar: 'foobar', func: (function() { /**/ }) };
+  testDup: function (test: nodeunit.Test) {
+    let o = { 5: 4, 3: 2, foobar: 'foobar', func: (function () { /**/ }) };
     test.deepEqual(dup(o), { 5: 4, 3: 2, foobar: 'foobar' });
     let p = new (function Test() {
       this.foo = 5;
@@ -133,8 +133,8 @@ module.exports = {
     test.done();
   },
 
-  testValuesAtCreate: function(test) {
-    let o = {1: 2, 3: 34, 5: 6};
+  testValuesAtCreate: function (test: nodeunit.Test) {
+    let o = { 1: 2, 3: 34, 5: 6 };
     let emptyThunk = valuesAtCreate();
     let partialValuesThunk = valuesAtCreate(5, 6);
     let otherPartialValuesThunk = valuesAtCreate(1, 2);
@@ -154,12 +154,12 @@ module.exports = {
     test.done();
   },
 
-  testIsSameTypeOf: function(test) {
+  testIsSameTypeOf: function (test: nodeunit.Test) {
     let undefinedType = isSameTypeOf(undefined);
     let objectType = isSameTypeOf({});
     let numberType = isSameTypeOf(1);
     /* tslint:disable:no-empty */
-    let funcType = isSameTypeOf(() => {});
+    let funcType = isSameTypeOf(() => { });
     /* tslint:enable:no-empty */
     let strType = isSameTypeOf('foobar');
     test.ok(undefinedType(undefined));
@@ -181,7 +181,7 @@ module.exports = {
     test.done();
   },
 
-  testAllArrayItemTypesMatch: function(test) {
+  testAllArrayItemTypesMatch: function (test: nodeunit.Test) {
     test.ok(allArrayItemTypesMatch([0, 1, 2, 3]));
     test.ok(!allArrayItemTypesMatch([null, 0, 1]));
     test.ok(!allArrayItemTypesMatch([0, 'hey', null]));
@@ -192,7 +192,31 @@ module.exports = {
     test.done();
   },
 
-  tearDown: function(callback) {
+  testIsNumeric: function (test: nodeunit.Test) {
+    test.ok(isNumeric(4));
+    test.ok(isNumeric(0));
+    test.ok(isNumeric(-6));
+    test.ok(isNumeric('3'));
+    test.ok(isNumeric('0'));
+    test.ok(isNumeric('+5'));
+    test.ok(!isNumeric(true));
+    test.ok(!isNumeric(false));
+    test.ok(isNumeric(0x35));
+    test.ok(isNumeric(Infinity));
+    test.ok(!isNumeric(''));
+    test.ok(!isNumeric('x'));
+    test.ok(isNumeric('0x35'));
+    test.ok(!isNumeric([]));
+    test.ok(!isNumeric(undefined));
+    test.ok(!isNumeric(null));
+    test.ok(!isNumeric(NaN));
+    test.ok(!isNumeric({}));
+    test.ok(!isNumeric([5]));
+    test.ok(!isNumeric([5, 5]));
+    test.done();
+  },
+
+  tearDown: function (callback) {
     callback();
   }
 };

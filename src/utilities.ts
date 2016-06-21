@@ -4,7 +4,7 @@
 
 type Bing = string | Buffer;
 
-export const isJSON = Object.defineProperties(function(str: Bing): boolean {
+export const isJSON = Object.defineProperties(function (str: Bing): boolean {
 
   if (typeof str === 'string') {
 
@@ -34,7 +34,7 @@ export const isJSON = Object.defineProperties(function(str: Bing): boolean {
   }
 );
 
-export const isXML = Object.defineProperties(function(str: Bing): boolean {
+export const isXML = Object.defineProperties(function (str: Bing): boolean {
 
   if (typeof str === 'string') {
 
@@ -105,9 +105,9 @@ export function dup<T>(obj: T): Object {
 }
 
 export function valuesAtCreate(...keys: any[]): (obj: Object) => Array<any> {
-   return (obj) => {
-     return keys.map(key => obj[key]);
-   };
+  return (obj) => {
+    return keys.map(key => obj[key]);
+  };
 }
 
 export function allArrayItemTypesMatch(array: Array<any>): boolean {
@@ -118,6 +118,11 @@ export function isSameTypeOf(chkVal): (val) => boolean {
   return (val) => {
     return typeof chkVal === typeof val;
   };
+}
+
+export function isNumeric(value: any) {
+  return (!!value || value === 0) && value !== true && !Array.isArray(value) &&
+    !isNaN(value) && String(value).length !== 0;
 }
 
 export class CaseInsensitiveBucket {
