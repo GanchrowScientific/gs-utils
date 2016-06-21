@@ -10,3 +10,4 @@ gs-utils.sublime-project
 gs-utils.sublime-workspace
 .vscode
 patch.diff
+package.yml
