@@ -137,3 +137,9 @@ export class CaseInsensitiveBucket {
     return this.obj.has(String(key).toLowerCase());
   }
 }
+
+export const TYPEOF_UNDEFINED = 'undefined';
+export const TYPEOF_NUMBER = 'number';
+export const TYPEOF_STRING = 'string';
+export const TYPEOF_OBJECT = 'object';
+export const TYPEOF_FUNCTION = 'function';
