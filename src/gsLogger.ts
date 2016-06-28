@@ -11,7 +11,7 @@ export enum Emphasis {
 }
 
 export enum Level {
-  DEBUG, INFO, WARN, ERROR, NONE
+  DEBUG, INFO, WARN, ERROR, FATAL, NONE
 }
 
 function levelString() {
@@ -84,6 +84,10 @@ export class Logger {
     this.logInternal(message, emphasis, Level.ERROR);
   }
 
+  public fatal(message: any, emphasis = Emphasis.VERY_STRONG) {
+    this.logInternal(message, emphasis, Level.FATAL);
+  }
+
   private logInternal(message: any, emphasis: Emphasis = Emphasis.DEFAULT,
     level: Level, maxLength = MSG_LEN_UNLIMITED, logPrefix?: string,
     suppressTag?: boolean) {
@@ -129,7 +133,7 @@ export class Logger {
       case Emphasis.STRONG:
         return chalk.red(fullMessage).toString();
       case Emphasis.VERY_STRONG:
-        return chalk.bgRed.black(fullMessage).toString();
+        return chalk.bgRed.white(fullMessage).toString();
     }
   }
 

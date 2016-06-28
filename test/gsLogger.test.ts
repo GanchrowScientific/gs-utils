@@ -37,6 +37,7 @@ module.exports = {
     mockConsole.expects('log').withExactArgs(`WARN [NotADate #${process.pid}] hucairz --- warn!`);
     mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
     mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
+    mockConsole.expects('log').withExactArgs(`FATAL [NotADate #${process.pid}] hucairz --- fatal!`);
 
     logger.info('info!', Emphasis.NORMAL);
     logger.debug('debug!', Emphasis.NORMAL);
@@ -50,6 +51,7 @@ module.exports = {
     logger.debug('debug!', Emphasis.NORMAL);
     logger.warn('warn!', Emphasis.NORMAL);
     logger.error('error!', Emphasis.NORMAL);
+    logger.fatal('fatal!', Emphasis.NORMAL);
 
     mockConsole.verify();
     test.done();
