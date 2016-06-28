@@ -285,6 +285,21 @@ module.exports = {
     test.done();
   },
 
+  testInstallUncaughtExceptionLogger(test: nodeunit.Test) {
+    let logger = getLogger('handler');
+    mockConsole.expects('log');
+    logger.installUncaughtExceptionLogger();
+
+    let mockError = {};
+    try {
+      process.emit('uncaughtException', mockError);
+    } catch (e) {
+      test.equals(e, mockError);
+    }
+    mockConsole.verify();
+    test.done();
+  },
+
   tearDown(callback) {
     mockConsole.restore();
     Date.prototype.toISOString = originalISOString;

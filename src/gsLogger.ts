@@ -118,6 +118,13 @@ export class Logger {
     this.logInternal(message, emphasis, Level.FATAL);
   }
 
+  public installUncaughtExceptionLogger() {
+    process.on('uncaughtException', (err: Error) => {
+      this.fatal(err.message);
+      throw err;
+    });
+  }
+
   private logInternal(message: any, emphasis: Emphasis = Emphasis.DEFAULT,
     level: Level, maxLength = MSG_LEN_UNLIMITED, logPrefix?: string,
     suppressTag?: boolean) {
