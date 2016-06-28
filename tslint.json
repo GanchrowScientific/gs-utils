@@ -74,5 +74,8 @@
       "check-type"
     ],
     "copyright-check": [true, "/* Copyright © %%% Ganchrow Scientific, SA all rights reserved */", 2015]
-  }
+  },
+  "rulesDirectory": [
+    "target/dist/tslint-rules"
+  ]
 }

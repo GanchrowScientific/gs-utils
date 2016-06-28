@@ -17,7 +17,7 @@ sed -i '1d' target/dist/src/index.d.ts
 COMPILATION_PATCHING=$?
 
 echo Running tslint..
-node_modules/.bin/tslint --rules-dir target/dist/tslint-rules $FILES
+node_modules/.bin/tslint $FILES
 LINTING=$?
 
 echo Copying compiled source to lib folder
