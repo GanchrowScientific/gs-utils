@@ -1,21 +1,21 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
-/// <reference path="../typings/sinon/sinon.d.ts"/>
-/// <reference path="../typings/chalk/chalk.d.ts" />
-
 // include this line to fix stack traces
 import 'source-map-support/register';
 
 import * as sinon from 'sinon';
+import * as pq from 'proxyquire';
 
 import * as chalk from 'chalk';
 import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
 from '../src/gsLogger';
 
+let proxyquire = pq.noPreserveCache();
 let mockConsole: Sinon.SinonMock;
 let originalISOString = Date.prototype.toISOString;
+let createTransportSpy: Sinon.SinonStub;
+let sendMailSpy: Sinon.SinonSpy;
 
 module.exports = {
   setUp(callback) {
@@ -226,6 +226,63 @@ module.exports = {
 
     mockConsole.verify();
     test.done();
+
+  },
+
+  testSetUpEmail(test: nodeunit.Test) {
+    let module = createMocks();
+    test.equal(createTransportSpy.callCount, 1);
+    test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
+
+    module.setUpMailer({
+      to: 'me',
+      from: 'you',
+      subjectPrefix: 'Prefix'
+    });
+
+    let logger = module.getLogger('mailer');
+    mockConsole.expects('log');
+    logger.fatal('a fatal message');
+
+    test.equal(sendMailSpy.callCount, 1);
+    test.deepEqual(sendMailSpy.firstCall.args[0], {
+      from: 'you',
+      to: 'me',
+      subject: 'Prefix: FATAL',
+      text: `FATAL [NotADate #${process.pid}] mailer --- a fatal message`
+    });
+    mockConsole.verify();
+    test.done();
+  },
+
+  testSetUpEmailWithLogLevel(test: nodeunit.Test) {
+    let module = createMocks();
+    test.equal(createTransportSpy.callCount, 1);
+    test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
+
+    module.setUpMailer({
+      to: 'me',
+      from: 'you',
+      subjectPrefix: 'Prefix',
+      minLogLevel: Level.WARN
+    });
+
+    let logger = module.getLogger('mailer');
+    mockConsole.expects('log');
+    mockConsole.expects('log');
+
+    logger.warn('a warn message');
+    logger.info('an info message');
+
+    test.equal(sendMailSpy.callCount, 1);
+    test.deepEqual(sendMailSpy.firstCall.args[0], {
+      from: 'you',
+      to: 'me',
+      subject: 'Prefix: WARN',
+      text: `WARN [NotADate #${process.pid}] mailer --- a warn message`
+    });
+    mockConsole.verify();
+    test.done();
   },
 
   tearDown(callback) {
@@ -235,6 +292,21 @@ module.exports = {
   }
 };
 
+function createMocks() {
+  sendMailSpy = sinon.spy();
+  createTransportSpy = sinon.stub();
+  createTransportSpy.returns({
+    sendMail: sendMailSpy
+  });
+
+  return proxyquire('../src/gsLogger',
+    {
+      'nodemailer': {
+        createTransport: createTransportSpy
+      }
+    });
+}
+
 function generateObject(): number[] {
   let array = [];
   for (let i = 0; i < 100; i++) {
@@ -242,3 +314,5 @@ function generateObject(): number[] {
   }
   return array;
 }
+
+

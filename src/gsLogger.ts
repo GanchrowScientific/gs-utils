@@ -3,6 +3,9 @@
 'use strict';
 
 import * as chalk from 'chalk';
+import * as nodemailer from 'nodemailer';
+
+const SMTP_SERVER = 'smtp://mail.ganchrow.com';
 
 export const MSG_LEN_UNLIMITED = -1;
 
@@ -21,6 +24,8 @@ function levelString() {
 
 const DEFAULT_LOG_LEVEL = Level.DEBUG;
 const DEFAULT_MAX_DEBUG_MESSAGE_LENGTH = 64;
+const transporter = nodemailer.createTransport(SMTP_SERVER);
+
 let globalLogLevel = DEFAULT_LOG_LEVEL;
 
 export function setGlobalLogLevel(logLevel: Level | string) {
@@ -44,8 +49,32 @@ export interface LoggerOptions {
   suppressTag?: boolean;
 }
 
+export interface MailerOptions {
+  to: string;
+  from: string;
+  subjectPrefix: string;
+  minLogLevel?: Level; // specifies minimum log level to mail, or defatult to FATAL
+}
+
+// To set up email, invoke the following method:
+//
+// setUpMailer({
+//   to: 'Admin <admin@ganchrow.com>',
+//   from: 'System <system@ganchrow.com>',
+//   subjectPrefix: 'Hello!!!',
+//   minLogLevel: Level.FATAL // (optional)
+// });
+//
+// Installs the email transport
+export function setUpMailer(mailerOptions: MailerOptions) {
+  Logger.mailerOptions = mailerOptions;
+  Logger.mailerOptions.minLogLevel = Logger.mailerOptions.minLogLevel || Level.FATAL;
+}
+
 export class Logger {
   public static defaultLogLevel: Level = DEFAULT_LOG_LEVEL;
+
+  public static mailerOptions: MailerOptions;
 
   constructor(
     private label: string,
@@ -58,6 +87,7 @@ export class Logger {
     let maxLength: number;
     let logPrefix: string;
     let suppressTag: boolean;
+
 
     if (typeof options === 'number') {
       emphasis = <Emphasis>options;
@@ -98,6 +128,8 @@ export class Logger {
       /* tslint:disable:no-console */
       console.log(logMessage);
       /* tslint:enable:no-console */
+
+      this.sendEmailNotification(fullMessage, level);
     }
   }
 
@@ -148,5 +180,25 @@ export class Logger {
 
   private getActualLogLevel(): Level {
     return Math.max(globalLogLevel, this.logLevel);
+  }
+
+  private sendEmailNotification(logMessage, level: Level) {
+    if (Logger.mailerOptions && level >= Logger.mailerOptions.minLogLevel) {
+      transporter.sendMail({
+        from: Logger.mailerOptions.from,
+        to: Logger.mailerOptions.to,
+        subject: Logger.mailerOptions.subjectPrefix + ': ' + Level[level],
+        text: logMessage
+      }, function(error, info){
+        /* tslint:disable:no-console */
+        if (error) {
+          console.log(`Failed to send email notification with mailer options: ${JSON.stringify(Logger.mailerOptions)}`);
+          console.log(error);
+        } else {
+          console.log(`Email notification sent to '${Logger.mailerOptions.to}': ${info.response}`);
+        }
+        /* tslint:disable:no-console */
+      });
+    }
   }
 }
