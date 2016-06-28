@@ -1,7 +1,7 @@
 *.map
 *.swp
 *.js
-*.d.ts
+lib/**/*.d.ts
 !typings/custom/**/*.d.ts
 node_modules
 target
