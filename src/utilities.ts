@@ -2,7 +2,9 @@
 
 'use strict';
 
-type Bing = string | Buffer;
+export type Bing = string | Buffer;
+
+export type ParsedJson = any;
 
 export const isJSON = Object.defineProperties(function (str: Bing): boolean {
 
@@ -100,7 +102,7 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
-export function dup<T>(obj: T): Object {
+export function dup<T>(obj: T): ParsedJson {
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -138,7 +140,7 @@ export class CaseInsensitiveBucket {
   }
 }
 
-export function stripAnyValues<T extends Object>(obj: T, ...args: any[]): Object {
+export function stripAnyValues<T extends Object|Array<any>>(obj: T, ...args: any[]): Object|Array<any> {
   let dupItems = dup(obj);
   toArray(dupItems).forEach(item => {
     args.forEach(arg => {
