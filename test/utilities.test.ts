@@ -8,12 +8,24 @@
 import 'source-map-support/register';
 
 import {SimpleStore, BasicObject, isObject,
-  toArray, deepFreeze, isJSON, isXML, dup,
+  toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket, isNumeric} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testStripAnyValues(test: nodeunit.Test) {
+    let obj = {hey: 'mental', foo: 'sigfigs', a: 'bored', _id: 4};
+    test.deepEqual(stripAnyValues(obj, '_id'), {
+      hey: 'mental', foo: 'sigfigs', a: 'bored'
+    });
+    test.deepEqual(stripAnyValues(obj, '_id', 'foo'), {
+      hey: 'mental', a: 'bored'
+    });
+    test.deepEqual(stripAnyValues(obj, ['_id', 'foo']), obj);
+    test.done();
   },
 
   testCaseInsensitiveBucket(test: nodeunit.Test) {

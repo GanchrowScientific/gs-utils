@@ -138,6 +138,16 @@ export class CaseInsensitiveBucket {
   }
 }
 
+export function stripAnyValues<T extends Object>(obj: T, ...args: any[]): Object {
+  let dupItems = dup(obj);
+  toArray(dupItems).forEach(item => {
+    args.forEach(arg => {
+      delete item[arg];
+    });
+  });
+  return dupItems;
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
