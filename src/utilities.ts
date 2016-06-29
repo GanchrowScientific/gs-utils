@@ -140,7 +140,7 @@ export class CaseInsensitiveBucket {
   }
 }
 
-export function stripAnyValues<T extends Object|Array<any>>(obj: T, ...args: any[]): Object|Array<any> {
+export function stripAnyValues<T>(obj: T, ...args: any[]): ParsedJson {
   let dupItems = dup(obj);
   toArray(dupItems).forEach(item => {
     args.forEach(arg => {
