@@ -1,0 +1,14 @@
+key1:
+  - value1
+  - value2
+key2:
+  - value3
+  - value4
+ENVIRONMENTS:
+  DEVELOPMENT:
+    key1:
+      - value5
+      - value6
+    key3:
+      - value7
+      - value8

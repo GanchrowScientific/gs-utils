@@ -9,6 +9,10 @@ echo
 mkdir -p target
 mkdir -p target/test-reports
 
+echo Copying test resources to target folder
+rm -rf target/dist/test/resources
+cp -r test/resources target/dist/test/
+
 NODEUNIT="node_modules/.bin/nodeunit"
 NUOPTS="--reporter junit --output target/test-reports"
 TESTDIR="target/dist/test"
