@@ -150,6 +150,10 @@ export function stripAnyValues<T>(obj: T, ...args: any[]): ParsedJson {
   return dupItems;
 }
 
+export function flattenArray(ary: any[]): any[] {
+  return ary.reduce((b, c) => b.concat(c), []);
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';

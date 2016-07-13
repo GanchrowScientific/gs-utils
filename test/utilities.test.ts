@@ -9,11 +9,19 @@ import 'source-map-support/register';
 
 import {SimpleStore, BasicObject, isObject,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
-  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket, isNumeric} from '../src/utilities';
+  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket, isNumeric, flattenArray} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testFlattenArray(test: nodeunit.Test) {
+    test.deepEqual(flattenArray([1, 2]), [1, 2]);
+    test.deepEqual(flattenArray([[1], 2]), [1, 2]);
+    test.deepEqual(flattenArray([[1], [2]]), [1, 2]);
+    test.notDeepEqual(flattenArray([[[1]], [2]]), [1, 2]);
+    test.done();
   },
 
   testStripAnyValues(test: nodeunit.Test) {
