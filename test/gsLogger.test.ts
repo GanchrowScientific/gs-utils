@@ -21,7 +21,7 @@ module.exports = {
   setUp(callback) {
     setGlobalLogLevel(Level.DEBUG);
     mockConsole = sinon.mock(console);
-    Date.prototype.toISOString = function() {
+    Date.prototype.toISOString = function () {
       return 'NotADate';
     };
     callback();
@@ -34,24 +34,24 @@ module.exports = {
 
     mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- debug!`);
     mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- info!`);
-    mockConsole.expects('log').withExactArgs(`WARN [NotADate #${process.pid}] hucairz --- warn!`);
-    mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
-    mockConsole.expects('log').withExactArgs(`ERROR [NotADate #${process.pid}] hucairz --- error!`);
-    mockConsole.expects('log').withExactArgs(`FATAL [NotADate #${process.pid}] hucairz --- fatal!`);
+    mockConsole.expects('log').withExactArgs(chalk.cyan(`WARN [NotADate #${process.pid}] hucairz --- warn!`));
+    mockConsole.expects('log').withExactArgs(chalk.red(`ERROR [NotADate #${process.pid}] hucairz --- error!`));
+    mockConsole.expects('log').withExactArgs(chalk.red(`ERROR [NotADate #${process.pid}] hucairz --- error!`));
+    mockConsole.expects('log').withExactArgs(chalk.bgRed.white(`FATAL [NotADate #${process.pid}] hucairz --- fatal!`));
 
-    logger.info('info!', Emphasis.NORMAL);
-    logger.debug('debug!', Emphasis.NORMAL);
-    logger.warn('warn!', Emphasis.NORMAL);
-    logger.error('error!', Emphasis.NORMAL);
+    logger.debug('debug!');
+    logger.info('info!');
+    logger.warn('warn!');
+    logger.error('error!');
 
     logger = getLogger('hucairz', Level.ERROR);
     test.equal(logger.logLevel, Level.ERROR);
 
-    logger.info('info!', Emphasis.NORMAL);
-    logger.debug('debug!', Emphasis.NORMAL);
-    logger.warn('warn!', Emphasis.NORMAL);
-    logger.error('error!', Emphasis.NORMAL);
-    logger.fatal('fatal!', Emphasis.NORMAL);
+    logger.info('info!');
+    logger.debug('debug!');
+    logger.warn('warn!');
+    logger.error('error!');
+    logger.fatal('fatal!');
 
     mockConsole.verify();
     test.done();
@@ -91,11 +91,11 @@ module.exports = {
     mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- undefined`);
     mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- null`);
 
-    logger.info(obj, Emphasis.NORMAL);
-    logger.debug(obj, Emphasis.NORMAL);
-    logger.info(1, Emphasis.NORMAL);
-    logger.info(undefined, Emphasis.NORMAL);
-    logger.info(null, Emphasis.NORMAL);
+    logger.info(obj);
+    logger.debug(obj);
+    logger.info(1);
+    logger.info(undefined);
+    logger.info(null);
 
     mockConsole.verify();
     test.done();
@@ -296,6 +296,25 @@ module.exports = {
     } catch (e) {
       test.equals(e, mockError);
     }
+    mockConsole.verify();
+    test.done();
+  },
+
+  testInvokeCallback(test: nodeunit.Test) {
+    let label = 'invoke callback';
+    let logger = getLogger(label, Level.DEBUG);
+    let logMessage = 'test callback';
+    let callbackMessage = 'im in ur callback callin ur d00dz';
+    mockConsole.expects('log').
+      withExactArgs(`INFO [NotADate #${process.pid}] ${label} --- ${logMessage}`);
+    mockConsole.expects('log').withExactArgs(callbackMessage);
+
+    /* tslint:disable:no-console */
+    logger.info(logMessage, () => {
+      console.log(callbackMessage);
+    });
+    /* tslint:disable:no-console */
+
     mockConsole.verify();
     test.done();
   },

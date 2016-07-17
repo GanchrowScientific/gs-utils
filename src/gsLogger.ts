@@ -4,6 +4,7 @@
 
 import * as chalk from 'chalk';
 import * as nodemailer from 'nodemailer';
+import {NoArgVoidFunc} from './utilities';
 
 const SMTP_SERVER = 'smtp://mail.ganchrow.com';
 
@@ -47,6 +48,7 @@ export interface LoggerOptions {
   logPrefix?: string;
   emphasis?: Emphasis;
   suppressTag?: boolean;
+  callback?: NoArgVoidFunc;
 }
 
 export interface MailerOptions {
@@ -82,40 +84,42 @@ export class Logger {
     public maxDebugMessageLength: number = DEFAULT_MAX_DEBUG_MESSAGE_LENGTH
   ) { /* */ }
 
-  public debug(message: any, options?: Emphasis | LoggerOptions) {
-    let emphasis: Emphasis;
+  public debug(message: any, options?: LoggerOptions) {
+    let emphasis: Emphasis = Emphasis.DEFAULT;
     let maxLength: number;
     let logPrefix: string;
     let suppressTag: boolean;
+    let callback: NoArgVoidFunc;
 
-
-    if (typeof options === 'number') {
-      emphasis = <Emphasis>options;
-    } else if (options) {
-      emphasis = options.emphasis;
+    if (options) {
+      if (options.emphasis) {
+        emphasis = options.emphasis;
+      }
       maxLength = options.maxLength;
       logPrefix = options.logPrefix;
       suppressTag = options.suppressTag;
+      callback = options.callback;
     }
+
     maxLength = typeof maxLength === 'number' ? maxLength : this.maxDebugMessageLength;
 
-    this.logInternal(message, emphasis, Level.DEBUG, maxLength, logPrefix, suppressTag);
+    this.logInternal(message, emphasis, Level.DEBUG, callback, maxLength, logPrefix, suppressTag);
   }
 
-  public info(message: any, emphasis = Emphasis.NORMAL) {
-    this.logInternal(message, emphasis, Level.INFO);
+  public info(message: any, callback?: NoArgVoidFunc) {
+    this.logInternal(message, Emphasis.NORMAL, Level.INFO, callback);
   }
 
-  public warn(message: any, emphasis = Emphasis.MEDIUM) {
-    this.logInternal(message, emphasis, Level.WARN);
+  public warn(message: any, callback?: NoArgVoidFunc) {
+    this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callback);
   }
 
-  public error(message: any, emphasis = Emphasis.STRONG) {
-    this.logInternal(message, emphasis, Level.ERROR);
+  public error(message: any, callback?: NoArgVoidFunc) {
+    this.logInternal(message, Emphasis.STRONG, Level.ERROR, callback);
   }
 
-  public fatal(message: any, emphasis = Emphasis.VERY_STRONG) {
-    this.logInternal(message, emphasis, Level.FATAL);
+  public fatal(message: any, callback?: NoArgVoidFunc) {
+    this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callback);
   }
 
   public installUncaughtExceptionLogger() {
@@ -125,9 +129,8 @@ export class Logger {
     });
   }
 
-  private logInternal(message: any, emphasis: Emphasis = Emphasis.DEFAULT,
-    level: Level, maxLength = MSG_LEN_UNLIMITED, logPrefix?: string,
-    suppressTag?: boolean) {
+  private logInternal(message: any, emphasis: Emphasis, level: Level, callback?: NoArgVoidFunc,
+    maxLength = MSG_LEN_UNLIMITED, logPrefix?: string, suppressTag?: boolean) {
     if (level >= this.getActualLogLevel()) {
       let stringMessage = this.stringify(message, maxLength);
       let fullMessage = this.generatePrefix(level, logPrefix, suppressTag) + stringMessage;
@@ -136,7 +139,11 @@ export class Logger {
       console.log(logMessage);
       /* tslint:enable:no-console */
 
-      this.sendEmailNotification(fullMessage, level);
+      if (this.shouldSendMail(level)) {
+        this.sendEmailNotification(fullMessage, level, callback);
+      } else if (callback) {
+        callback();
+      }
     }
   }
 
@@ -180,7 +187,7 @@ export class Logger {
     suppressTag = false): string {
     logPrefix = logPrefix ? `${logPrefix} ` : '';
     let messageTag = suppressTag ? '' :
-        `${Level[level]} [${new Date().toISOString()} #${process.pid}] ${this.label} --- `;
+      `${Level[level]} [${new Date().toISOString()} #${process.pid}] ${this.label} --- `;
 
     return `${messageTag}${logPrefix}`;
   }
@@ -189,23 +196,28 @@ export class Logger {
     return Math.max(globalLogLevel, this.logLevel);
   }
 
-  private sendEmailNotification(logMessage, level: Level) {
-    if (Logger.mailerOptions && level >= Logger.mailerOptions.minLogLevel) {
-      transporter.sendMail({
-        from: Logger.mailerOptions.from,
-        to: Logger.mailerOptions.to,
-        subject: Logger.mailerOptions.subjectPrefix + ': ' + Level[level],
-        text: logMessage
-      }, function(error, info){
-        /* tslint:disable:no-console */
-        if (error) {
-          console.log(`Failed to send email notification with mailer options: ${JSON.stringify(Logger.mailerOptions)}`);
-          console.log(error);
-        } else {
-          console.log(`Email notification sent to '${Logger.mailerOptions.to}': ${info.response}`);
-        }
-        /* tslint:disable:no-console */
-      });
-    }
+  private sendEmailNotification(logMessage, level: Level, callback?: NoArgVoidFunc) {
+    transporter.sendMail({
+      from: Logger.mailerOptions.from,
+      to: Logger.mailerOptions.to,
+      subject: Logger.mailerOptions.subjectPrefix + ': ' + Level[level],
+      text: logMessage
+    }, function (error, info) {
+      /* tslint:disable:no-console */
+      if (error) {
+        console.log(`Failed to send email notification with mailer options: ${JSON.stringify(Logger.mailerOptions)}`);
+        console.log(error);
+      } else {
+        console.log(`Email notification sent to '${Logger.mailerOptions.to}': ${info.response}`);
+      }
+      /* tslint:disable:no-console */
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  private shouldSendMail(level: Level): boolean {
+    return Logger.mailerOptions && level >= Logger.mailerOptions.minLogLevel;
   }
 }

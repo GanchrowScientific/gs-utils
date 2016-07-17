@@ -2,14 +2,14 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
     "bufferpack": "0.0.6",
-    "chalk": "1.1.1",
+    "chalk": "1.1.3",
     "js-yaml": "3.6.1",
-    "nodemailer": "2.4.2",
+    "nodemailer": "2.5.0",
     "source-map-support": "0.4.0"
   },
   "publishConfig": {
@@ -24,7 +24,7 @@
   "devDependencies": {
     "istanbul": "0.4.2",
     "nodeunit": "0.9.1",
-    "proxyquire": "1.7.3",
+    "proxyquire": "1.7.10",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
     "temp": "0.8.3",
