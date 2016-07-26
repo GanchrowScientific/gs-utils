@@ -239,6 +239,8 @@ module.exports = {
 
   testStringifyJSONNoEmptyArrays: function(test: nodeunit.Test) {
     let emptyArray = [];
+    let arrayOfEmptyArrays = [emptyArray, emptyArray];
+    let arrayOfUndefineds = [undefined, undefined];
     let objWithEmptyArrayValue = { a: emptyArray, b: [null], c: {} };
     let objWithNoEmptyArrayValue = dup(objWithEmptyArrayValue);
     delete objWithNoEmptyArrayValue.a;
@@ -246,6 +248,7 @@ module.exports = {
     test.equals(stringifyJSONNoEmptyArrays(emptyArray), undefined);
     test.equals(stringifyJSONNoEmptyArrays(objWithNoEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
     test.equals(stringifyJSONNoEmptyArrays(objWithEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
+    test.equals(stringifyJSONNoEmptyArrays(arrayOfEmptyArrays), JSON.stringify(arrayOfUndefineds));
     test.done();
   },
 
