@@ -82,6 +82,10 @@ export class SimpleStore {
     }
     return finalValue;
   }
+
+  public clear(): void {
+    this.obj = {};
+  }
 }
 
 export function toArray<T>(obj?: T[] | T): T[] {
