@@ -155,7 +155,7 @@ export function flattenArray(ary: any[]): any[] {
 }
 
 export function stringifyJSONNoEmptyArrays(obj: any): string {
-  return JSON.stringify(obj, function(key: string, value: any): any {
+  return JSON.stringify(obj, function (key: string, value: any): any {
     if (!Array.isArray(value) || value.length) {
       return value;
     }
