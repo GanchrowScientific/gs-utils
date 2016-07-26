@@ -154,6 +154,14 @@ export function flattenArray(ary: any[]): any[] {
   return ary.reduce((b, c) => b.concat(c), []);
 }
 
+export function stringifyJSONNoEmptyArrays(obj: any): string {
+  return JSON.stringify(obj, function(key: string, value: any): any {
+    if (!Array.isArray(value) || value.length) {
+      return value;
+    }
+  });
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';

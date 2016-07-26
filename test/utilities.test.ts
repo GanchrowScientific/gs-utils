@@ -9,7 +9,8 @@ import 'source-map-support/register';
 
 import {SimpleStore, BasicObject, isObject,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
-  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket, isNumeric, flattenArray} from '../src/utilities';
+  valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
+  isNumeric, flattenArray, stringifyJSONNoEmptyArrays} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
@@ -233,6 +234,18 @@ module.exports = {
     test.ok(!isNumeric({}));
     test.ok(!isNumeric([5]));
     test.ok(!isNumeric([5, 5]));
+    test.done();
+  },
+
+  testStringifyJSONNoEmptyArrays: function(test: nodeunit.Test) {
+    let emptyArray = [];
+    let objWithEmptyArrayValue = { a: emptyArray, b: [null], c: {} };
+    let objWithNoEmptyArrayValue = dup(objWithEmptyArrayValue);
+    delete objWithNoEmptyArrayValue.a;
+
+    test.equals(stringifyJSONNoEmptyArrays(emptyArray), undefined);
+    test.equals(stringifyJSONNoEmptyArrays(objWithNoEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
+    test.equals(stringifyJSONNoEmptyArrays(objWithEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
     test.done();
   },
 
