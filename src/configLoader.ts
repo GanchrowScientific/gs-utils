@@ -11,7 +11,8 @@ const ENVIRONMENTS = 'ENVIRONMENTS';
 export enum ExecutionEnvironment {
   DEVELOPMENT = 1,
   STAGING,
-  PRODUCTION
+  PRODUCTION,
+  TESTING
 }
 
 export class ConfigLoader {
