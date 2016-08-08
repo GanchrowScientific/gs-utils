@@ -5,7 +5,7 @@ lib/**/*.d.ts
 !typings/custom/**/*.d.ts
 node_modules
 target
-npm-debug.log
+npm-debug.log*
 gs-utils.sublime-project
 gs-utils.sublime-workspace
 .vscode
