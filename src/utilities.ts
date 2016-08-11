@@ -166,6 +166,18 @@ export function stringifyJSONNoEmptyArrays(obj: any): string {
   });
 }
 
+export function hasAllPropertyValues(main: Object, other: Object): boolean {
+  return Object.keys(main).every(key => {
+    if (isObject(main[key])) {
+      if (isObject(other[key])) {
+        return hasAllPropertyValues(main[key], other[key]);
+      }
+    } else {
+      return main[key] === other[key];
+    }
+  });
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';

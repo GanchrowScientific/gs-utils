@@ -10,11 +10,59 @@ import 'source-map-support/register';
 import {SimpleStore, BasicObject, isObject,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
-  isNumeric, flattenArray, stringifyJSONNoEmptyArrays} from '../src/utilities';
+  isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testHasAllPropertyValues(test: nodeunit.Test) {
+    test.ok(hasAllPropertyValues({foo: 5, bar: 6}, {foo: 5, bar: 6, baz: 7}));
+    test.ok(!hasAllPropertyValues({foo: 5, bar: 6}, {foo: 5, bar: 7, baz: 7}));
+    test.ok(hasAllPropertyValues([1, 2, 3], [1, 2, 3, 4]));
+    test.ok(!hasAllPropertyValues([1, 2, 3, 4], [1, 2, 3]));
+    test.ok(hasAllPropertyValues({
+      foo: {
+        bar: 6,
+        shabaz: {
+          hey: 7
+        }
+      },
+      ho: 5
+    }, {
+      foo: {
+        bar: 6,
+        shabaz: {
+          hey: 7,
+          foo: 54
+        }
+      },
+      baz: 4,
+      ho: 5,
+      hey: 6
+    }));
+    test.ok(!hasAllPropertyValues({
+      foo: {
+        bar: 6,
+        shabaz: {
+          hey: 6
+        }
+      },
+      ho: 5
+    }, {
+      foo: {
+        bar: 6,
+        shabaz: {
+          hey: 7,
+          foo: 54
+        }
+      },
+      baz: 4,
+      ho: 5,
+      hey: 6
+    }));
+    test.done();
   },
 
   testFlattenArray(test: nodeunit.Test) {
