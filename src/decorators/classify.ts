@@ -6,7 +6,7 @@ import {getLogger} from '../gsLogger';
 
 let logger = getLogger('classifier');
 
-export const S_CLASSIFY = Symbol('classify');
+export const S_CLASSIFY = Symbol.for('classify');
 
 const EMPTY_VALUE = '<MISSING>';
 
