@@ -19,8 +19,8 @@ export function classify(...keys: string[]) {
             logger.error(new Error(`Cannot create classifier for key: ${key} in object: ${JSON.stringify(this)}`));
             return EMPTY_VALUE;
           }
-          return typeof this[key] === 'function' ? this[key]() :
-            this[key].toString();
+          let val = this[key];
+          return typeof val === 'function' ? val() : val.toString();
         }, this).join(':');
       }
     });
