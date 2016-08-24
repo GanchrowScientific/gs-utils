@@ -178,6 +178,19 @@ export function hasAllPropertyValues(main: Object, other: Object): boolean {
   });
 }
 
+/**
+ * Checks that both arrays are the same size and every element in the first array exists in the second.
+ * If one array is falsy, then the other array must be empty or falsy for this function to return true.
+ * @param  {any[]}   first
+ * @param  {any[]}   second
+ * @return {boolean}        true if every element of the first array exists in the second they are the same size
+ */
+export function arraysEquivalent(first?: any[], second?: any[]): boolean {
+  first = first || [];
+  second = second || [];
+  return first.length === second.length && first.every(val => second.includes(val));
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';

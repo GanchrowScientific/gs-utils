@@ -7,7 +7,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {SimpleStore, BasicObject, isObject,
+import {SimpleStore, BasicObject, isObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues} from '../src/utilities';
@@ -299,6 +299,27 @@ module.exports = {
     test.equals(stringifyJSONNoEmptyArrays(arrayOfEmptyArrays), JSON.stringify(arrayOfUndefineds));
     test.done();
   },
+
+  testArraysEquivalent(test: nodeunit.Test) {
+    let val1 = {};
+    let val2 = {};
+
+    test.ok(arraysEquivalent(null, null));
+    test.ok(arraysEquivalent(null, []));
+    test.ok(arraysEquivalent([], null));
+    test.ok(arraysEquivalent([], []));
+    test.ok(arraysEquivalent([1], [1]));
+    test.ok(arraysEquivalent([1, 2], [2, 1]));
+    test.ok(arraysEquivalent([val1, val2], [val2, val1]));
+
+    test.ok(!arraysEquivalent([1], []));
+    test.ok(!arraysEquivalent([1], null));
+    test.ok(!arraysEquivalent([1], [1, 2, 3]));
+    test.ok(!arraysEquivalent([val1, val2], [{}, {}]));
+
+    test.done();
+  },
+
 
   tearDown: function (callback) {
     callback();
