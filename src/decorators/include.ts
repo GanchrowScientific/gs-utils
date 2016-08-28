@@ -5,7 +5,7 @@ export function include(...baseCtors: Array<Function>) {
   return function <T extends Function>(target: T) { // typescript handbook
     baseCtors.forEach(baseCtor => {
       Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-        target.prototype[name] = baseCtor.prototype[name];
+        Object.defineProperty(target.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name));
       });
     });
   };
