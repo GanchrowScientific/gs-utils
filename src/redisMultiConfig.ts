@@ -91,32 +91,32 @@ export class RedisMultiConfig extends PrivateEventEmitter {
   }
 
   private lrange(multi: RedisMulti, key: string) {
-    multi.lrange(key, 0, -1, this.eachCallback.bind(this));
+    multi.lrange(key, 0, -1, this.eachCallback.bind(this, key));
   }
 
   private keys(multi: RedisMulti, pattern: string) {
     this.client.keys(pattern, (err, res) => {
       if (err) {
-        this.emit('eachError', err);
+        this.emit('eachError', 'keys', err);
       } else {
-        multi.mget(...res, this.eachCallback.bind(this));
+        multi.mget(...res, this.eachCallback.bind(this, 'keys'));
       }
     });
   }
 
   private try(multi: RedisMulti, cmd: string, ...args: any[]) {
     if (typeof multi[cmd] === 'function') {
-      multi[cmd](...args, this.eachCallback.bind(this));
+      multi[cmd](...args, this.eachCallback.bind(this, args));
     } else {
-      this.emit('eachError', new InvalidRedisCommand(cmd));
+      this.emit('eachError', args, new InvalidRedisCommand(cmd));
     }
   }
 
-  private eachCallback(err: any, res: any) {
+  private eachCallback(item: any, err: any, res: any) {
     if (err) {
-      this.emit('eachError', err);
+      this.emit('eachError', item, err);
     } else {
-      this.emit('each', res);
+      this.emit('each', item, res);
     }
   }
 

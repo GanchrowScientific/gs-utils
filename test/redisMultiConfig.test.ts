@@ -131,18 +131,24 @@ module.exports = {
   testEmittedEvents(test: nodeunit.Test) {
     let rmc = new RedisMultiConfig(client);
     rmc.load({ test: ['get', '5'], anotherTest: ['hget', 'foo', 'bar']});
-    rmc.on('each', (res) => {
+    rmc.on('each', (item, res) => {
       let arg = res[0];
       if (arg === 'get') {
         test.equals(res[1], 5);
-      }
-      if (arg === 'hget') {
+        test.equals(item[0], '5');
+      } else if (arg === 'hget') {
         test.equals(res[1], 'foo');
         test.equals(res[2], 'bar');
+        test.equals(item[0], 'foo');
+        test.equals(item[1], 'bar');
+      } else {
+        test.ok(false);
       }
     });
-    rmc.on('eachError', (err) => {
+    rmc.on('eachError', (item, err) => {
       test.equals(err, 'hget');
+      test.equals(item[0], 'foo');
+      test.equals(item[1], 'bar');
       test.done();
     });
     client.multi().get.callArgWith(1, null, ['get', 5]);
