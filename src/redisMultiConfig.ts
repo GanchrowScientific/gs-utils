@@ -83,7 +83,7 @@ export class RedisMultiConfig extends PrivateEventEmitter {
       } else {
         let finishedObject = {};
         res.forEach((r, i) => {
-          finishedObject[sigs[i]] = isJSON(r) ? JSON.parse(r) : r;
+          finishedObject[sigs[i]] = (typeof r === 'string') && isJSON(r) ? JSON.parse(r) : r;
         });
         this.emit('done', finishedObject);
       }
