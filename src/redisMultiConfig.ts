@@ -83,7 +83,7 @@ export class RedisMultiConfig extends PrivateEventEmitter {
       } else {
         let finishedObject = {};
         res.forEach((r, i) => {
-          finishedObject[sigs[i]] = (typeof r === 'string') && isJSON(r) ? JSON.parse(r) : r;
+          finishedObject[sigs[i]] = this.deepParse(r);
         });
         this.emit('done', finishedObject);
       }
@@ -117,6 +117,18 @@ export class RedisMultiConfig extends PrivateEventEmitter {
       this.emit('eachError', err);
     } else {
       this.emit('each', res);
+    }
+  }
+
+  private eachParse(val: any): any {
+    return (typeof val === 'string') && isJSON(val) ? JSON.parse(val) : val;
+  }
+
+  private deepParse(val: any): any {
+    if (Array.isArray(val)) {
+      return val.map(this.eachParse);
+    } else {
+      return this.eachParse(val);
     }
   }
 }
