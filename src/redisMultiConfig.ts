@@ -8,13 +8,14 @@ import {isJSON} from './utilities';
 const KEYS_COMMAND = 'keys';
 
 export interface RedisMulti {
-  mget: Function;
+  keys: Function;
   lrange: Function;
   exec: Function;
 }
 
 export interface RedisMultiable {
   multi(): RedisMulti;
+  mget(keys: string[], cb: Function): void;
   keys(pattern: string, cb: Function): void;
   subscribe(pattern: string, cb?: Function): void;
   on(type: string, cb: Function): void;
@@ -28,6 +29,7 @@ export interface RedisMultiConfigOptions {
 export class RedisMultiConfig extends PrivateEventEmitter {
   private isPersisted: boolean;
   private config: RedisMultiConfigOptions;
+  private keyRequests = {};
 
   constructor(private client: RedisMultiable) {
     super();
@@ -50,7 +52,7 @@ export class RedisMultiConfig extends PrivateEventEmitter {
           let cmd = innerConfig[0];
           let args = innerConfig.slice(1);
           if (cmd === KEYS_COMMAND) {
-            this.keys(multi, args[0]);
+            this.keys(multi, args[0], sig);
           } else {
             this.try(multi, cmd, ...args);
           }
@@ -82,24 +84,53 @@ export class RedisMultiConfig extends PrivateEventEmitter {
         this.emit('error', err);
       } else {
         let finishedObject = {};
+        let keyRequests = Object.keys(this.keyRequests);
         res.forEach((r, i) => {
-          finishedObject[sigs[i]] = this.deepParse(r);
+          if (!keyRequests.includes(sigs[i])) {
+            finishedObject[sigs[i]] = this.deepParse(r);
+          }
         });
-        this.emit('done', finishedObject);
+        if (keyRequests.length) {
+          this.resolveKeyRequests(finishedObject, keyRequests);
+        } else {
+          this.emit('done', finishedObject);
+        }
       }
     });
+  }
+
+  private resolveKeyRequests(finishedObject: Object, keyRequests: string[]) {
+    keyRequests.forEach(sig => {
+      let keys = keyRequests[sig];
+      this.client.mget(keys, (err, res) => {
+        if (err) {
+          this.emit('eachError', ['keys', sig], err);
+        } else {
+          let innerObject = {};
+          keys.forEach((key, i) => {
+            if (res[i]) {
+              innerObject[key] = res[i];
+            }
+          });
+          finishedObject[sig] = innerObject;
+          this.emit('done', finishedObject);
+        }
+      });
+    });
+    this.keyRequests = {};
   }
 
   private lrange(multi: RedisMulti, key: string) {
     multi.lrange(key, 0, -1, this.eachCallback.bind(this, key));
   }
 
-  private keys(multi: RedisMulti, pattern: string) {
-    this.client.keys(pattern, (err, res) => {
+  private keys(multi: RedisMulti, pattern: string, sig: string) {
+    multi.keys(pattern, (err, res) => {
       if (err) {
-        this.emit('eachError', 'keys', err);
+        this.emit('eachError', ['keys', sig], err);
       } else {
-        multi.mget(...res, this.eachCallback.bind(this, 'keys'));
+        this.emit('each', ['keys', sig], res);
+        this.keyRequests[sig] = res;
       }
     });
   }

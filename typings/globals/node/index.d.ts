@@ -487,6 +487,7 @@ interface NodeBuffer extends Uint8Array {
     fill(value: any, offset?: number, end?: number): this;
     // TODO: encoding param
     indexOf(value: string | number | Buffer, byteOffset?: number): number;
+    includes(value: any): boolean;
     // TODO: entries
     // TODO: includes
     // TODO: keys

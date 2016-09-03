@@ -16,16 +16,16 @@ const EMIT_KEY = 'emit';
 
 const COMMANDS = [
   'multi',
-  'keys',
   'subscribe',
-  'on'
+  'on',
+  'mget',
 ];
 
 const MULTIABLE_COMMANDS = [
   'lrange',
   'exec',
   'get',
-  'mget',
+  'keys',
   'hgetall',
   'hget'
 ];
@@ -53,11 +53,11 @@ module.exports = {
     let rmc = new RedisMultiConfig(client);
     rmc.load({ test: ['keys', '*'], persist: 'hey'});
     test.ok(rmc[HAS_PERSISTENCE]);
-    test.ok(client.keys.calledOnce);
-    client.keys.callArgWith(1, null, ['test']);
-    test.ok(client.multi().mget.calledOnce);
-    test.ok(client.multi().mget.calledWith('test'));
+    test.ok(client.multi().keys.calledOnce);
+    client.multi().keys.callArgWith(1, null, ['test']);
     test.ok(client.multi().exec.calledOnce);
+    client.multi().exec.callArgWith(0, null, ['test']);
+    test.ok(client.mget.calledOnce);
     test.done();
   },
 
