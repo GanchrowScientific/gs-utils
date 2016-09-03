@@ -8,7 +8,6 @@ import {isJSON} from './utilities';
 const KEYS_COMMAND = 'keys';
 
 export interface RedisMulti {
-  keys: Function;
   lrange: Function;
   exec: Function;
 }
@@ -85,13 +84,11 @@ export class RedisMultiConfig extends PrivateEventEmitter {
       } else {
         let finishedObject = {};
         let keyRequests = Object.keys(this.keyRequests);
-        res.forEach((r, i) => {
-          if (!keyRequests.includes(sigs[i])) {
-            finishedObject[sigs[i]] = this.deepParse(r);
-          }
+        res.filter(t => !keyRequests.includes(t)).forEach((r, i) => {
+          finishedObject[sigs[i]] = this.deepParse(r);
         });
         if (keyRequests.length) {
-          this.resolveKeyRequests(finishedObject, keyRequests);
+          this.resolveKeyRequests(finishedObject);
         } else {
           this.emit('done', finishedObject);
         }
@@ -99,9 +96,12 @@ export class RedisMultiConfig extends PrivateEventEmitter {
     });
   }
 
-  private resolveKeyRequests(finishedObject: Object, keyRequests: string[]) {
-    keyRequests.forEach(sig => {
-      let keys = keyRequests[sig];
+  private resolveKeyRequests(finishedObject: Object) {
+    let keyRequests = Object.keys(this.keyRequests);
+    let len = keyRequests.length;
+    let count = 0;
+    Object.keys(this.keyRequests).forEach(sig => {
+      let keys = this.keyRequests[sig];
       this.client.mget(keys, (err, res) => {
         if (err) {
           this.emit('eachError', ['keys', sig], err);
@@ -113,7 +113,10 @@ export class RedisMultiConfig extends PrivateEventEmitter {
             }
           });
           finishedObject[sig] = innerObject;
-          this.emit('done', finishedObject);
+          count++;
+          if (count === len) {
+            this.emit('done', finishedObject);
+          }
         }
       });
     });
@@ -125,11 +128,11 @@ export class RedisMultiConfig extends PrivateEventEmitter {
   }
 
   private keys(multi: RedisMulti, pattern: string, sig: string) {
-    multi.keys(pattern, (err, res) => {
+    this.client.keys(pattern, (err, res) => {
       if (err) {
-        this.emit('eachError', ['keys', sig], err);
+        this.emit('eachError', ['keys', pattern], err);
       } else {
-        this.emit('each', ['keys', sig], res);
+        this.emit('each', ['keys', pattern], res);
         this.keyRequests[sig] = res;
       }
     });
