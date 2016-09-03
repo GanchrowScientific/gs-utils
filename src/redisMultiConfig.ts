@@ -84,8 +84,8 @@ export class RedisMultiConfig extends PrivateEventEmitter {
       } else {
         let finishedObject = {};
         let keyRequests = Object.keys(this.keyRequests);
-        res.filter(t => !keyRequests.includes(t)).forEach((r, i) => {
-          finishedObject[sigs[i]] = this.deepParse(r);
+        sigs.filter(t => !keyRequests.includes(t)).forEach((s, i) => {
+          finishedObject[s] = this.deepParse(res[i]);
         });
         if (keyRequests.length) {
           this.resolveKeyRequests(finishedObject);
