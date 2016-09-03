@@ -109,7 +109,7 @@ export class RedisMultiConfig extends PrivateEventEmitter {
           let innerObject = {};
           keys.forEach((key, i) => {
             if (res[i]) {
-              innerObject[key] = res[i];
+              innerObject[key] = this.deepParse(res[i]);
             }
           });
           finishedObject[sig] = innerObject;
