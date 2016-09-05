@@ -6,7 +6,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {ConfigLoader, ExecutionEnvironment, loadConfig} from '../src/configLoader';
+import {ConfigLoader, loadConfig} from '../src/configLoader';
 
 module.exports = {
   testLoadConfigSimple: function(test: nodeunit.Test) {
@@ -57,8 +57,8 @@ module.exports = {
 
   testCustomConfigOverriddenByClassParameter(test: nodeunit.Test) {
     process.env.EXECUTION_ENVIRONMENT = 'PRODUCTION';
-    let loader = new ConfigLoader(ExecutionEnvironment.STAGING);
-    test.equals((<any> loader).executionEnvironment, ExecutionEnvironment.STAGING);
+    let loader = new ConfigLoader('STAGING');
+    test.equals((<any> loader).executionEnvironment, 'STAGING');
     let configWithDevelopementEnvironment = loader.loadConfig(getCompletePath('configWithDevelopementEnvironment'));
     // STAGING doesn't exist, so no change from default
     test.deepEqual(configWithDevelopementEnvironment, {
@@ -74,19 +74,8 @@ module.exports = {
     test.done();
   },
 
-  testInvalidExecutionEnvironmentAsArgument(test: nodeunit.Test) {
-    test.throws(() =>  new ConfigLoader(999), 'Invalid execution environment: 999');
-    test.done();
-  },
-
-  testInvalidExecutionEnvironmentAsEnvVariable(test: nodeunit.Test) {
-    process.env.EXECUTION_ENVIRONMENT = 'hucairz';
-    test.throws(() => new ConfigLoader(), 'Invalid execution environment: HUCAIRZ');
-    test.done();
-  },
-
   testNonDefaultConfigPath(test: nodeunit.Test) {
-    let loader = new ConfigLoader(ExecutionEnvironment.STAGING);
+    let loader = new ConfigLoader('STAGING');
     let configSimple = loader.loadConfig(getCompletePath('extraPath/configSimple'));
     test.deepEqual(configSimple, {
       key1: [ 'value1', 'value2' ]

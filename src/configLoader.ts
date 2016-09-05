@@ -8,16 +8,11 @@ import * as fs from 'fs';
 const EXECUTION_ENVIRONMENT = 'EXECUTION_ENVIRONMENT';
 const ENVIRONMENTS = 'ENVIRONMENTS';
 
-export enum ExecutionEnvironment {
-  DEVELOPMENT = 1,
-  STAGING,
-  PRODUCTION,
-  TESTING
-}
+const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
 
 export class ConfigLoader {
 
-  constructor(private executionEnvironment?: ExecutionEnvironment, private basePath = '') {
+  constructor(private executionEnvironment?: string, private basePath = '') {
     this.executionEnvironment = this.getExecutionEnvironmentFromEnv(executionEnvironment);
     if (basePath && !basePath.endsWith('/')) {
       basePath += '/';
@@ -32,7 +27,7 @@ export class ConfigLoader {
 
   private applyEnvironment(config: any): any {
     let allEnvironments = config[ENVIRONMENTS] || {};
-    let thisEnvironment = allEnvironments[ExecutionEnvironment[this.executionEnvironment]] || {};
+    let thisEnvironment = allEnvironments[this.executionEnvironment] || {};
 
     delete config[ENVIRONMENTS];
 
@@ -40,21 +35,17 @@ export class ConfigLoader {
     return config;
   }
 
-  private getExecutionEnvironmentFromEnv(initialExecutionEnvironment): ExecutionEnvironment {
-    let executionEnvironment: ExecutionEnvironment;
+  private getExecutionEnvironmentFromEnv(initialExecutionEnvironment): string {
+    let executionEnvironment;
     let envString: string;
     if (initialExecutionEnvironment) {
       executionEnvironment = initialExecutionEnvironment;
       envString = String(executionEnvironment);
     } else {
       envString = process.env[EXECUTION_ENVIRONMENT];
-      envString = envString ? envString.toUpperCase() : 'DEVELOPMENT';
-      executionEnvironment = ExecutionEnvironment[envString];
+      envString = envString ? envString.toUpperCase() : DEFAULT_EXECUTION_ENVIRONMENT;
     }
-    if (!executionEnvironment || !ExecutionEnvironment[executionEnvironment]) {
-      throw new Error(`Invalid execution environment: ${envString}`);
-    }
-    return executionEnvironment;
+    return envString;
   }
 }
 
