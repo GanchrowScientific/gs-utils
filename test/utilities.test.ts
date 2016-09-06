@@ -10,7 +10,8 @@ import 'source-map-support/register';
 import {SimpleStore, BasicObject, isObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
-  isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues} from '../src/utilities';
+  isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
+  arrayIsSubset} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
@@ -18,8 +19,8 @@ module.exports = {
   },
 
   testHasAllPropertyValues(test: nodeunit.Test) {
-    test.ok(hasAllPropertyValues({foo: 5, bar: 6}, {foo: 5, bar: 6, baz: 7}));
-    test.ok(!hasAllPropertyValues({foo: 5, bar: 6}, {foo: 5, bar: 7, baz: 7}));
+    test.ok(hasAllPropertyValues({ foo: 5, bar: 6 }, { foo: 5, bar: 6, baz: 7 }));
+    test.ok(!hasAllPropertyValues({ foo: 5, bar: 6 }, { foo: 5, bar: 7, baz: 7 }));
     test.ok(hasAllPropertyValues([1, 2, 3], [1, 2, 3, 4]));
     test.ok(!hasAllPropertyValues([1, 2, 3, 4], [1, 2, 3]));
     test.ok(hasAllPropertyValues({
@@ -31,17 +32,17 @@ module.exports = {
       },
       ho: 5
     }, {
-      foo: {
-        bar: 6,
-        shabaz: {
-          hey: 7,
-          foo: 54
-        }
-      },
-      baz: 4,
-      ho: 5,
-      hey: 6
-    }));
+        foo: {
+          bar: 6,
+          shabaz: {
+            hey: 7,
+            foo: 54
+          }
+        },
+        baz: 4,
+        ho: 5,
+        hey: 6
+      }));
     test.ok(!hasAllPropertyValues({
       foo: {
         bar: 6,
@@ -51,17 +52,17 @@ module.exports = {
       },
       ho: 5
     }, {
-      foo: {
-        bar: 6,
-        shabaz: {
-          hey: 7,
-          foo: 54
-        }
-      },
-      baz: 4,
-      ho: 5,
-      hey: 6
-    }));
+        foo: {
+          bar: 6,
+          shabaz: {
+            hey: 7,
+            foo: 54
+          }
+        },
+        baz: 4,
+        ho: 5,
+        hey: 6
+      }));
     test.done();
   },
 
@@ -74,7 +75,7 @@ module.exports = {
   },
 
   testStripAnyValues(test: nodeunit.Test) {
-    let obj = {hey: 'mental', foo: 'sigfigs', a: 'bored', _id: 4};
+    let obj = { hey: 'mental', foo: 'sigfigs', a: 'bored', _id: 4 };
     test.deepEqual(stripAnyValues(obj, '_id'), {
       hey: 'mental', foo: 'sigfigs', a: 'bored'
     });
@@ -285,7 +286,7 @@ module.exports = {
     test.done();
   },
 
-  testStringifyJSONNoEmptyArrays: function(test: nodeunit.Test) {
+  testStringifyJSONNoEmptyArrays: function (test: nodeunit.Test) {
     let emptyArray = [];
     let arrayOfEmptyArrays = [emptyArray, emptyArray];
     let arrayOfUndefineds = [undefined, undefined];
@@ -320,6 +321,21 @@ module.exports = {
     test.done();
   },
 
+  testArrayIsSubset(test: nodeunit.Test) {
+    test.ok(arrayIsSubset(null, null));
+    test.ok(arrayIsSubset([], null));
+    test.ok(arrayIsSubset(null, []));
+    test.ok(arrayIsSubset([], []));
+    test.ok(arrayIsSubset(undefined, undefined));
+    test.ok(arrayIsSubset([], undefined));
+    test.ok(arrayIsSubset(undefined, []));
+    test.ok(arrayIsSubset(undefined, [1, 2, 3]));
+    test.ok(arrayIsSubset([], [1, 2]));
+    test.ok(arrayIsSubset([1, 2], [1, 2, 3]));
+    test.ok(arrayIsSubset([2, 3, 5], [3, 5, 2]));
+    test.ok(!arrayIsSubset([1, 2, 3], [1, 2]));
+    test.done();
+  },
 
   tearDown: function (callback) {
     callback();

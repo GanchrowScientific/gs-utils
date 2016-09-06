@@ -191,6 +191,18 @@ export function arraysEquivalent(first?: any[], second?: any[]): boolean {
   return first.length === second.length && first.every(val => second.includes(val));
 }
 
+/**
+ * Checks that every element of a is present in b, but a can be a subset of b
+ * @param  {any[]}   a
+ * @param  {any[]}   b
+ * @return {boolean} true if every element of the first array exists in the second
+ */
+export function arrayIsSubset(a: any[], b: any[]): boolean {
+  a = a || [];
+  b = b || [];
+  return a.every(el => b.includes(el));
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
