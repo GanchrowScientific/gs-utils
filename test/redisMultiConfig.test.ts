@@ -15,6 +15,7 @@ const HAS_PERSISTENCE = 'isPersisted';
 const EMIT_KEY = 'emit';
 
 const COMMANDS = [
+  'duplicate',
   'multi',
   'subscribe',
   'keys',
@@ -92,8 +93,9 @@ module.exports = {
     test.ok(rmc[HAS_PERSISTENCE]);
     rmc[EMIT_KEY]('done', null);
     rmc[EMIT_KEY]('done', null);
-    test.ok(client.subscribe.calledOnce);
-    test.ok(client.subscribe.calledWithExactly('hey'));
+    test.ok(client.duplicate().subscribe.calledOnce);
+    test.ok(client.duplicate().on.calledOnce);
+    test.ok(client.duplicate().subscribe.calledWithExactly('hey'));
     test.done();
   },
 
@@ -102,7 +104,8 @@ module.exports = {
     rmc.load({ test: ['keys', '*']});
     test.ok(!rmc[HAS_PERSISTENCE]);
     rmc[EMIT_KEY]('done', null);
-    test.ok(!client.subscribe.calledOnce);
+    test.ok(!client.duplicate().subscribe.calledOnce);
+    test.ok(!client.duplicate().on.calledOnce);
     test.done();
   },
 
@@ -170,6 +173,12 @@ function createFakeRedis(commands = COMMANDS, multiable = MULTIABLE_COMMANDS) {
         multiCmdObj[mCmd] = sinon.stub();
       });
       cmdObj[cmd].returns(multiCmdObj);
+    }
+    if (cmd === 'duplicate') {
+      cmdObj[cmd].returns({
+        on: sinon.stub(),
+        subscribe: sinon.stub()
+      });
     }
   });
   return cmdObj;

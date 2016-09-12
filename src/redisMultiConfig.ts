@@ -12,7 +12,11 @@ export interface RedisMulti {
   exec: Function;
 }
 
+export interface Subscribable {
+}
+
 export interface RedisMultiable {
+  duplicate(): RedisMultiable;
   multi(): RedisMulti;
   mget(keys: string[], cb: Function): void;
   keys(pattern: string, cb: Function): void;
@@ -37,7 +41,7 @@ export class RedisMultiConfig extends PrivateEventEmitter {
   public load(config?: RedisMultiConfigOptions, tsig?: string) {
     let multi = this.client.multi();
     if (!this.isPersisted && config && config.persist) {
-      this.persist(config.persist);
+      this.createPersistence(config.persist);
       delete config.persist;
     }
     if (config) {
@@ -65,15 +69,16 @@ export class RedisMultiConfig extends PrivateEventEmitter {
     this.exec(multi, sigs);
   }
 
-  private persist(persistChannel: string) {
+  private createPersistence(persistChannel: string) {
+    let subscriptionClient = this.client.duplicate();
     this.isPersisted = true;
     this.once('done', (...args: any[]) => {
-      this.client.on('message', (channel, message) => {
+      subscriptionClient.on('message', (channel, message) => {
         if (channel === persistChannel) {
           this.load(null, message);
         }
       });
-      this.client.subscribe(persistChannel);
+      subscriptionClient.subscribe(persistChannel);
     });
   }
 
@@ -172,7 +177,6 @@ class InvalidRedisCommand extends Error {
     super();
     this.name = 'InvalidRedisCommand';
     this.message = message;
-    this.stack = (new Error()).stack;
   }
 }
 
@@ -181,6 +185,5 @@ class SigNotFound extends Error {
     super();
     this.name = 'SigNotFound';
     this.message = message;
-    this.stack = (new Error()).stack;
   }
 }
