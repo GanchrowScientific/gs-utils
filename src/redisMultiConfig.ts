@@ -69,6 +69,16 @@ export class RedisMultiConfig extends PrivateEventEmitter {
     this.exec(multi, sigs);
   }
 
+  public subscribe(ch: string, cb: Function) {
+    let subscriptionClient = this.client.duplicate();
+    subscriptionClient.on('message', (channel, message) => {
+      if (channel === ch) {
+        cb(message);
+      }
+    });
+    subscriptionClient.subscribe(ch);
+  }
+
   private createPersistence(persistChannel: string) {
     let subscriptionClient = this.client.duplicate();
     this.isPersisted = true;

@@ -87,6 +87,15 @@ module.exports = {
     test.done();
   },
 
+  testSubscribe(test: nodeunit.Test) {
+    let rmc = new RedisMultiConfig(client);
+    rmc.subscribe('hey', (msg) => { /**/ });
+    test.ok(client.duplicate().subscribe.calledOnce);
+    test.ok(client.duplicate().on.calledOnce);
+    test.ok(client.duplicate().subscribe.calledWithExactly('hey'));
+    test.done();
+  },
+
   testLoadWithPersistence(test: nodeunit.Test) {
     let rmc = new RedisMultiConfig(client);
     rmc.load({ test: ['keys', '*'], persist: 'hey'});
