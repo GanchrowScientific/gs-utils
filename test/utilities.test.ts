@@ -200,6 +200,9 @@ module.exports = {
       this.hey = 6;
     });
     test.deepEqual(dup(p), { foo: 5, hey: 6 });
+
+    let x = { foobar: 5, shabaz: { 6: 5, foobar: 5 } };
+    test.deepEqual(dup(x, ['foobar']), { shabaz: { 6: 5 } });
     test.done();
   },
 
