@@ -18,6 +18,7 @@ const COMMANDS = [
   'duplicate',
   'multi',
   'subscribe',
+  'psubscribe',
   'keys',
   'mget',
   'on'
@@ -89,10 +90,28 @@ module.exports = {
 
   testSubscribe(test: nodeunit.Test) {
     let rmc = new RedisMultiConfig(client);
-    rmc.subscribe('hey', (msg) => { /**/ });
+    let spy = sinon.spy();
+    rmc.subscribe('my-channel', spy);
     test.ok(client.duplicate().subscribe.calledOnce);
     test.ok(client.duplicate().on.calledOnce);
-    test.ok(client.duplicate().subscribe.calledWithExactly('hey'));
+    test.ok(client.duplicate().subscribe.calledWithExactly('my-channel'));
+
+    client.duplicate().on.firstCall.args[1]('my-channel', 'my-message');
+    test.equals(spy.callCount, 1);
+    test.deepEqual(spy.firstCall.args, ['my-message', 'my-channel']);
+    test.done();
+  },
+
+  testPsubscribe(test: nodeunit.Test) {
+    let rmc = new RedisMultiConfig(client);
+    let spy = sinon.spy();
+    rmc.psubscribe('my-channel', spy);
+    test.ok(client.duplicate().psubscribe.calledOnce);
+    test.ok(client.duplicate().on.calledOnce);
+    test.ok(client.duplicate().psubscribe.calledWithExactly('my-channel'));
+
+    client.duplicate().on.firstCall.args[1]('my-pattern', 'my-channel', 'my-message');
+    test.deepEqual(spy.firstCall.args, ['my-message', 'my-pattern', 'my-channel']);
     test.done();
   },
 
@@ -186,6 +205,7 @@ function createFakeRedis(commands = COMMANDS, multiable = MULTIABLE_COMMANDS) {
     if (cmd === 'duplicate') {
       cmdObj[cmd].returns({
         on: sinon.stub(),
+        psubscribe: sinon.stub(),
         subscribe: sinon.stub()
       });
     }

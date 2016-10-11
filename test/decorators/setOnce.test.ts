@@ -75,21 +75,15 @@ module.exports = {
 
   testSetOnceAccessorWithGet(test: nodeunit.Test) {
 
-    test.throws(function() {
-      return c.setOnceAccessorWithGet === SOME_OTHER_VALUE;
-    }, Error, NO_VALUE_SET_ERROR.message);
+    test.throws(() => c.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
     c.setOnceAccessorWithGet = SOME_VALUE;
     test.equal(c.setOnceAccessorWithGet, SOME_VALUE);
-    test.throws(function() {
-      return cc.setOnceAccessorWithGet === SOME_OTHER_VALUE;
-    }, Error, NO_VALUE_SET_ERROR.message);
+    test.throws(() => cc.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
-    test.throws(function() { c.setOnceAccessorWithGet = SOME_OTHER_VALUE; });
+    test.throws(() => c.setOnceAccessorWithGet = SOME_OTHER_VALUE);
     test.equal(c.setOnceAccessorWithGet, SOME_VALUE);
-    test.throws(function() {
-      return cc.setOnceAccessorWithGet === SOME_OTHER_VALUE;
-    }, Error, NO_VALUE_SET_ERROR.message);
+    test.throws(() => cc.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
     cc.setOnceAccessorWithGet = SOME_OTHER_VALUE;
     test.equal(c.setOnceAccessorWithGet, SOME_VALUE);

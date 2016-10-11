@@ -21,6 +21,7 @@ export interface RedisMultiable {
   mget(keys: string[], cb: Function): void;
   keys(pattern: string, cb: Function): void;
   subscribe(pattern: string, cb?: Function): void;
+  psubscribe(pattern: string, cb?: Function): void;
   on(type: string, cb: Function): void;
 }
 
@@ -73,10 +74,18 @@ export class RedisMultiConfig extends PrivateEventEmitter {
     let subscriptionClient = this.client.duplicate();
     subscriptionClient.on('message', (channel, message) => {
       if (channel === ch) {
-        cb(message);
+        cb(message, channel);
       }
     });
     subscriptionClient.subscribe(ch);
+  }
+
+  public psubscribe(ch: string, cb: Function) {
+    let subscriptionClient = this.client.duplicate();
+    subscriptionClient.on('pmessage', (pattern, channel, message) => {
+      cb(message, pattern, channel);
+    });
+    subscriptionClient.psubscribe(ch);
   }
 
   private createPersistence(persistChannel: string) {

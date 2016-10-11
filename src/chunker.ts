@@ -12,7 +12,7 @@ export class Chunker {
   }
 
   public forEachCompleteChunk(dataBuf: Buffer | string, cb: (string) => void): void {
-    let data = dataBuf.toString('utf8').split(this.split);
+    let data = (<any> dataBuf).toString('utf8').split(this.split);
     let lastIdx = data.length - 1;
     this.partial += data[0];
     for (let i = 0; i < lastIdx; i++) {
