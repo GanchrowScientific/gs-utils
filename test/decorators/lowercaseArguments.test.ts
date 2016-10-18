@@ -52,14 +52,14 @@ class Mock {
 
   @lowercaseArguments
   public testStringMethod(a: string, b: string) {
-    this.test.equals(a, a.toLowerCase());
-    this.test.equals(b, b.toLowerCase());
+    this.test.strictEqual(a, a.toLowerCase());
+    this.test.strictEqual(b, b.toLowerCase());
     this.test.done();
   }
 
   @lowercaseArguments
   public testNoModificationsMethod(a: number, b: number[], c: string[]) {
-    this.test.equals(a, a);
+    this.test.strictEqual(a, a);
     this.test.deepEqual(b, b);
     this.test.deepEqual(c, c);
     this.test.done();
@@ -67,7 +67,7 @@ class Mock {
 
   @lowercaseArguments
   public testNoArguments() {
-    this.test.equals(arguments.length, 0);
+    this.test.strictEqual(arguments.length, 0);
     this.test.done();
   }
 

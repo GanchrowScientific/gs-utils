@@ -18,7 +18,7 @@ module.exports = {
     let arr = [];
     arr[3] = 4;
     test.deepEqual(arr.compact(), [4]);
-    test.equals(arr.compact().shift(), 4);
+    test.strictEqual(arr.compact().shift(), 4);
     // test mutability
     test.deepEqual(arr, [, , , 4]);
     test.done();

@@ -43,7 +43,7 @@ module.exports = {
     // full message in one chunk
     bsc.forEachCompleteChunk(createASCIIMessages('msg1'), f);
     test.deepEqual(a, [new Buffer('msg1')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -52,7 +52,7 @@ module.exports = {
     // 2 full messages
     bsc.forEachCompleteChunk(createASCIIMessages('msg1', 'msg2'), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -64,7 +64,7 @@ module.exports = {
     test.deepEqual(a, []);
     bsc.forEachCompleteChunk(msgs.slice(5), f);
     test.deepEqual(a, [new Buffer('msg1')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -78,7 +78,7 @@ module.exports = {
     test.deepEqual(a, [new Buffer('msg1')]);
     bsc.forEachCompleteChunk(msgs.slice(14), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2xx'), new Buffer('msg3xxx')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -90,7 +90,7 @@ module.exports = {
     test.deepEqual(a, []);
     bsc.forEachCompleteChunk(msgs.slice(2), f);
     test.deepEqual(a, [new Buffer('msg1')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -102,7 +102,7 @@ module.exports = {
     test.deepEqual(a, [new Buffer('msg1')]);
     bsc.forEachCompleteChunk(msgs.slice(10), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
     test.done();
   },
@@ -117,7 +117,7 @@ module.exports = {
     byteBuffer[5] = 169;
     bsc.forEachCompleteChunk(createMessages(byteBuffer), f);
     test.deepEqual(a, [new Buffer('8BIT©')]);
-    test.equal((<any>bsc).partial, '');
+    test.strictEqual((<any>bsc).partial.toString('utf8'), '');
     test.done();
   }
 };

@@ -29,8 +29,8 @@ module.exports = {
 
   testLogLevel(test: nodeunit.Test) {
     let logger: any = getLogger('hucairz', Level.DEBUG);
-    test.equal(logger.logLevel, Level.DEBUG);
-    test.equal(logger.label, 'hucairz');
+    test.strictEqual(logger.logLevel, Level.DEBUG);
+    test.strictEqual(logger.label, 'hucairz');
 
     mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- debug!`);
     mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- info!`);
@@ -45,7 +45,7 @@ module.exports = {
     logger.error('error!');
 
     logger = getLogger('hucairz', Level.ERROR);
-    test.equal(logger.logLevel, Level.ERROR);
+    test.strictEqual(logger.logLevel, Level.ERROR);
 
     logger.info('info!');
     logger.debug('debug!');
@@ -59,10 +59,10 @@ module.exports = {
 
   testPrefix(test: nodeunit.Test) {
     let logger: any = getLogger('hucairz');
-    test.equal(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] hucairz --- `);
+    test.strictEqual(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] hucairz --- `);
 
     logger = getLogger('other');
-    test.equal(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] other --- `);
+    test.strictEqual(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] other --- `);
 
     mockConsole.verify();
     test.done();
@@ -71,11 +71,11 @@ module.exports = {
   testColorMessage(test: nodeunit.Test) {
     let logger: any = getLogger('hucairz');
 
-    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.DEFAULT)), 'xxx');
-    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.NORMAL)), 'xxx');
-    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.MEDIUM)), 'xxx');
-    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.STRONG)), 'xxx');
-    test.equal(chalk.stripColor(logger.colorMessage('xxx', Emphasis.VERY_STRONG)), 'xxx');
+    test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.DEFAULT)), 'xxx');
+    test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.NORMAL)), 'xxx');
+    test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.MEDIUM)), 'xxx');
+    test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.STRONG)), 'xxx');
+    test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.VERY_STRONG)), 'xxx');
     test.done();
   },
 
@@ -103,7 +103,7 @@ module.exports = {
 
   testMaxDebugMessageLength(test: nodeunit.Test) {
     let logger: any = getLogger('hucairz', Level.DEBUG, 1);
-    test.equal(logger.maxDebugMessageLength, 1);
+    test.strictEqual(logger.maxDebugMessageLength, 1);
 
     mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- X`);
     mockConsole.expects('log').withExactArgs(`INFO [NotADate #${process.pid}] hucairz --- XXX`);
@@ -114,7 +114,7 @@ module.exports = {
     logger.info('XXX');
 
     logger.maxDebugMessageLength = 2;
-    test.equal(logger.maxDebugMessageLength, 2);
+    test.strictEqual(logger.maxDebugMessageLength, 2);
 
     logger.debug('XXX');
     logger.info('XXX');
@@ -125,8 +125,8 @@ module.exports = {
 
   testLoggerOptions(test: nodeunit.Test) {
     let logger: any = getLogger('hucairz', Level.DEBUG);
-    test.equal(logger.logLevel, Level.DEBUG);
-    test.equal(logger.label, 'hucairz');
+    test.strictEqual(logger.logLevel, Level.DEBUG);
+    test.strictEqual(logger.label, 'hucairz');
 
     let maxDebugMessageLength = logger.maxDebugMessageLength;
     let options: LoggerOptions = {
@@ -168,12 +168,12 @@ module.exports = {
     let logger: any = getLogger('hucairz');
     let e = new Error('message');
     let obj = { a: 123 };
-    test.equals(logger.stringify(undefined), 'undefined');
-    test.equals(logger.stringify(e), `${e.message}\n${e.stack}`);
-    test.equals(logger.stringify('message'), 'message');
-    test.equals(logger.stringify(1), '1');
-    test.equals(logger.stringify(obj, 3), JSON.stringify(obj).substr(0, 3));
-    test.equals(logger.stringify(obj, -1), JSON.stringify(obj));
+    test.strictEqual(logger.stringify(undefined), 'undefined');
+    test.strictEqual(logger.stringify(e), `${e.message}\n${e.stack}`);
+    test.strictEqual(logger.stringify('message'), 'message');
+    test.strictEqual(logger.stringify(1), '1');
+    test.strictEqual(logger.stringify(obj, 3), JSON.stringify(obj).substr(0, 3));
+    test.strictEqual(logger.stringify(obj, -1), JSON.stringify(obj));
 
     test.done();
   },
@@ -231,7 +231,7 @@ module.exports = {
 
   testSetUpEmail(test: nodeunit.Test) {
     let module = createMocks();
-    test.equal(createTransportSpy.callCount, 1);
+    test.strictEqual(createTransportSpy.callCount, 1);
     test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
 
     module.setUpMailer({
@@ -244,7 +244,7 @@ module.exports = {
     mockConsole.expects('log');
     logger.fatal('a fatal message');
 
-    test.equal(sendMailSpy.callCount, 1);
+    test.strictEqual(sendMailSpy.callCount, 1);
     test.deepEqual(sendMailSpy.firstCall.args[0], {
       from: 'you',
       to: 'me',
@@ -257,7 +257,7 @@ module.exports = {
 
   testSetUpEmailWithLogLevel(test: nodeunit.Test) {
     let module = createMocks();
-    test.equal(createTransportSpy.callCount, 1);
+    test.strictEqual(createTransportSpy.callCount, 1);
     test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
 
     module.setUpMailer({
@@ -274,7 +274,7 @@ module.exports = {
     logger.warn('a warn message');
     logger.info('an info message');
 
-    test.equal(sendMailSpy.callCount, 1);
+    test.strictEqual(sendMailSpy.callCount, 1);
     test.deepEqual(sendMailSpy.firstCall.args[0], {
       from: 'you',
       to: 'me',
@@ -294,7 +294,7 @@ module.exports = {
     try {
       process.emit('uncaughtException', mockError);
     } catch (e) {
-      test.equals(e, mockError);
+      test.strictEqual(e, mockError);
     }
     mockConsole.verify();
     test.done();

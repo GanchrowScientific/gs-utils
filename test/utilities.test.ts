@@ -100,29 +100,29 @@ module.exports = {
 
   testFetchSimpleStore(test: nodeunit.Test) {
     let ss = new SimpleStore();
-    test.equals(ss.fetch(5), 5);
+    test.strictEqual(ss.fetch(5), 5);
     test.done();
   },
 
   testStoreReturnValueSimpleStore(test: nodeunit.Test) {
     let ss = new SimpleStore();
-    test.equals(ss.store(5, 7), 7);
+    test.strictEqual(ss.store(5, 7), 7);
     test.done();
   },
 
   testStoreAndFetchSimpleStore(test: nodeunit.Test) {
     let ss = new SimpleStore();
-    test.equals(ss.store(6, 3), ss.fetch(6));
+    test.strictEqual(ss.store(6, 3), ss.fetch(6));
     test.done();
   },
 
   testBasicObject: function (test: nodeunit.Test) {
     let b = new BasicObject();
 
-    test.equals(typeof b, 'object');
-    test.equals(Object.getPrototypeOf(b), null);
+    test.strictEqual(typeof b, 'object');
+    test.strictEqual(Object.getPrototypeOf(b), null);
     test.deepEqual(Object.keys(b), []);
-    test.equals(b instanceof Object, false);
+    test.strictEqual(b instanceof Object, false);
 
     test.done();
   },
@@ -214,7 +214,7 @@ module.exports = {
     let allValuesThunk = valuesAtCreate(1, 3, 5);
     let noValuesThunk = valuesAtCreate(7, 8, 9);
 
-    test.equals(typeof emptyThunk, 'function');
+    test.strictEqual(typeof emptyThunk, 'function');
     test.ok(Array.isArray(emptyThunk(o)));
 
     test.deepEqual(noValuesThunk(o), [undefined, undefined, undefined]);
@@ -222,7 +222,7 @@ module.exports = {
     test.deepEqual(partialValuesThunk(o), [6, undefined]);
     test.deepEqual(otherPartialValuesThunk(o), [2, undefined]);
 
-    test.equals(emptyThunk(o).length, 0);
+    test.strictEqual(emptyThunk(o).length, 0);
 
     test.done();
   },
@@ -297,10 +297,10 @@ module.exports = {
     let objWithNoEmptyArrayValue = dup(objWithEmptyArrayValue);
     delete objWithNoEmptyArrayValue.a;
 
-    test.equals(stringifyJSONNoEmptyArrays(emptyArray), undefined);
-    test.equals(stringifyJSONNoEmptyArrays(objWithNoEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
-    test.equals(stringifyJSONNoEmptyArrays(objWithEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
-    test.equals(stringifyJSONNoEmptyArrays(arrayOfEmptyArrays), JSON.stringify(arrayOfUndefineds));
+    test.strictEqual(stringifyJSONNoEmptyArrays(emptyArray), undefined);
+    test.strictEqual(stringifyJSONNoEmptyArrays(objWithNoEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
+    test.strictEqual(stringifyJSONNoEmptyArrays(objWithEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
+    test.strictEqual(stringifyJSONNoEmptyArrays(arrayOfEmptyArrays), JSON.stringify(arrayOfUndefineds));
     test.done();
   },
 

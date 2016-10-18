@@ -23,7 +23,7 @@ module.exports = {
     c.forEachCompleteChunk('\n', f);
     c.forEachCompleteChunk('7\n', f);
     c.forEachCompleteChunk('\n', f);
-    test.equals(a.toString(), ['1', '23', '4', '56', '7', ''].toString());
+    test.strictEqual(a.toString(), ['1', '23', '4', '56', '7', ''].toString());
 
     test.done();
   }

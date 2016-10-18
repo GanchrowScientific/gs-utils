@@ -97,7 +97,7 @@ module.exports = {
     test.ok(client.duplicate().subscribe.calledWithExactly('my-channel'));
 
     client.duplicate().on.firstCall.args[1]('my-channel', 'my-message');
-    test.equals(spy.callCount, 1);
+    test.strictEqual(spy.callCount, 1);
     test.deepEqual(spy.firstCall.args, ['my-message', 'my-channel']);
     test.done();
   },
@@ -164,21 +164,21 @@ module.exports = {
     rmc.on('each', (item, res) => {
       let arg = res[0];
       if (arg === 'get') {
-        test.equals(res[1], 5);
-        test.equals(item[0], '5');
+        test.strictEqual(res[1], 5);
+        test.strictEqual(item[0], '5');
       } else if (arg === 'hget') {
-        test.equals(res[1], 'foo');
-        test.equals(res[2], 'bar');
-        test.equals(item[0], 'foo');
-        test.equals(item[1], 'bar');
+        test.strictEqual(res[1], 'foo');
+        test.strictEqual(res[2], 'bar');
+        test.strictEqual(item[0], 'foo');
+        test.strictEqual(item[1], 'bar');
       } else {
         test.ok(false);
       }
     });
     rmc.on('eachError', (item, err) => {
-      test.equals(err, 'hget');
-      test.equals(item[0], 'foo');
-      test.equals(item[1], 'bar');
+      test.strictEqual(err, 'hget');
+      test.strictEqual(item[0], 'foo');
+      test.strictEqual(item[1], 'bar');
       test.done();
     });
     client.multi().get.callArgWith(1, null, ['get', 5]);

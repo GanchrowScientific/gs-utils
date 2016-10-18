@@ -25,15 +25,15 @@ module.exports = {
   },
 
   testClassify(test: nodeunit.Test) {
-    test.equals(this.clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
-    test.equals(this.clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
+    test.strictEqual(this.clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
+    test.strictEqual(this.clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
     test.done();
   },
 
   testClassifyWithMissingKey(test: nodeunit.Test) {
     delete this.clTarget.first_name;
-    test.equals(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
-    test.equals((<Sinon.SinonSpy>console.log).callCount, 1);
+    test.strictEqual(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
+    test.strictEqual((<Sinon.SinonSpy>console.log).callCount, 1);
     test.ok((<Sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
     test.done();
   },

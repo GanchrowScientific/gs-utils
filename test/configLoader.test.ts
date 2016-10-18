@@ -58,7 +58,7 @@ module.exports = {
   testCustomConfigOverriddenByClassParameter(test: nodeunit.Test) {
     process.env.EXECUTION_ENVIRONMENT = 'PRODUCTION';
     let loader = new ConfigLoader('STAGING');
-    test.equals((<any> loader).executionEnvironment, 'STAGING');
+    test.strictEqual((<any> loader).executionEnvironment, 'STAGING');
     let configWithDevelopementEnvironment = loader.loadConfig(getCompletePath('configWithDevelopementEnvironment'));
     // STAGING doesn't exist, so no change from default
     test.deepEqual(configWithDevelopementEnvironment, {

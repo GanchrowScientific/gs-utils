@@ -37,7 +37,7 @@ module.exports = {
   testThrottleHardDelayWithSoftDelay(test: nodeunit.Test) {
     let throttle = new GSThrottle(2000, 1000);
     throttle.callback((arg) => {
-      test.equals(arg, 3);
+      test.strictEqual(arg, 3);
     });
     throttle.more(1);
     clock.tick(999);
@@ -51,7 +51,7 @@ module.exports = {
   testThrottleHardDelayWithSoftDelay2(test: nodeunit.Test) {
     let throttle = new GSThrottle(2000, 1000);
     throttle.callback((arg) => {
-      test.equals(arg, 2);
+      test.strictEqual(arg, 2);
     });
     throttle.more(1);
     clock.tick(999);

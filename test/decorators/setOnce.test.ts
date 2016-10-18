@@ -23,52 +23,52 @@ module.exports = {
 
   testSetOnceProperty(test: nodeunit.Test) {
 
-    test.equal(c.setOnceProperty, undefined);
-    test.equal(cc.setOnceProperty, undefined);
+    test.strictEqual(c.setOnceProperty, undefined);
+    test.strictEqual(cc.setOnceProperty, undefined);
 
     c.setOnceProperty = SOME_VALUE;
-    test.equal(c.setOnceProperty, SOME_VALUE);
-    test.equal(cc.setOnceProperty, undefined);
+    test.strictEqual(c.setOnceProperty, SOME_VALUE);
+    test.strictEqual(cc.setOnceProperty, undefined);
 
     test.throws(function() { c.setOnceProperty = SOME_OTHER_VALUE; });
-    test.equal(c.setOnceProperty, SOME_VALUE);
-    test.equal(cc.setOnceProperty, undefined);
+    test.strictEqual(c.setOnceProperty, SOME_VALUE);
+    test.strictEqual(cc.setOnceProperty, undefined);
 
     cc.setOnceProperty = SOME_OTHER_VALUE;
-    test.equal(c.setOnceProperty, SOME_VALUE);
-    test.equal(cc.setOnceProperty, SOME_OTHER_VALUE);
+    test.strictEqual(c.setOnceProperty, SOME_VALUE);
+    test.strictEqual(cc.setOnceProperty, SOME_OTHER_VALUE);
 
     test.done();
   },
 
   testSetOncePropertyPredefined(test: nodeunit.Test) {
 
-    test.equal(c.setOncePropertyPredefined, SOME_VALUE);
-    test.equal(cc.setOncePropertyPredefined, SOME_VALUE);
+    test.strictEqual(c.setOncePropertyPredefined, SOME_VALUE);
+    test.strictEqual(cc.setOncePropertyPredefined, SOME_VALUE);
 
     test.throws(function() { c.setOncePropertyPredefined = SOME_OTHER_VALUE; });
-    test.equal(c.setOncePropertyPredefined, SOME_VALUE);
-    test.equal(cc.setOncePropertyPredefined, SOME_VALUE);
+    test.strictEqual(c.setOncePropertyPredefined, SOME_VALUE);
+    test.strictEqual(cc.setOncePropertyPredefined, SOME_VALUE);
 
     test.done();
   },
 
   testSetOnceAccessor(test: nodeunit.Test) {
 
-    test.equal(c.setOnceAccessor, undefined);
-    test.equal(cc.setOnceAccessor, undefined);
+    test.strictEqual(c.setOnceAccessor, undefined);
+    test.strictEqual(cc.setOnceAccessor, undefined);
 
     c.setOnceAccessor = SOME_VALUE;
-    test.equal(c.setOnceAccessor, SOME_VALUE);
-    test.equal(cc.setOnceAccessor, undefined);
+    test.strictEqual(c.setOnceAccessor, SOME_VALUE);
+    test.strictEqual(cc.setOnceAccessor, undefined);
 
     test.throws(function() { c.setOnceAccessor = SOME_OTHER_VALUE; });
-    test.equal(c.setOnceAccessor, SOME_VALUE);
-    test.equal(cc.setOnceAccessor, undefined);
+    test.strictEqual(c.setOnceAccessor, SOME_VALUE);
+    test.strictEqual(cc.setOnceAccessor, undefined);
 
     cc.setOnceAccessor = SOME_OTHER_VALUE;
-    test.equal(c.setOnceAccessor, SOME_VALUE);
-    test.equal(cc.setOnceAccessor, SOME_OTHER_VALUE);
+    test.strictEqual(c.setOnceAccessor, SOME_VALUE);
+    test.strictEqual(cc.setOnceAccessor, SOME_OTHER_VALUE);
 
     test.done();
   },
@@ -77,17 +77,17 @@ module.exports = {
 
     test.throws(() => c.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
-    c.setOnceAccessorWithGet = SOME_VALUE;
-    test.equal(c.setOnceAccessorWithGet, SOME_VALUE);
+    (c as any).setOnceAccessorWithGet = SOME_VALUE;
+    test.strictEqual(c.setOnceAccessorWithGet, SOME_VALUE);
     test.throws(() => cc.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
-    test.throws(() => c.setOnceAccessorWithGet = SOME_OTHER_VALUE);
-    test.equal(c.setOnceAccessorWithGet, SOME_VALUE);
+    test.throws(() => (c as any).setOnceAccessorWithGet = SOME_OTHER_VALUE);
+    test.strictEqual(c.setOnceAccessorWithGet, SOME_VALUE);
     test.throws(() => cc.setOnceAccessorWithGet === SOME_OTHER_VALUE, Error, NO_VALUE_SET_ERROR.message);
 
-    cc.setOnceAccessorWithGet = SOME_OTHER_VALUE;
-    test.equal(c.setOnceAccessorWithGet, SOME_VALUE);
-    test.equal(cc.setOnceAccessorWithGet, SOME_OTHER_VALUE);
+    (cc as any).setOnceAccessorWithGet = SOME_OTHER_VALUE;
+    test.strictEqual(c.setOnceAccessorWithGet, SOME_VALUE);
+    test.strictEqual(cc.setOnceAccessorWithGet, SOME_OTHER_VALUE);
 
     test.done();
   },

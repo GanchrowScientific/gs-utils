@@ -34,7 +34,7 @@ module.exports = {
     backoff.register(() => {
       let now = getNow();
       backoff.reset();
-      test.equals(now, time + 100);
+      test.strictEqual(now, time + 100);
       test.done();
     });
     backoff.fire();
@@ -48,7 +48,7 @@ module.exports = {
     backoff.register(() => {
       let now = getNow();
       backoff.reset();
-      test.equals(now, time + interval);
+      test.strictEqual(now, time + interval);
       test.done();
     });
     backoff.fire();
@@ -64,7 +64,7 @@ module.exports = {
       if (count === 2) {
         let now = getNow();
         backoff.reset();
-        test.equals(Math.trunc(now), Math.trunc(time + 100 * Math.exp(1 / 10)));
+        test.strictEqual(Math.trunc(now), Math.trunc(time + 100 * Math.exp(1 / 10)));
         test.done();
       } else {
         time = getNow();
@@ -85,7 +85,7 @@ module.exports = {
       if (count === 3) {
         let now = getNow();
         backoff.reset();
-        test.equals(Math.trunc(now), Math.trunc(time + 100 * Math.exp(2 / 10)));
+        test.strictEqual(Math.trunc(now), Math.trunc(time + 100 * Math.exp(2 / 10)));
         test.done();
       } else {
         time = getNow();
@@ -107,7 +107,7 @@ module.exports = {
     });
     backoff.onEnd(() => {
       test.ok(true);
-      test.equals(count, 10);
+      test.strictEqual(count, 10);
       test.done();
     });
     backoff.fire();
@@ -124,7 +124,7 @@ module.exports = {
     });
     backoff.onEnd(() => {
       test.ok(true);
-      test.equals(count, 2);
+      test.strictEqual(count, 2);
       test.done();
     });
     backoff.fire();

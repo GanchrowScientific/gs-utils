@@ -67,7 +67,7 @@ Reason: Key must be non-empty`);
   testGetValue(test: nodeunit.Test) {
     this.store.storeValue('key', 1);
 
-    test.equals(1, this.store.getValue('key'));
+    test.strictEqual(1, this.store.getValue('key'));
 
     test.throws(() =>
       this.store.getValue('hucairz'),

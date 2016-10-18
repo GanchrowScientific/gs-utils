@@ -14,33 +14,33 @@ module.exports = {
 
   testBarInclude(test: nodeunit.Test) {
     let bar = createBar();
-    test.equals(bar.bar, 'bar');
+    test.strictEqual(bar.bar, 'bar');
     test.ok(!('foobar' in bar));
-    test.equals(bar.shabaz, 5);
-    test.equals(bar.shabazMethod(), 10);
-    test.equals(bar.poofMethod(), 'poof up in the air');
+    test.strictEqual(bar.shabaz, 5);
+    test.strictEqual(bar.shabazMethod(), 10);
+    test.strictEqual(bar.poofMethod(), 'poof up in the air');
     test.done();
   },
 
   testBarIncludeMethodOverride(test: nodeunit.Test) {
     let bar = createBar();
-    test.equals(bar.common(), 'COMMON');
+    test.strictEqual(bar.common(), 'COMMON');
     test.done();
   },
 
   testFoobarInclude(test: nodeunit.Test) {
     let foobar = createFoobar();
-    test.equals(foobar.foobar, 'foobar');
-    test.equals(foobar.bar, 'bar');
-    test.equals(foobar.shabaz, 5);
-    test.equals(foobar.shabazMethod(), 10);
-    test.equals(foobar.poofMethod(), 'poof up in the air');
+    test.strictEqual(foobar.foobar, 'foobar');
+    test.strictEqual(foobar.bar, 'bar');
+    test.strictEqual(foobar.shabaz, 5);
+    test.strictEqual(foobar.shabazMethod(), 10);
+    test.strictEqual(foobar.poofMethod(), 'poof up in the air');
     test.done();
   },
 
   testFoobarIncludeMethodOverride(test: nodeunit.Test) {
     let foobar = createFoobar();
-    test.equals(foobar.common(), 'COMMON');
+    test.strictEqual(foobar.common(), 'COMMON');
     test.done();
   },
 
