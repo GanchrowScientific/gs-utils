@@ -16,6 +16,7 @@ cp -r test/resources target/dist/test/
 NODEUNIT="node_modules/.bin/nodeunit"
 NUOPTS="--reporter junit --output target/test-reports"
 TESTDIR="target/dist/test"
+INTTESTDIR="target/dist/integration-test"
 ALL_RESULTS=0
 ERROR_MESSAGE=""
 FAILURES=0
@@ -41,6 +42,7 @@ runTests() {
 }
 
 runTests $TESTDIR
+runTests $INTTESTDIR
 
 if [[ "$FAILURES" -gt 1 ]]; then
   TEST+='s'
