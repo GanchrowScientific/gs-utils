@@ -132,6 +132,23 @@ module.exports = {
     test.done();
   },
 
+  testConfigurationValidator(test: nodeunit.Test) {
+    test.deepEqual(RedisAtomicDataLoader.configurationValidator({
+      foo: {
+        loadArray: true
+      },
+      bar: {
+        loadHash: true
+      },
+      baz: {
+        loadDummy: true
+      },
+      hucairz: [],
+      attackOfTheShow: 'hey'
+    }).sort(), ['hucairz', 'attackOfTheShow', 'baz'].sort());
+    test.done();
+  },
+
   testLoadWithNoPersistence(test: nodeunit.Test) {
     let rmc = new RedisAtomicDataLoader(client, {});
     rmc.load();

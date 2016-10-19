@@ -28,6 +28,10 @@ let config = {
   EXPOSED_KEY3: {
     loadKeys: [keys.f, keys.g, keys.h, 'hucairz']
   },
+  EXPOSED_KEY_INVALID_COMMAND: {
+    loadDummy: ['hucairz']
+  },
+  EXTRA_KEY_UNRELATED: true
 };
 
 let logger = getLogger('rmc integration test');

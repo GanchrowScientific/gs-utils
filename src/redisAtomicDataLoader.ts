@@ -3,6 +3,7 @@
 'use strict';
 
 import {PrivateEventEmitter} from './privateEventEmitter';
+import {isObject} from './utilities';
 
 const LUA_COMMANDS: any = {};
 LUA_COMMANDS.isJson = `
@@ -69,15 +70,20 @@ LUA_COMMANDS.generate = `
   local function generate(configObject)
     local resultObject = {}
     for code, items in pairs(configObject) do
-      local partialResults = resultObject[code]
-      if not partialResults then
-        partialResults = {}
-        resultObject[code] = partialResults
-      end
-      for cmd, args in pairs(items) do
-        local cmdExec = commandTable[cmd]
-        for _, arg in ipairs(args) do
-          cmdExec.execute(arg, partialResults)
+      if type(items) == 'table' then
+        local partialResults = resultObject[code]
+        for cmd, args in pairs(items) do
+          local cmdExec = commandTable[cmd]
+          if not cmdExec then
+            break
+          end
+          if not partialResults then
+            partialResults = {}
+            resultObject[code] = partialResults
+          end
+          for _, arg in ipairs(args) do
+            cmdExec.execute(arg, partialResults)
+          end
         end
       end
     end
@@ -90,6 +96,7 @@ LUA_COMMANDS.main = `
 `;
 
 const LUA_EVAL = Object.keys(LUA_COMMANDS).map(cmd => LUA_COMMANDS[cmd]).join('');
+const LUA_ALLOWED_COMMANDS = ['loadHash', 'loadArray', 'loadKeys'];
 
 export interface RedisAtomicClientConfiguration {
   [sig: string]: any;
@@ -107,9 +114,22 @@ export interface RedisAtomicClient {
 export class RedisAtomicDataLoader extends PrivateEventEmitter {
   private isPersisted: boolean;
 
+  public static configurationValidator(config: Object) {
+    return Object.keys(config).filter(key => {
+      if (isObject(config[key]) &&
+           Object.keys(config[key]).length &&
+           Object.keys(config[key]).every(item => LUA_ALLOWED_COMMANDS.includes(item))
+         ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
   constructor(private client: RedisAtomicClient, private config: RedisAtomicClientConfiguration) {
     super();
     this.createPersistence(config.persist);
+    delete config.persist;
   }
 
   public load(partialKey?: string) {
