@@ -91,13 +91,13 @@ LUA_COMMANDS.main = `
 
 const LUA_EVAL = Object.keys(LUA_COMMANDS).map(cmd => LUA_COMMANDS[cmd]).join('');
 
-export interface AtomicRedisClientConfiguration {
+export interface RedisAtomicClientConfiguration {
   [sig: string]: any;
   persist?: string;
 }
 
-export interface AtomicRedisClient {
-  duplicate(): AtomicRedisClient;
+export interface RedisAtomicClient {
+  duplicate(): RedisAtomicClient;
   eval(script: string, numArgs: number, arg: any, cb?: Function);
   subscribe(pattern: string, cb?: Function): void;
   psubscribe(pattern: string, cb?: Function): void;
@@ -107,7 +107,7 @@ export interface AtomicRedisClient {
 export class RedisAtomicDataLoader extends PrivateEventEmitter {
   private isPersisted: boolean;
 
-  constructor(private client: AtomicRedisClient, private config: AtomicRedisClientConfiguration) {
+  constructor(private client: RedisAtomicClient, private config: RedisAtomicClientConfiguration) {
     super();
     this.createPersistence(config.persist);
   }
