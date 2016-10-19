@@ -5,6 +5,7 @@
 /// <reference path="globals/nodemailer/index.d.ts" />
 /// <reference path="globals/nodeunit/index.d.ts" />
 /// <reference path="globals/proxyquire/index.d.ts" />
+/// <reference path="globals/redis/index.d.ts" />
 /// <reference path="globals/sinon/index.d.ts" />
 
 interface Array<T> {

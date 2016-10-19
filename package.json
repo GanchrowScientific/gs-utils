@@ -25,6 +25,7 @@
     "istanbul": "0.4.2",
     "nodeunit": "0.9.1",
     "proxyquire": "1.7.10",
+    "redis": "2.6.2",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
     "temp": "0.8.3",
@@ -33,6 +34,6 @@
     "typescript-formatter": "2.2.0"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=6.7"
   }
 }
