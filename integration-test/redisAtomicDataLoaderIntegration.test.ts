@@ -51,7 +51,7 @@ module.exports = {
       .hset(keys.c, 'c1', JSON.stringify({ a: 1 }))
       .hset(keys.c, 'c2', JSON.stringify({ a: 1 }))
       .hset(keys.c, 'c3', JSON.stringify({ a: 1 }))
-      .hset(keys.c, 'c4', 'NOT JSON')
+      .hset(keys.c, 'c4', 'NOT JSON BUT SHOULD RECEIVE')
 
       .hset(keys.d, 'd1', JSON.stringify({ a: 1 }))
       .hset(keys.d, 'd2', JSON.stringify({ a: 1 }))
@@ -87,6 +87,7 @@ module.exports = {
             c1: { a: 1 },
             c2: { a: 1 },
             c3: { a: 1 },
+            c4: 'NOT JSON BUT SHOULD RECEIVE',
             d1: { a: 1 },
             d2: { a: 1 },
             d3: { a: 1 },

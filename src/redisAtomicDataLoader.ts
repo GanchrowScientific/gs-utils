@@ -13,12 +13,14 @@ LUA_COMMANDS.isJson = `
   end
 `;
 LUA_COMMANDS.zipHash = `
-  local function zipHash(keys, values)
+  local function zipHash(keys, values, withNonJson)
     local result = {}
     for i, key in ipairs(keys) do
       local value = values[i]
       if isJson(value) then
         result[key] = cjson.decode(value)
+      elseif withNonJson then
+        result[key] = value
       end
     end
     return result
@@ -56,7 +58,7 @@ LUA_COMMANDS.commandTable = `
         partial = partial or {}
         local keys = redis.call('hkeys', arg)
         if #keys > 0 then
-          for key, field in pairs(zipHash(keys, redis.call('hmget', arg, unpack(keys)))) do
+          for key, field in pairs(zipHash(keys, redis.call('hmget', arg, unpack(keys)), true)) do
             partial[key] = field
           end
         end
