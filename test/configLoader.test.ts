@@ -83,6 +83,13 @@ module.exports = {
     test.done();
   },
 
+  testLoadEmptyConfig(test: nodeunit.Test) {
+    let loader = new ConfigLoader();
+    let configSimple = loader.loadConfig(getCompletePath('emptyConfig'));
+    test.deepEqual(configSimple, {});
+    test.done();
+  },
+
   tearDown(cb) {
     delete process.env.EXECUTION_ENVIRONMENT;
     cb();

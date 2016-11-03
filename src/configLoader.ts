@@ -25,7 +25,7 @@ export class ConfigLoader {
     return this.applyEnvironment(yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8')));
   }
 
-  private applyEnvironment(config: any): any {
+  private applyEnvironment(config = {}): any {
     let allEnvironments = config[ENVIRONMENTS] || {};
     let thisEnvironment = allEnvironments[this.executionEnvironment] || {};
 
