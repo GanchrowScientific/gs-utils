@@ -7,7 +7,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import {SimpleStore, BasicObject, isObject, arraysEquivalent,
+import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
@@ -16,6 +16,22 @@ import {SimpleStore, BasicObject, isObject, arraysEquivalent,
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testIsStrictObject(test: nodeunit.Test) {
+    test.ok(isStrictObject({}));
+    test.ok(!isStrictObject([]));
+    test.done();
+  },
+
+  testEnsureObject(test: nodeunit.Test) {
+    let a = {foo: 5};
+    let b = {foo: []};
+    let c = {foo: {baz: 5}};
+    test.deepEqual(ensureObject(a, 'foo'), {});
+    test.deepEqual(ensureObject(b, 'foo'), {});
+    test.deepEqual(ensureObject(c, 'foo'), {baz: 5});
+    test.done();
   },
 
   testHasAllPropertyValues(test: nodeunit.Test) {

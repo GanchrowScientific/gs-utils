@@ -96,6 +96,14 @@ export function isObject(obj: any): boolean {
   return obj != null && typeof obj === 'object';
 }
 
+export function isStrictObject(obj: any): boolean {
+  return isObject(obj) && !Array.isArray(obj);
+}
+
+export function ensureObject(obj: Object, field: string): Object {
+  return isStrictObject(obj[field]) && obj[field] || (obj[field] = {});
+}
+
 export function deepFreeze<T>(obj: T): T {
   if (isObject(obj) || typeof obj === 'function') {
     Object.freeze(obj);
