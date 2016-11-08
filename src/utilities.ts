@@ -92,6 +92,14 @@ export function toArray<T>(obj?: T[] | T): T[] {
   return Array.isArray(obj) ? obj : obj === undefined ? [] : [obj];
 }
 
+export function isFunction(fn: any): boolean {
+  return typeof fn === 'function';
+}
+
+export function isNumber(n: any): boolean {
+  return typeof n === 'number';
+}
+
 export function isObject(obj: any): boolean {
   return obj != null && typeof obj === 'object';
 }
@@ -180,6 +188,28 @@ export function stringifyJSONNoEmptyArrays(obj: any): string {
     if (!Array.isArray(value) || value.length) {
       return value;
     }
+  });
+}
+
+export function multiArraySome(arrays: any[][], match: any, index?: number): boolean {
+  return arrays.some(array => {
+    if (isFunction(match)) {
+      return array.some(match);
+    }
+    return isNumber(index) ? toArray(array)[index] === match :
+      toArray(array).includes(match)
+    ;
+  });
+}
+
+export function multiArrayEvery(arrays: any[][], match: any, index?: number): boolean {
+  return arrays.every(array => {
+    if (isFunction(match)) {
+      return array.every(match);
+    }
+    return isNumber(index) ? toArray(array)[index] === match :
+      toArray(array).includes(match)
+    ;
   });
 }
 

@@ -11,11 +11,30 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
-  arrayIsSubset} from '../src/utilities';
+  arrayIsSubset, multiArraySome, multiArrayEvery} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testMultiArrayEvery(test: nodeunit.Test) {
+    test.ok(multiArrayEvery([[1, 2, 3], [1, 3, 2]], 2));
+    test.ok(multiArrayEvery([['foo', 'man', 'chu'], ['bob', 'man', 'bubba']], 'man', 1));
+    test.ok(!multiArrayEvery([['hey', 'how', 'are', 'you'], ['i', 'am', 'fine']], 'chimp'));
+    test.ok(!multiArrayEvery([['', 'foo', 'man', 'chu'], ['bob', 'man', 'bubba']], 'man', 2));
+    test.ok(!multiArrayEvery([[6, 5, 8], [6, 5, 4]], (item) => item > 4));
+    test.ok(multiArrayEvery([[6, 5, 8], [6, 5, 6]], (item) => item > 4));
+    test.done();
+  },
+
+  testMultiArraySome(test: nodeunit.Test) {
+    test.ok(multiArraySome([[1, 2, 3], [1, 3, 2]], 2));
+    test.ok(multiArraySome([['foo', 'man', 'chu'], ['bob', 'mah', 'bubba']], 'man', 1));
+    test.ok(!multiArraySome([['hey', 'how', 'are', 'you'], ['i', 'am', 'fine']], 'chimp'));
+    test.ok(!multiArraySome([['foo', 'man', 'chu'], ['bob', 'man', 'bubba']], 'man', 2));
+    test.ok(multiArraySome([[1, 2, 5], [1, 3, 2]], (item) => item > 4));
+    test.done();
   },
 
   testIsStrictObject(test: nodeunit.Test) {
