@@ -4,11 +4,14 @@
 
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import {getLogger} from './gsLogger';
 
 const EXECUTION_ENVIRONMENT = 'EXECUTION_ENVIRONMENT';
 const ENVIRONMENTS = 'ENVIRONMENTS';
 
 const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
+
+let logger = getLogger('config-loader');
 
 export class ConfigLoader {
 
@@ -19,6 +22,7 @@ export class ConfigLoader {
     } else {
       basePath = '';
     }
+    logger.debug(`ConfigLoader EXECUTION_ENVIRONMENT: ${this.executionEnvironment} basePath ${this.basePath}`);
   }
 
   public loadConfig(fileName: string): any {
