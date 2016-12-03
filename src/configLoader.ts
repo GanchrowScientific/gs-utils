@@ -14,6 +14,9 @@ const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
 let logger = getLogger('config-loader');
 
 export class ConfigLoader {
+  public static viewEnvironments(fileName: string): any {
+    return Object.keys(yaml.safeLoad(fs.readFileSync(fileName, 'utf-8'))[ENVIRONMENTS] || {});
+  }
 
   constructor(private executionEnvironment?: string, private basePath = '') {
     this.executionEnvironment = this.getExecutionEnvironmentFromEnv(executionEnvironment);

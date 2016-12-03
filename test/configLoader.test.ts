@@ -9,7 +9,16 @@ import 'source-map-support/register';
 import {ConfigLoader, loadConfig} from '../src/configLoader';
 
 module.exports = {
-  testLoadConfigSimple: function(test: nodeunit.Test) {
+  testViewEnvironments(test: nodeunit.Test) {
+    test.deepEqual(
+      ConfigLoader.viewEnvironments(getCompletePath('configWithMultipleEnvironments')),
+      ['DEVELOPMENT', 'STAGING']
+    );
+    test.done();
+  },
+
+
+  testLoadConfigSimple(test: nodeunit.Test) {
     let configSimple = loadConfig(getCompletePath('configSimple'));
     test.deepEqual(configSimple, {
       key1: [ 'value1', 'value2' ]
@@ -17,7 +26,7 @@ module.exports = {
     test.done();
   },
 
-  testLoadConfigWithDevelopmentEnvironment: function(test: nodeunit.Test) {
+  testLoadConfigWithDevelopmentEnvironment(test: nodeunit.Test) {
     let configWithDevelopementEnvironment = loadConfig(getCompletePath('configWithDevelopementEnvironment'));
     test.deepEqual(configWithDevelopementEnvironment, {
       key1: [ 'value5', 'value6' ],
