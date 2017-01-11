@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module" : "commonjs",
+    "target": "es6",
+    "outDir": "target/dist",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "alwaysStrict": true,
+    "noImplicitThis": false,
+    "strictNullChecks": false
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
+}

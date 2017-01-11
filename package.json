@@ -1,0 +1,18 @@
+{
+  "name": "gs-typescript-config",
+  "version": "1.0.0",
+  "description": "configuration files for ganchrow scientific typescript projects",
+  "main": "tsconfig.json",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://andy@gerrit.ganchrow.com:29418/gs-typescript-config"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "author": "Ganchrow Scientific",
+  "license": ""
+}
