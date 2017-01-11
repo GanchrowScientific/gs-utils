@@ -4,7 +4,7 @@
   "description": "configuration files for ganchrow scientific typescript projects",
   "main": "tsconfig.json",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/tsc"
   },
   "repository": {
     "type": "git",
@@ -14,5 +14,8 @@
     "typescript"
   ],
   "author": "Ganchrow Scientific",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "typescript": "2.1.4"
+  }
 }

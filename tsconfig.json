@@ -11,9 +11,5 @@
     "alwaysStrict": true,
     "noImplicitThis": false,
     "strictNullChecks": false
-  },
-  "exclude": [
-    "node_modules",
-    "typings"
-  ]
+  }
 }
