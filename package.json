@@ -1,0 +1,27 @@
+{
+  "name": "gs-ts-lint",
+  "version": "1.0.0",
+  "description": "TSLint rules for Ganchrow Scientific typescript projects",
+  "main": "tslint.json",
+  "scripts": {
+    "test": "npm run tsc && npm run lint",
+    "tsc": "node_modules/.bin/tsc",
+    "lint": "node_modules/.bin/tslint -c tslint.json ./rules/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://andy@gerrit.ganchrow.com:29418/gs-ts-lint"
+  },
+  "keywords": [
+    "tslint",
+    "typescript"
+  ],
+  "author": "Ganchrow Scientific",
+  "license": "",
+  "devDependencies": {
+    "gs-typescript-config": "1.0.3",
+    "tslint": "4.3.1",
+    "typescript": "2.1.4"
+  },
+  "dependencies": {}
+}

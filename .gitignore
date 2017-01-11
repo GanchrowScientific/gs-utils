@@ -1,0 +1,4 @@
+*.js
+*.map
+*.swp
+node_modules
