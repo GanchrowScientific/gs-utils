@@ -296,6 +296,69 @@ module.exports = {
     test.deepEqual(config, expectConfig);
 
     test.done();
+  },
+
+  testObjectPropertiesInheritedSpecificInner(test: nodeunit.Test) {
+    let config = {
+      foo: {
+        inherits: ['a', 'b', 'c'],
+        objectA: {
+          fieldA: 5, fieldB: 6, fieldC: 7
+        }
+      },
+      a: {
+        objectB: { fieldA: 1 }
+      },
+      b: {
+        objectA: {
+          fieldD: 8
+        }
+      },
+      c: {
+        objectC: {
+          fieldC: 14, fieldD: 15, fieldE: 16
+        },
+        inner: {
+          array: [1, 2, 3, 4, 5]
+        }
+      }
+    };
+
+    let expectConfig = {
+      foo: {
+        inherits: ['a', 'b', 'c'],
+        objectA: {
+          fieldA: 5, fieldB: 6, fieldC: 7
+        },
+        inner: {
+          array: [1, 2, 3, 4, 5]
+        }
+      },
+      a: {
+        objectB: { fieldA: 1 }
+      },
+      b: {
+        objectA: {
+          fieldD: 8
+        }
+      },
+      c: {
+        objectC: {
+          fieldC: 14, fieldD: 15, fieldE: 16
+        },
+        inner: {
+          array: [1, 2, 3, 4, 5]
+        }
+      }
+    };
+
+    test.deepEqual(selfExtender(config, null, false, 'inner'), expectConfig);
+
+    // also test mutation
+
+    test.deepEqual(config, expectConfig);
+
+    test.done();
   }
 };
 

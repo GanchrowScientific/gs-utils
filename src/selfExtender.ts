@@ -17,13 +17,19 @@ function inheritProperty(to: Object, from: Object, inherit: string, concatArray:
   }
 }
 
-export function selfExtender(config: Object, noInheritKeys = [], concatArray = true): Object {
+export function selfExtender(config: Object, noInheritKeys = [], concatArray = true, innerProperty = null): Object {
   noInheritKeys = (noInheritKeys || []).concat('inherits');
   Object.keys(config || {}).forEach(to => {
     if (config[to].inherits) {
       toArray(config[to].inherits).forEach(from => {
-        Object.keys(config[from]).filter(f => !noInheritKeys.includes(f)).forEach(inherit => {
-          inheritProperty(config[to], config[from], inherit, concatArray);
+        let toInnerConfig = config[to];
+        let fromInnerConfig = config[from];
+        if (innerProperty) {
+          fromInnerConfig = fromInnerConfig[innerProperty] || {};
+          toInnerConfig = toInnerConfig[innerProperty] || (toInnerConfig[innerProperty] = {});
+        }
+        Object.keys(fromInnerConfig).filter(f => !noInheritKeys.includes(f)).forEach(inherit => {
+          inheritProperty(toInnerConfig, fromInnerConfig, inherit, concatArray);
         });
       });
     }
