@@ -3,6 +3,8 @@
 
 import {dup, isObject, toArray} from './utilities';
 
+const INHERITS = 'inherits';
+
 function inheritProperty(to: Object, from: Object, inherit: string, concatArray: boolean): void {
   if (Array.isArray(from[inherit])) {
     if (concatArray) {
@@ -17,13 +19,13 @@ function inheritProperty(to: Object, from: Object, inherit: string, concatArray:
   }
 }
 
-export function selfExtender(config: Object, noInheritKeys = [], concatArray = true, innerProperty = null): Object {
-  noInheritKeys = (noInheritKeys || []).concat('inherits');
+export function selfExtender(config: Object, noInheritKeys?: string[], concatArray = true, innerProperty = null): Object {
+  noInheritKeys = (noInheritKeys || []).concat(INHERITS);
   Object.keys(config || {}).forEach(to => {
-    if (config[to].inherits) {
-      toArray(config[to].inherits).forEach(from => {
+    if (config[to][INHERITS]) {
+      toArray(config[to][INHERITS]).forEach(from => {
         let toInnerConfig = config[to];
-        let fromInnerConfig = config[from];
+        let fromInnerConfig = config[from] || {};
         if (innerProperty) {
           fromInnerConfig = fromInnerConfig[innerProperty] || {};
           toInnerConfig = toInnerConfig[innerProperty] || (toInnerConfig[innerProperty] = {});

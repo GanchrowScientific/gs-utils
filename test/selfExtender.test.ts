@@ -101,6 +101,31 @@ module.exports = {
     test.done();
   },
 
+  testInheritsTargetNotInBlob(test: nodeunit.Test) {
+    let config = {
+        foo: {
+          inherits: 'bar',
+          array: [1, 2, 3]
+        }
+      }
+    ;
+
+    let expectConfig = {
+      foo: {
+        inherits: 'bar',
+        array: [1, 2, 3]
+      }
+    };
+
+    test.deepEqual(selfExtender(config, ['array']), expectConfig);
+
+    // also test mutation
+
+    test.deepEqual(config, expectConfig);
+
+    test.done();
+  },
+
   testNonObjectPropertiesInheritedOrder(test: nodeunit.Test) {
     let config = {
       bar: {
