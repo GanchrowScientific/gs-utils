@@ -1,13 +1,12 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 
-/// <reference path="../typings/index.d.ts"/>
-
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
 import * as sinon from 'sinon';
+import * as nodeunit from 'nodeunit';
 import {RedisAtomicDataLoader} from '../src/redisAtomicDataLoader';
 
 const HAS_PERSISTENCE = 'isPersisted';

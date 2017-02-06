@@ -1,10 +1,9 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
-
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
+import * as nodeunit from 'nodeunit';
 import * as sinon from 'sinon';
 
 import {classify, S_CLASSIFY} from '../../src/decorators/classify';
@@ -33,8 +32,8 @@ module.exports = {
   testClassifyWithMissingKey(test: nodeunit.Test) {
     delete this.clTarget.first_name;
     test.strictEqual(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
-    test.strictEqual((<Sinon.SinonSpy>console.log).callCount, 1);
-    test.ok((<Sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
+    test.strictEqual((<sinon.SinonSpy>console.log).callCount, 1);
+    test.ok((<sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
     test.done();
   },
 

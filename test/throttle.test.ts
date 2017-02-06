@@ -5,6 +5,8 @@
 import 'source-map-support/register';
 
 import * as sinon from 'sinon';
+import * as nodeunit from 'nodeunit';
+
 import {GSThrottle} from '../src/throttle';
 let clock;
 

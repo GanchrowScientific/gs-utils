@@ -1,11 +1,7 @@
 {
+  "extends": "./node_modules/gs-typescript-config/tsconfig.json",
   "compilerOptions": {
-    "module" : "commonjs",
-    "target": "es6",
-    "sourceMap": true,
-    "outDir": "./target/dist",
-    "experimentalDecorators": true,
-    "declaration": true
+    "outDir": "target/dist"
   },
   "exclude": [
     "node_modules",

@@ -1,17 +1,13 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 
-/// <reference path="../typings/index.d.ts"/>
-
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import {ByteSizedChunker} from '../src/byteSizedChunker';
+import * as nodeunit from 'nodeunit';
 
-// tsc is not able to find bufferpack
-/* tslint:disable:no-require-imports */
-let bufferpack = require('bufferpack');
-/* tslint:enable:no-require-imports */
+import {ByteSizedChunker} from '../src/byteSizedChunker';
+import * as bufferpack from 'bufferpack';
 
 let bsc: ByteSizedChunker, a: string[];
 let f = function(x) {

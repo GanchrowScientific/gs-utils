@@ -6,16 +6,17 @@ import 'source-map-support/register';
 
 import * as sinon from 'sinon';
 import * as pq from 'proxyquire';
-
+import * as nodeunit from 'nodeunit';
 import * as chalk from 'chalk';
+
 import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
 from '../src/gsLogger';
 
 let proxyquire = pq.noPreserveCache();
-let mockConsole: Sinon.SinonMock;
+let mockConsole: sinon.SinonMock;
 let originalISOString = Date.prototype.toISOString;
-let createTransportSpy: Sinon.SinonStub;
-let sendMailSpy: Sinon.SinonSpy;
+let createTransportSpy: sinon.SinonStub;
+let sendMailSpy: sinon.SinonSpy;
 
 module.exports = {
   setUp(callback) {

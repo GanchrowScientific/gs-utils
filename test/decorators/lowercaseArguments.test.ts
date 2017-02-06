@@ -1,10 +1,9 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../../typings/nodeunit/nodeunit.d.ts"/>
-
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
+import * as nodeunit from 'nodeunit';
 import {lowercaseArguments} from '../../src/decorators/lowercaseArguments';
 
 module.exports = {
@@ -31,6 +30,7 @@ module.exports = {
           return true;
         }
       };
+      return new ShouldThrow();
     });
     test.done();
   },

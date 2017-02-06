@@ -1,11 +1,10 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-/// <reference path="../typings/node/node.d.ts"/>
-/// <reference path="../typings/nodeunit/nodeunit.d.ts"/>
-
 // include this line to fix stack traces
 import 'source-map-support/register';
+
+import * as nodeunit from 'nodeunit';
 
 import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,

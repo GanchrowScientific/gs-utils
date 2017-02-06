@@ -1,11 +1,10 @@
 /* Copyright © 2015-2016 Ganchrow Scientific, SA all rights reserved */
 
-/// <reference path="../../typings/index.d.ts" />
-
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
+import * as nodeunit from 'nodeunit';
 
 import {precondition} from '../../src/decorators/precondition';
 

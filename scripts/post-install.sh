@@ -12,20 +12,6 @@ echo Running tsc...
 node_modules/.bin/tsc
 COMPILATION=$?
 
-echo Patching compilation...
-OS=$(uname)
-case $OS in
-  'Linux')
-    sed -i '1d' target/dist/src/index.d.ts
-    ;;
-  'Darwin')
-    sed -i.tmp '1d' target/dist/src/index.d.ts
-    rm -f target/dist/src/index.d.ts.tmp
-    ;;
-  *);;
-esac
-COMPILATION_PATCHING=$?
-
 echo Running tslint..
 node_modules/.bin/tslint $FILES
 LINTING=$?

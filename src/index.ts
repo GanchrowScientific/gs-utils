@@ -1,5 +1,4 @@
 /* Copyright © 2015-2016 Ganchrow Scientific, SA all rights reserved */
-/// <reference path="../typings/index.d.ts" />
 
 'use strict';
 
@@ -14,7 +13,7 @@ import {precondition} from './decorators/precondition';
 import {setOnce} from './decorators/setOnce';
 import {Backoff} from './backoff';
 
-export var gsutils = Object.defineProperties(utils, {
+export const gsutils = Object.defineProperties(utils, {
   Chunker: { value: Chunker },
   ByteSizedChunker: { value: ByteSizedChunker },
   decorators: { value: Object.defineProperties({}, {

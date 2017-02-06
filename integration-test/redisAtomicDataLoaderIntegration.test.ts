@@ -4,8 +4,10 @@
 
 
 import {RedisAtomicDataLoader} from '../src/redisAtomicDataLoader';
-import * as redis from 'redis';
 import {getLogger} from '../src/gsLogger';
+
+import * as redis from 'redis';
+import * as nodeunit from 'nodeunit';
 
 let keys = {
   a: 'rmc-integration-test-a',

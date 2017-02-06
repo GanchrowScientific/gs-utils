@@ -22,16 +22,20 @@
     "clean": "rm -rf target lib"
   },
   "devDependencies": {
+    "@types/node": "^7.0.5",
+    "@types/nodeunit": "0.0.30",
+    "gs-ts-lint": "^1.2.0",
+    "gs-typescript-config": "^1.0.3",
     "istanbul": "0.4.2",
-    "nodeunit": "0.9.1",
+    "nodeunit": "^0.9.1",
     "proxyquire": "1.7.10",
     "redis": "2.6.2",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
     "temp": "0.8.3",
-    "tslint": "3.10.2",
-    "typescript": "1.8.10",
-    "typescript-formatter": "2.2.0"
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.5",
+    "typescript-formatter": "^4.1.0"
   },
   "engines": {
     "node": ">=6.7"
