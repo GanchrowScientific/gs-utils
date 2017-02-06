@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "git@bitbucket.org:baalm/gs-utils.git",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -19,23 +19,25 @@
   "scripts": {
     "prepublish": "scripts/post-install.sh",
     "test": "scripts/test.sh",
-    "clean": "rm -rf target lib"
+    "clean": "rm -rf target lib",
+    "rebuild-addons": "./node_modules/.bin/node-gyp rebuild"
   },
   "devDependencies": {
-    "@types/node": "^7.0.5",
+    "@types/node": "7.0.5",
     "@types/nodeunit": "0.0.30",
-    "gs-ts-lint": "^1.2.0",
-    "gs-typescript-config": "^1.0.3",
+    "gs-ts-lint": "1.2.0",
+    "gs-typescript-config": "1.0.3",
     "istanbul": "0.4.2",
-    "nodeunit": "^0.9.1",
+    "nodeunit": "0.9.1",
+    "node-gyp": "3.5.0",
     "proxyquire": "1.7.10",
     "redis": "2.6.2",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
     "temp": "0.8.3",
-    "tslint": "^4.4.2",
-    "typescript": "^2.1.5",
-    "typescript-formatter": "^4.1.0"
+    "tslint": "4.4.2",
+    "typescript": "2.1.5",
+    "typescript-formatter": "4.1.0"
   },
   "engines": {
     "node": ">=6.7"

@@ -1,6 +1,9 @@
 *.map
 *.swp
 *.js
+.syntastic*
+build
+*.node
 lib/**/*.d.ts
 !typings/custom/**/*.d.ts
 node_modules

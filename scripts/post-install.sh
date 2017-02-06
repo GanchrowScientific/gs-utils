@@ -16,8 +16,14 @@ echo Running tslint..
 node_modules/.bin/tslint $FILES
 LINTING=$?
 
+npm run rebuild-addons
+BUILDING_ADDONS=$?
+
 echo Copying compiled source to lib folder
 mkdir -p lib
 cp -r target/dist/src/* lib
+cp -r build lib/
+cp -r build target/dist/
+rm -rf build
 
-exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING ))
+exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING + $BUILDING_ADDONS))
