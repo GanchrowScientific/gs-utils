@@ -13,6 +13,10 @@ export function tcdf(z: number, dof?: number): number {
   return math.tcdf(z, dof);
 }
 
-export function stdNorm(z: number): number {
-  return math.stdNorm(z);
+export function tpdf(z: number, dof?: number): number {
+  return math.tpdf(z, dof);
+}
+
+export function erf(x: number): number {
+  return math.erf(x);
 }

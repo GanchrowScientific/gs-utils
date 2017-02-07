@@ -2,13 +2,285 @@
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
-#include "prob.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif
 
 #define NASNF 1+1e-10
+
+const int beta_inc_it_max = 1000;
+const double beta_inc_tol = 1.0E-07;
+
+double beta(double a, double b) {
+  return (tgamma(a)*tgamma(b)) / tgamma(a+b);
+}
+
+double r8_abs( double x ) {
+  double value;
+
+  if ( 0.0 <= x )
+  {
+    value = x;
+  }
+  else
+  {
+    value = -x;
+  }
+  return value;
+}
+
+double beta_inc ( double a, double b, double x )
+
+/******************************************************************************/
+/*
+  Purpose:
+
+    BETA_INC returns the value of the incomplete Beta function.
+
+  Discussion:
+
+    This calculation requires an iteration.  In some cases, the iteration
+    may not converge rapidly, or may become inaccurate.
+
+    BETA_INC(A,B,X)
+
+      =   Integral ( 0 <= T <= X ) T^(A-1) (1-T)^(B-1) dT
+        / Integral ( 0 <= T <= 1 ) T^(A-1) (1-T)^(B-1) dT
+
+      =   Integral ( 0 <= T <= X ) T^(A-1) (1-T)^(B-1) dT
+        / BETA(A,B)
+
+  Licensing:
+
+    This code is distributed under the GNU LGPL license.
+
+  Modified:
+
+    10 October 2004
+
+  Author:
+
+    Original FORTRAN77 version by Majumder, Bhattacharjee.
+    C version by John Burkardt.
+
+  Reference:
+
+    Majumder, Bhattacharjee,
+    Algorithm AS63,
+    Applied Statistics,
+    1973, volume 22, number 3.
+
+  Parameters:
+
+    Input, double A, B, the parameters of the function.
+    0.0 < A,
+    0.0 < B.
+
+    Input, double X, the argument of the function.
+    Normally, 0.0 <= X <= 1.0.
+
+    Output, double BETA_INC, the value of the function.
+*/
+{
+  double cx;
+  int i;
+  int it;
+  int indx;
+  int ns;
+  double pp;
+  double psq;
+  double qq;
+  double rx;
+  double temp;
+  double term;
+  double value;
+  double xx;
+
+  /*if ( a <= 0.0 )
+  {
+    fprintf ( stderr, "\n" );
+    fprintf ( stderr, "BETA_INC - Fatal error!\n" );
+    fprintf ( stderr, "  A <= 0.\n" );
+    exit ( 1 );
+  }
+
+  if ( b <= 0.0 )
+  {
+    fprintf ( stderr, "\n" );
+    fprintf ( stderr, "BETA_INC - Fatal error!\n" );
+    fprintf ( stderr, "  B <= 0.\n" );
+    exit ( 1 );
+  }*/
+
+  if ( x <= 0.0 )
+  {
+    value = 0.0;
+    return value;
+  }
+  else if ( 1.0 <= x )
+  {
+    value = 1.0;
+    return value;
+  }
+/*
+  Change tail if necessary and determine S.
+*/
+  psq = a + b;
+
+  if ( a < ( a + b ) * x )
+  {
+    xx = 1.0 - x;
+    cx = x;
+    pp = b;
+    qq = a;
+    indx = 1;
+  }
+  else
+  {
+    xx = x;
+    cx = 1.0 - x;
+    pp = a;
+    qq = b;
+    indx = 0;
+  }
+
+  term = 1.0;
+  i = 1;
+  value = 1.0;
+
+  ns = ( int ) ( qq + cx * ( a + b ) );
+/*
+  Use Soper's reduction formulas.
+*/
+  rx = xx / cx;
+
+  temp = qq - ( double ) i;
+  if ( ns == 0 )
+  {
+    rx = xx;
+  }
+
+  it = 0;
+
+  for ( ; ; )
+  {
+    it = it + 1;
+
+    /*if ( beta_inc_it_max < it )
+    {
+      fprintf ( stderr, "\n" );
+      fprintf ( stderr, "BETA_INC - Fatal error!\n" );
+      fprintf ( stderr, "  Maximum number of iterations exceeded!\n" );
+      fprintf ( stderr, "  IT_MAX = %d\n", beta_inc_it_max );
+      exit ( 1 );
+    }*/
+
+    term = term * temp * rx / ( pp + ( double ) ( i ) );
+    value = value + term;
+    temp = r8_abs ( term );
+
+    if ( temp <= beta_inc_tol && temp <= beta_inc_tol * value )
+    {
+      break;
+    }
+
+    i = i + 1;
+    ns = ns - 1;
+
+    if ( 0 <= ns )
+    {
+      temp = qq - ( double ) i;
+      if ( ns == 0 )
+      {
+        rx = xx;
+      }
+    }
+    else
+    {
+      temp = psq;
+      psq = psq + 1.0;
+    }
+  }
+/*
+  Finish calculation.
+*/
+  value = value * exp ( pp * log ( xx )
+    + ( qq - 1.0 ) * log ( cx ) ) / ( beta ( a, b ) * pp );
+
+  if ( indx )
+  {
+    value = 1.0 - value;
+  }
+
+  return value;
+}
+
+double student_cdf ( double t, double df, double a, double b )
+
+/******************************************************************************/
+/*
+  Purpose:
+
+    STUDENT_CDF evaluates the central Student T CDF.
+
+  Licensing:
+
+    This code is distributed under the GNU LGPL license.
+
+  Modified:
+
+    02 November 2005
+
+  Author:
+
+    John Burkardt
+
+  Parameters:
+
+    Input, double X, the argument of the CDF.
+
+    Input, double A, B, shape parameters of the PDF,
+    used to transform the argument X to a shifted and scaled
+    value Y = ( X - A ) / B.  It is required that B be nonzero.
+    For the standard distribution, A = 0 and B = 1.
+
+    Input, double C, is usually called the number of
+    degrees of freedom of the distribution.  C is typically an
+    integer, but that is not essential.  It is required that
+    C be strictly positive.
+
+    Output, double STUDENT_CDF, the value of the CDF.
+*/
+{
+  double a2;
+  double b2;
+  double c2;
+  double cdf;
+  double y;
+
+  y = ( t - a ) / b;
+
+  a2 = 0.5 * df;
+  b2 = 0.5;
+  c2 = df / ( df + y * y );
+
+  if ( y <= 0.0 )
+  {
+    cdf = 0.5 * beta_inc ( a2, b2, c2 );
+  }
+  else
+  {
+    cdf = 1.0 - 0.5 * beta_inc ( a2, b2, c2 );
+  }
+
+  return cdf;
+}
+
+double t_cdf( double t, double df ) {
+  return student_cdf( t, df, 0.0, 1.0 );
+}
+
 
 /* TINV COEFFICIENTS */
 const double coef[4][5] = {
@@ -51,12 +323,12 @@ double phi_standard(double z){
   return (half*(1.0+erf(z*halfhalf)));
 }
 
-// http://josiahmanson.com/prose/student_t
+double std_pdf(double z) {
+  return exp(-half * z * z) / (sqrt(2 * PI));
+}
+
 double t_pdf( double t, double df ) {
-  return
-    (t_coefficients[0] * df *
-      pow((df + t*t) / df, -0.5 * df - 0.5)
-    ) / (t_coefficients[1] + df);
+  return pow(1 + t*t / df, -(df+1)/2) / (sqrt(df) * beta(0.5, df/2.0));
 }
 
 double standard_norm(double x){
@@ -198,6 +470,54 @@ namespace bd {
     }
   }
 
+  void Tpdf(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+    int argsLen = args.Length();
+    if ((argsLen == 1) || (argsLen == 2)) {
+      if (!args[0]->IsNumber()) {
+        isolate->ThrowException(Exception::TypeError(
+          String::NewFromUtf8(isolate, "Incorrect first argument type, expect number")
+        ));
+        return;
+      }
+      double value = args[0]->NumberValue();
+      double dof = args[1]->NumberValue();
+      Local<Number> num;
+      if (dof > 0.0) {
+        num = Number::New(isolate, t_pdf(value, dof));
+      } else {
+        num = Number::New(isolate, std_pdf(value));
+      }
+      args.GetReturnValue().Set(num);
+    } else {
+      isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Requires only one numeric argument")
+      ));
+      return;
+    }
+  }
+
+  void Erf(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+    if (args.Length() != 1) {
+      isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Requires only one numeric argument")
+      ));
+      return;
+    }
+
+    if (!args[0]->IsNumber()) {
+      isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Incorrect argument type, expect number")
+      ));
+      return;
+    }
+
+    double value = args[0]->NumberValue();
+    Local<Number> num = Number::New(isolate, erf(value));
+    args.GetReturnValue().Set(num);
+  }
+
   void StdNorm(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
     if (args.Length() != 1) {
@@ -223,6 +543,8 @@ namespace bd {
     NODE_SET_METHOD(exports, "stdNorm", StdNorm);
     NODE_SET_METHOD(exports, "tcdf", Tcdf);
     NODE_SET_METHOD(exports, "tinv", Tinv);
+    NODE_SET_METHOD(exports, "erf", Erf);
+    NODE_SET_METHOD(exports, "tpdf", Tpdf);
   }
 
   NODE_MODULE(normaldist, Init)
