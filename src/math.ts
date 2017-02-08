@@ -2,21 +2,21 @@
 'use strict';
 
 /* tslint:disable no-require-imports */
-const math = require('../build/Release/normaldist');
+const dist = require('../build/Release/prob_distributions');
 /* tslint:enable no-require-imports */
 
 export function tinv(prob: number, dof?: number): number {
-  return math.tinv(prob, dof);
+  return dist.tinv(prob, dof);
 }
 
 export function tcdf(z: number, dof?: number): number {
-  return math.tcdf(z, dof);
+  return dist.tcdf(z, dof);
 }
 
 export function tpdf(z: number, dof?: number): number {
-  return math.tpdf(z, dof);
+  return dist.tpdf(z, dof);
 }
 
 export function erf(x: number): number {
-  return math.erf(x);
+  return dist.erf(x);
 }
