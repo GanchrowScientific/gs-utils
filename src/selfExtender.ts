@@ -5,13 +5,9 @@ import {dup, isObject, toArray} from './utilities';
 
 const INHERITS = 'inherits';
 
-function inheritProperty(to: Object, from: Object, inherit: string, concatArray: boolean): void {
+function inheritProperty(to: Object, from: Object, inherit: string): void {
   if (Array.isArray(from[inherit])) {
-    if (concatArray) {
-      to[inherit] = to[inherit].concat(from[inherit]);
-    } else {
-      to[inherit] = from[inherit];
-    }
+    to[inherit] = to[inherit] || dup(from[inherit]);
   } else if (isObject(from[inherit])) {
     to[inherit] = Object.assign({}, dup(from[inherit]), to[inherit]);
   } else if (!(inherit in to)) {
@@ -19,7 +15,7 @@ function inheritProperty(to: Object, from: Object, inherit: string, concatArray:
   }
 }
 
-export function selfExtender(config: Object, noInheritKeys?: string[], concatArray = true, innerProperty = null): Object {
+export function selfExtender(config: Object, noInheritKeys?: string[], innerProperty = null): Object {
   noInheritKeys = (noInheritKeys || []).concat(INHERITS);
   Object.keys(config || {}).forEach(to => {
     if (config[to][INHERITS]) {
@@ -31,7 +27,7 @@ export function selfExtender(config: Object, noInheritKeys?: string[], concatArr
           toInnerConfig = toInnerConfig[innerProperty] || (toInnerConfig[innerProperty] = {});
         }
         Object.keys(fromInnerConfig).filter(f => !noInheritKeys.includes(f)).forEach(inherit => {
-          inheritProperty(toInnerConfig, fromInnerConfig, inherit, concatArray);
+          inheritProperty(toInnerConfig, fromInnerConfig, inherit);
         });
       });
     }

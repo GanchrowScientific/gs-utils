@@ -12,7 +12,6 @@ module.exports = {
     let config = {
         foo: {
           inherits: 'bar',
-          array: [1, 2, 3]
         },
         bar: {
           array: [4]
@@ -23,7 +22,7 @@ module.exports = {
     let expectConfig = {
       foo: {
         inherits: 'bar',
-        array: [1, 2, 3, 4]
+        array: [4]
       },
       bar: {
         array: [4]
@@ -39,7 +38,7 @@ module.exports = {
     test.done();
   },
 
-  testArrayPropertiesInheritedNotConcat(test: nodeunit.Test) {
+  testArrayPropertiesInheritedNoOverwrite(test: nodeunit.Test) {
     let config = {
         foo: {
           inherits: 'bar',
@@ -54,14 +53,14 @@ module.exports = {
     let expectConfig = {
       foo: {
         inherits: 'bar',
-        array: [4]
+        array: [1, 2, 3]
       },
       bar: {
         array: [4]
       }
     };
 
-    test.deepEqual(selfExtender(config, null, false), expectConfig);
+    test.deepEqual(selfExtender(config, null), expectConfig);
 
     // also test mutation
 
@@ -376,7 +375,7 @@ module.exports = {
       }
     };
 
-    test.deepEqual(selfExtender(config, null, false, 'inner'), expectConfig);
+    test.deepEqual(selfExtender(config, null, 'inner'), expectConfig);
 
     // also test mutation
 
