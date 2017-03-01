@@ -5,8 +5,15 @@
 import * as os from 'os';
 
 export function getNetworkIP(): string {
-  let ifaces = os.networkInterfaces();
-  return Object.keys(ifaces).map(i => ifaces[i].filter(x => x.family === 'IPv4' && !x.internal)[0]).filter(f => !!f)[0].address;
+  try {
+    let ifaces = os.networkInterfaces();
+    return Object.keys(ifaces)
+      .map(i => ifaces[i].filter(x => x.family === 'IPv4' && !x.internal)[0])
+      .filter(f => !!f)[0].address;
+  } catch (e) {
+    // assume network is turned off
+    return '';
+  }
 };
 
 function isExactMatchWrap(item: any): (otherItem: any) => boolean {
