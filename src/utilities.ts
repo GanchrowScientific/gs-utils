@@ -250,6 +250,10 @@ export function arrayIsSubset(a: any[], b: any[]): boolean {
   return a.every(el => b.includes(el));
 }
 
+export function arrayPartition<T>(array: T[], partition: (item: any) => boolean): [T[], T[]] {
+  return array.reduce((part, item) => (part[partition(item) ? 0 : 1].push(item), part), [[], []] as [T[], T[]]);
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';

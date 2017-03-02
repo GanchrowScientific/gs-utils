@@ -10,11 +10,21 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
-  arrayIsSubset, multiArraySome, multiArrayEvery} from '../src/utilities';
+  arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testArrayPartition(test: nodeunit.Test) {
+    test.deepEqual(arrayPartition([1, 2, 3, 4], () => true), [[1, 2, 3, 4], []]);
+    test.deepEqual(arrayPartition([1, 2, 3, 4], () => false), [[], [1, 2, 3, 4]]);
+    test.deepEqual(arrayPartition(
+      ['cat', 'dog', 'catfish', 'dogfish'],
+      (item) => /cat/.test(item)
+    ), [['cat', 'catfish'], ['dog', 'dogfish']]);
+    test.done();
   },
 
   testMultiArrayEvery(test: nodeunit.Test) {
