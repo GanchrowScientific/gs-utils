@@ -26,4 +26,13 @@ cp -r build lib/
 cp -r build target/dist/
 rm -rf build
 
-exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING + $BUILDING_ADDONS))
+echo Fixing the source maps
+SOURCE_MAPS=0
+for f in $(find ./target/dist/ -type f -name '*.js.map');
+do
+  echo "Fix: $f";
+  sed -i -e s_\\.\\./\\.\\./__ $f
+  (( SOURCE_MAPS += $? ))
+done
+
+exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING + $BUILDING_ADDONS + $SOURCE_MAPS))
