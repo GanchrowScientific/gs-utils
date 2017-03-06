@@ -1,6 +1,6 @@
 {
   "name": "gs-typescript-config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "configuration files for ganchrow scientific typescript projects",
   "main": "tsconfig.json",
   "scripts": {
