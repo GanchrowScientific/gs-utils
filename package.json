@@ -19,8 +19,7 @@
   "scripts": {
     "prepublish": "scripts/post-install.sh",
     "test": "scripts/test.sh",
-    "clean": "rm -rf target lib",
-    "rebuild-addons": "./node_modules/.bin/node-gyp rebuild"
+    "clean": "rm -rf target lib"
   },
   "devDependencies": {
     "@types/node": "7.0.5",
@@ -29,7 +28,6 @@
     "gs-typescript-config": "1.0.3",
     "istanbul": "0.4.2",
     "nodeunit": "0.9.1",
-    "node-gyp": "3.5.0",
     "proxyquire": "1.7.10",
     "redis": "2.6.2",
     "remap-istanbul": "0.5.1",

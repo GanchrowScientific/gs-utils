@@ -16,15 +16,9 @@ echo Running tslint..
 node_modules/.bin/tslint $FILES
 LINTING=$?
 
-npm run rebuild-addons
-BUILDING_ADDONS=$?
-
 echo Copying compiled source to lib folder
 mkdir -p lib
 cp -r target/dist/src/* lib
-cp -r build lib/
-cp -r build target/dist/
-rm -rf build
 
 echo Fixing the source maps
 SOURCE_MAPS=0
@@ -35,4 +29,4 @@ do
   (( SOURCE_MAPS += $? ))
 done
 
-exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING + $BUILDING_ADDONS + $SOURCE_MAPS))
+exit $(( $COMPILATION + $COMPILATION_PATCHING + $LINTING + $SOURCE_MAPS))
