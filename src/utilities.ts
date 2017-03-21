@@ -254,6 +254,15 @@ export function arrayPartition<T>(array: T[], partition: (item: any) => boolean)
   return array.reduce((part, item) => (part[partition(item) ? 0 : 1].push(item), part), [[], []] as [T[], T[]]);
 }
 
+export function swapItems<T extends Array<any>>(item: T): T {
+  if (Array.isArray(item)) {
+    let it = item[0];
+    item[0] = item[1];
+    item[1] = it;
+  }
+  return item;
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
