@@ -24,7 +24,7 @@ echo Fixing the source maps
 SOURCE_MAPS=0
 for f in $(find ./target/dist/ -type f -name '*.js.map');
 do
-  echo "Fix: $f";
+  # echo "Fix: $f";
   sed -i -e s_\\.\\./\\.\\./__ $f
   (( SOURCE_MAPS += $? ))
 done
