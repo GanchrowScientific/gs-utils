@@ -34,7 +34,7 @@ export class ConfigLoader {
 
   private applyEnvironment(config = {}): any {
     let allEnvironments = config[ENVIRONMENTS] || {};
-    let thisEnvironment = allEnvironments[this.executionEnvironment] || {};
+    let thisEnvironment = this.matchEnvironments(allEnvironments);
 
     delete config[ENVIRONMENTS];
 
@@ -53,6 +53,19 @@ export class ConfigLoader {
       envString = envString ? envString.toUpperCase() : DEFAULT_EXECUTION_ENVIRONMENT;
     }
     return envString;
+  }
+
+  private matchEnvironments<T>(allEnvironments: T): T {
+    if (allEnvironments[this.executionEnvironment]) {
+      return allEnvironments[this.executionEnvironment];
+    }
+    let possibleEnvironmentKeys = Object.keys(allEnvironments).filter(e => /\*$/.test(e));
+    let curEnv = possibleEnvironmentKeys.find(env => this.generateEnvironmentExpression(env).test(this.executionEnvironment));
+    return allEnvironments[curEnv] || {};
+  }
+
+  private generateEnvironmentExpression(env: string): RegExp {
+    return new RegExp(env.replace(/[.]?\*$/, '.*'));
   }
 }
 

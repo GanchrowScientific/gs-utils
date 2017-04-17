@@ -98,6 +98,36 @@ module.exports = {
     test.done();
   },
 
+  testLoadConfigPattern(test: nodeunit.Test) {
+    let loader = new ConfigLoader('PRODUCTION_TEST');
+    let configPatterns = loader.loadConfig(getCompletePath('configPatterns'));
+    test.deepEqual(configPatterns, {
+      key1: ['value1', 'value2'],
+      key2: ['value2', 'value3'],
+      keyString: 'string',
+      keyNumber: 0
+    });
+
+    ['PRODUCTION_TEST1', 'PRODUCTION', 'PRODUCTION_'].forEach(env => {
+      loader = new ConfigLoader(env);
+      configPatterns = loader.loadConfig(getCompletePath('configPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
+        key3: ['value10', 'value11'],
+        keyNumber: 1
+      });
+    });
+
+    ['DEVELOPMENT', 'PRODUCTIO', null].forEach(env => {
+      loader = new ConfigLoader(env);
+      configPatterns = loader.loadConfig(getCompletePath('configPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2']
+      });
+    });
+    test.done();
+  },
+
   tearDown(cb) {
     delete process.env.EXECUTION_ENVIRONMENT;
     cb();
