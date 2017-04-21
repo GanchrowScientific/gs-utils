@@ -128,6 +128,43 @@ module.exports = {
     test.done();
   },
 
+  testLoadExtensionsRange(test: nodeunit.Test) {
+    let loader = new ConfigLoader();
+    test.deepEqual(
+      loader.loadConfig(getCompletePath('configWithRangeExtension')),
+      {
+        key1: 'hey',
+        key2: {
+          range: [1, 3, 5, 7, 9],
+          range2: [21, 17, 13, 9, 5],
+          range3: [],
+          range4: [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+          range5: []
+        },
+        key3: {
+          range: [11, 5, -1, -7, -13],
+          range2: [3, 5, 7],
+          range3: []
+        },
+        key4: {
+          range: [ 18.234, 18.484, 18.734, 18.984, 19.234, 19.484, 19.734, 19.984 ]
+        },
+        key5: {
+          range: []
+        }
+      }
+    );
+    test.done();
+  },
+
+  testLoadExtensionsBadRange(test: nodeunit.Test) {
+    let loader = new ConfigLoader();
+    test.throws(() => loader.loadConfig(getCompletePath('configWithBadRangeExtensionNull')));
+    test.throws(() => loader.loadConfig(getCompletePath('configWithBadRangeExtensionString')));
+    test.throws(() => loader.loadConfig(getCompletePath('configWithBadRangeExtensionObject')));
+    test.done();
+  },
+
   tearDown(cb) {
     delete process.env.EXECUTION_ENVIRONMENT;
     cb();

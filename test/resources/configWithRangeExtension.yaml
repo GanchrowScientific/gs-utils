@@ -1,0 +1,26 @@
+key1: hey
+key2:
+  range: !range
+    - '1..9,2'
+  range2: !range
+    - '21..5,4'
+  range3: !range
+    - '21.5'
+  range4: !range
+    - '-9..-1'
+  range5: !range
+    - true
+key3:
+  range: !range
+    - '17...-15,6'
+  range2: !range
+    - '1...9,2'
+  range3: !range
+    - '1....9,2'
+key4:
+  range: !range
+    - '18.234..20.01,0.25'
+key5:
+  range: !range
+    - '1..9'
+    - '10..19'

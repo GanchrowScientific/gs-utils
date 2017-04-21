@@ -5,6 +5,7 @@
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import {getLogger} from './gsLogger';
+import {SCHEMA as CUSTOM_SCHEMA} from './yamlExtensions';
 
 const EXECUTION_ENVIRONMENT = 'EXECUTION_ENVIRONMENT';
 const ENVIRONMENTS = 'ENVIRONMENTS';
@@ -29,7 +30,8 @@ export class ConfigLoader {
   }
 
   public loadConfig(fileName: string): any {
-    return this.applyEnvironment(yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8')));
+    let parsedYaml = yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8'), {schema: CUSTOM_SCHEMA});
+    return this.applyEnvironment(parsedYaml);
   }
 
   private applyEnvironment(config = {}): any {
