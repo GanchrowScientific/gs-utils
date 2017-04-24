@@ -4,8 +4,7 @@
 .syntastic*
 build
 *.node
-lib/**/*.d.ts
-!typings/custom/**/*.d.ts
+lib
 node_modules
 target
 npm-debug.log*
