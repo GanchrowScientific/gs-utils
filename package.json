@@ -18,7 +18,7 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "prepublish": "scripts/post-install.sh",
+    "prepare": "scripts/post-install.sh",
     "test": "scripts/test.sh",
     "clean": "rm -rf target lib"
   },
