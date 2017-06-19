@@ -10,7 +10,7 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
-  arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems} from '../src/utilities';
+  arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems, leftDigit} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
@@ -351,6 +351,20 @@ module.exports = {
     test.strictEqual(stringifyJSONNoEmptyArrays(objWithNoEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
     test.strictEqual(stringifyJSONNoEmptyArrays(objWithEmptyArrayValue), JSON.stringify(objWithNoEmptyArrayValue));
     test.strictEqual(stringifyJSONNoEmptyArrays(arrayOfEmptyArrays), JSON.stringify(arrayOfUndefineds));
+    test.done();
+  },
+
+  testLeftDigits(test: nodeunit.Test) {
+    test.strictEqual(leftDigit(7001, 2), 70);
+    test.strictEqual(leftDigit(7001, 1), 7);
+    test.strictEqual(leftDigit(95681, 4), 9568);
+    test.strictEqual(leftDigit(95681), 9);
+    test.strictEqual(leftDigit(95681, 5), 95681);
+    test.strictEqual(leftDigit(95681, 6), 0);
+    test.strictEqual(leftDigit(95681, 0), 0);
+    test.strictEqual(leftDigit(1, 0), 0);
+    test.strictEqual(leftDigit(1, -1), 0);
+    test.strictEqual(leftDigit(1, 2), 0);
     test.done();
   },
 

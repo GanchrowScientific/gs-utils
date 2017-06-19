@@ -263,6 +263,13 @@ export function swapItems<T extends Array<any>>(item: T): T {
   return item;
 }
 
+export function leftDigit(x: number, n = 1): number {
+  if ((n < 1) || (10 ** (n - 1) > x)) {
+    return 0;
+  }
+  return Math.floor(x / 10 ** (Math.floor(Math.log10(x) - n + 1)));
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
