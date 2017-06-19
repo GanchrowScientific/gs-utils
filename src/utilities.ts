@@ -14,7 +14,7 @@ export const isJSON = Object.defineProperties(function (str: Bing): boolean {
       (isJSON.BEGIN_ARRAY_JSON.test(str) && isJSON.END_ARRAY_JSON.test(str))
       ;
 
-  } else if (typeof str === 'buffer') {
+  } else if (str instanceof Buffer) {
 
     return (str[0] === isJSON.BUFFER_BEGIN_OBJECT_JSON && str[str.length - 1] === isJSON.BUFFER_END_OBJECT_JSON) ||
       (str[0] === isJSON.BUFFER_BEGIN_ARRAY_JSON && str[str.length - 1] === isJSON.BUFFER_END_ARRAY_JSON)
@@ -42,7 +42,7 @@ export const isXML = Object.defineProperties(function (str: Bing): boolean {
 
     return isXML.XML_REGEXP.test(str);
 
-  } else if (typeof str === 'buffer') {
+  } else if (str instanceof Buffer) {
 
     return (str[0] === isXML.BUFFER_BEGIN_XML) && (str[str.length - 1] === isXML.BUFFER_END_XML);
 
