@@ -10,11 +10,38 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
-  arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems, leftDigit} from '../src/utilities';
+  arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
+  leftDigit, convertArrayValuesToObject} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testConvertArrayValuesToObject(test: nodeunit.Test) {
+    test.deepEqual(convertArrayValuesToObject({foobar: [1, 2, 3], baz: [4, 5, 6]}), [
+      {
+        foobar: 1,
+        baz: 4
+      }, {
+        foobar: 2,
+        baz: 5
+      }, {
+        foobar: 3,
+        baz: 6
+      }
+    ]);
+    test.deepEqual(convertArrayValuesToObject({foobar: 1, baz: [4, 5, 6]} as any), [
+      {
+        foobar: 1,
+        baz: 4
+      }, {
+        baz: 5
+      }, {
+        baz: 6
+      }
+    ]);
+    test.done();
   },
 
   testSwapItems(test: nodeunit.Test) {

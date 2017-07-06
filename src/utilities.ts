@@ -270,6 +270,15 @@ export function leftDigit(x: number, n = 1): number {
   return Math.floor(x / 10 ** (Math.floor(Math.log10(x) - n + 1)));
 }
 
+export function convertArrayValuesToObject(obj: {[a: string]: any[]}): {[a: string]: any}[] {
+  return Object.keys(obj).reduce((arr, key) => {
+    toArray(obj[key]).forEach((val, vidx) => {
+      Object.assign(arr[vidx] = arr[vidx] || {}, {[key]: val});
+    });
+    return arr;
+  }, []);
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
