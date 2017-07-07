@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import * as nodemailer from 'nodemailer';
 import {NoArgVoidFunc} from './utilities';
 
-const SMTP_SERVER = 'smtp://mail.ganchrow.com';
+const SMTP_SERVER = 'smtp-relay.gmail.com';
 
 export const MSG_LEN_UNLIMITED = -1;
 
@@ -25,7 +25,12 @@ function levelString() {
 
 const DEFAULT_LOG_LEVEL = Level.DEBUG;
 const DEFAULT_MAX_DEBUG_MESSAGE_LENGTH = 64;
-const transporter = nodemailer.createTransport(SMTP_SERVER);
+const transporter = nodemailer.createTransport({
+  host: SMTP_SERVER,
+  port: 465,
+  secure: true,
+  debug: true
+});
 
 let globalLogLevel = DEFAULT_LOG_LEVEL;
 
@@ -58,19 +63,25 @@ export interface MailerOptions {
   minLogLevel?: Level; // specifies minimum log level to mail, or defatult to FATAL
 }
 
+const MAILER_DEFAULTS: MailerOptions = {
+  minLogLevel: Level.FATAL,
+  from: 'System <system@ganchrow.com>',
+  to: 'Admin <admin@ganchrow.com>',
+  subjectPrefix: 'Log notification'
+};
+
 // To set up email, invoke the following method:
 //
 // setUpMailer({
 //   to: 'Admin <admin@ganchrow.com>',
 //   from: 'System <system@ganchrow.com>',
-//   subjectPrefix: 'Hello!!!',
-//   minLogLevel: Level.FATAL // (optional)
+//   subjectPrefix: 'Log notification',
+//   minLogLevel: Level.FATAL
 // });
 //
 // Installs the email transport
-export function setUpMailer(mailerOptions: MailerOptions) {
-  Logger.mailerOptions = mailerOptions;
-  Logger.mailerOptions.minLogLevel = Logger.mailerOptions.minLogLevel || Level.FATAL;
+export function setUpMailer(mailerOptions: MailerOptions = MAILER_DEFAULTS) {
+  Logger.mailerOptions = Object.assign({}, MAILER_DEFAULTS, mailerOptions);
 }
 
 export class Logger {

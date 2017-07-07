@@ -230,16 +230,17 @@ module.exports = {
 
   },
 
-  testSetUpEmail(test: nodeunit.Test) {
+  testSetUpEmailWithDefaults(test: nodeunit.Test) {
     let module = createMocks();
     test.strictEqual(createTransportSpy.callCount, 1);
-    test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
+    test.deepEqual(createTransportSpy.firstCall.args, [{
+      host: 'smtp-relay.gmail.com',
+      port: 465,
+      secure: true,
+      debug: true
+    }]);
 
-    module.setUpMailer({
-      to: 'me',
-      from: 'you',
-      subjectPrefix: 'Prefix'
-    });
+    module.setUpMailer();
 
     let logger = module.getLogger('mailer');
     mockConsole.expects('log');
@@ -247,9 +248,9 @@ module.exports = {
 
     test.strictEqual(sendMailSpy.callCount, 1);
     test.deepEqual(sendMailSpy.firstCall.args[0], {
-      from: 'you',
-      to: 'me',
-      subject: 'Prefix: FATAL',
+      from: 'System <system@ganchrow.com>',
+      to: 'Admin <admin@ganchrow.com>',
+      subject: 'Log notification: FATAL',
       text: `FATAL [NotADate #${process.pid}] mailer --- a fatal message`
     });
     mockConsole.verify();
@@ -259,7 +260,6 @@ module.exports = {
   testSetUpEmailWithLogLevel(test: nodeunit.Test) {
     let module = createMocks();
     test.strictEqual(createTransportSpy.callCount, 1);
-    test.deepEqual(createTransportSpy.firstCall.args, ['smtp://mail.ganchrow.com']);
 
     module.setUpMailer({
       to: 'me',
