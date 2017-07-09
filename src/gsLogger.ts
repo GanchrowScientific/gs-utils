@@ -92,7 +92,8 @@ export class Logger {
   constructor(
     private label: string,
     private logLevel: Level = Logger.defaultLogLevel,
-    public maxDebugMessageLength: number = DEFAULT_MAX_DEBUG_MESSAGE_LENGTH
+    public maxDebugMessageLength: number = DEFAULT_MAX_DEBUG_MESSAGE_LENGTH,
+    private mailer: {transporter?: nodemailer.Transporter, mailerOptions?: MailerOptions} = {}
   ) { /* */ }
 
   public debug(message: any, options?: LoggerOptions) {
@@ -149,7 +150,6 @@ export class Logger {
       /* tslint:disable:no-console */
       console.log(logMessage);
       /* tslint:enable:no-console */
-
       if (this.shouldSendMail(level)) {
         this.sendEmailNotification(fullMessage, level, callback);
       } else if (callback) {
@@ -208,18 +208,19 @@ export class Logger {
   }
 
   private sendEmailNotification(logMessage, level: Level, callback?: NoArgVoidFunc) {
-    transporter.sendMail({
-      from: Logger.mailerOptions.from,
-      to: Logger.mailerOptions.to,
-      subject: Logger.mailerOptions.subjectPrefix + ': ' + Level[level],
+    let mailerOptions = this.mailer.mailerOptions || Logger.mailerOptions;
+    (this.mailer.transporter || transporter).sendMail({
+      from: mailerOptions.from,
+      to: mailerOptions.to,
+      subject: mailerOptions.subjectPrefix + ': ' + Level[level],
       text: logMessage
     }, function (error, info) {
       /* tslint:disable:no-console */
       if (error) {
-        console.log(`Failed to send email notification with mailer options: ${JSON.stringify(Logger.mailerOptions)}`);
+        console.log(`Failed to send email notification with mailer options: ${JSON.stringify(mailerOptions)}`);
         console.log(error);
       } else {
-        console.log(`Email notification sent to '${Logger.mailerOptions.to}': ${info.response}`);
+        console.log(`Email notification sent to '${mailerOptions.to}': ${info.response}`);
       }
       /* tslint:disable:no-console */
       if (callback) {
@@ -229,6 +230,9 @@ export class Logger {
   }
 
   private shouldSendMail(level: Level): boolean {
-    return Logger.mailerOptions && level >= Logger.mailerOptions.minLogLevel;
+    let mailerOptions = this.mailer.mailerOptions || Logger.mailerOptions;
+    return mailerOptions && level >= (
+      Level[mailerOptions.minLogLevel] ? mailerOptions.minLogLevel : Logger.mailerOptions.minLogLevel || globalLogLevel
+    );
   }
 }

@@ -9,7 +9,7 @@ import * as pq from 'proxyquire';
 import * as nodeunit from 'nodeunit';
 import * as chalk from 'chalk';
 
-import {getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
+import {Logger, getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
 from '../src/gsLogger';
 
 let proxyquire = pq.noPreserveCache();
@@ -315,6 +315,59 @@ module.exports = {
       console.log(callbackMessage);
     });
     /* tslint:disable:no-console */
+
+    mockConsole.verify();
+    test.done();
+  },
+
+  testSendMailWithLoggerInstance(test: nodeunit.Test) {
+    let _ = undefined;
+    let transporterMock = {
+      sendMail: sinon.spy(),
+      templateSender: null,
+      use: null,
+      verify: null
+    };
+    let mailerOptions = {
+      from: 'Larry',
+      to: 'Gunther',
+      subjectPrefix: 'This is not Gunther from Friends',
+      minLogLevel: Level.ERROR
+    };
+    let logger = new Logger(
+      'SendMailWithLoggerInstance',
+      Level.INFO,
+      _,
+      {transporter: transporterMock, mailerOptions: mailerOptions}
+    );
+
+    mockConsole.expects('log')
+      .withExactArgs(`INFO [NotADate #${process.pid}] SendMailWithLoggerInstance --- hey`);
+    mockConsole.expects('log')
+      .withExactArgs(chalk.red(`ERROR [NotADate #${process.pid}] SendMailWithLoggerInstance --- email me`));
+    mockConsole.expects('log')
+      .withExactArgs(chalk.bgRed.white(`FATAL [NotADate #${process.pid}] SendMailWithLoggerInstance --- email me as well`));
+
+    logger.info('hey');
+    test.ok(transporterMock.sendMail.notCalled);
+
+    logger.error('email me');
+    test.ok(transporterMock.sendMail.calledOnce);
+    test.deepEqual(transporterMock.sendMail.firstCall.args[0], {
+      from: 'Larry',
+      to: 'Gunther',
+      subject: 'This is not Gunther from Friends: ERROR',
+      text: `ERROR [NotADate #${process.pid}] SendMailWithLoggerInstance --- email me`
+    });
+
+    logger.fatal('email me as well');
+    test.ok(transporterMock.sendMail.calledTwice);
+    test.deepEqual(transporterMock.sendMail.secondCall.args[0], {
+      from: 'Larry',
+      to: 'Gunther',
+      subject: 'This is not Gunther from Friends: FATAL',
+      text: `FATAL [NotADate #${process.pid}] SendMailWithLoggerInstance --- email me as well`
+    });
 
     mockConsole.verify();
     test.done();
