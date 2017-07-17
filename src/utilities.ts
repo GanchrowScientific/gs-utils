@@ -57,6 +57,7 @@ export const isXML = Object.defineProperties(function (str: Bing): boolean {
   }
 );
 
+export type OptArgCbFunc = (err?: Error, res?: any) => void;
 export type NoArgVoidFunc = () => void;
 export type ErrorArgVoidFunc = (err: Error) => void;
 export type AnyVoidFunc = (...args: any[]) => void;

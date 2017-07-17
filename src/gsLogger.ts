@@ -4,7 +4,7 @@
 
 import * as chalk from 'chalk';
 import * as nodemailer from 'nodemailer';
-import {NoArgVoidFunc} from './utilities';
+import {OptArgCbFunc, NoArgVoidFunc} from './utilities';
 
 const SMTP_SERVER = 'smtp-relay.gmail.com';
 
@@ -207,7 +207,7 @@ export class Logger {
     return Math.max(globalLogLevel, this.logLevel);
   }
 
-  private sendEmailNotification(logMessage, level: Level, callback?: NoArgVoidFunc) {
+  private sendEmailNotification(logMessage, level: Level, callback?: OptArgCbFunc) {
     let mailerOptions = this.mailer.mailerOptions || Logger.mailerOptions;
     (this.mailer.transporter || transporter).sendMail({
       from: mailerOptions.from,
@@ -224,7 +224,7 @@ export class Logger {
       }
       /* tslint:disable:no-console */
       if (callback) {
-        callback();
+        callback(error, error ? null : info);
       }
     });
   }
