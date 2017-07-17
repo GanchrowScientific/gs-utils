@@ -230,9 +230,12 @@ export class Logger {
   }
 
   private shouldSendMail(level: Level): boolean {
-    let mailerOptions = this.mailer.mailerOptions || Logger.mailerOptions;
+    let defaultMailerOptions = Logger.mailerOptions;
+    let mailerOptions = this.mailer.mailerOptions || defaultMailerOptions;
     return mailerOptions && level >= (
-      Level[mailerOptions.minLogLevel] ? mailerOptions.minLogLevel : Logger.mailerOptions.minLogLevel || globalLogLevel
+      Level[mailerOptions.minLogLevel] ?
+        mailerOptions.minLogLevel :
+        defaultMailerOptions && defaultMailerOptions.minLogLevel || globalLogLevel
     );
   }
 }
