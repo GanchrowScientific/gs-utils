@@ -12,7 +12,7 @@ interface BasicRedisConfig {
   path?: string;
 }
 
-export const install = () => {
+export let install = () => {
   let createClient = redis.createClient.bind(redis);
   Object.defineProperty(redis, 'createClient', {
     value: (config: BasicRedisConfig, ...args: any[]) => {
@@ -31,4 +31,5 @@ export const install = () => {
       return createClient(config, ...args);
     }
   });
+  install = () => { /**/ };
 };
