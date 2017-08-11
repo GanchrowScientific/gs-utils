@@ -1,7 +1,8 @@
 /* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
-
 'use strict';
 
+// include this line to fix stack traces
+import 'source-map-support/register';
 
 import {RedisAtomicDataLoader} from '../src/redisAtomicDataLoader';
 import {getLogger} from '../src/gsLogger';
@@ -38,8 +39,8 @@ let config = {
 
 let logger = getLogger('rmc integration test');
 
-let client = redis.createClient(11000, 'ashley', {
-  password: 'baalm_in_8i13a6'
+let client = redis.createClient(6380, 'saget', {
+  password: 'test_me_sideways'
 });
 let rmc = new RedisAtomicDataLoader(<any> client, config);
 let secondTestDone = false;
@@ -47,8 +48,8 @@ let secondTestDone = false;
 module.exports = {
   setUp(callback) {
     client.multi()
-      .lpush(keys.a, 1, 2, JSON.stringify([3]))
-      .lpush(keys.b, 4, 5, JSON.stringify({ a: 6 }))
+      .lpush(keys.a, '1', '2', JSON.stringify([3]))
+      .lpush(keys.b, '4', '5', JSON.stringify({ a: 6 }))
 
       .hset(keys.c, 'c1', JSON.stringify({ a: 1 }))
       .hset(keys.c, 'c2', JSON.stringify({ a: 1 }))
@@ -125,7 +126,7 @@ module.exports = {
 };
 
 function secondTest(test: nodeunit.Test) {
-  client.multi().del(keys.a, keys.b).lpush(keys.a, 7, 8, 9).lpush(keys.b, 10, 11, 12).exec(err => {
+  client.multi().del(keys.a, keys.b).lpush(keys.a, '7', '8', '9').lpush(keys.b, '10', '11', '12').exec(err => {
     if (err) {
       test.ok(false, err.message);
     }
