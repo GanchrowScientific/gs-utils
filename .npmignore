@@ -1,1 +1,3 @@
 !rules/*.js
+!rules/*.map
+

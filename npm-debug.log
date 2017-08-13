@@ -1,0 +1,139 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin/node',
+1 verbose cli   '/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@4.1.2
+3 info using node@v7.7.2
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/andrew.eisenberg/.npm correctMkdir not in flight; initializing
+10 warn prepublish-on-install As of npm@5, `prepublish` scripts will run only for `npm publish`.
+11 warn prepublish-on-install (In npm@4 and previous versions, it also runs for `npm install`.)
+12 warn prepublish-on-install See the deprecation note in `npm help scripts` for more information.
+13 info lifecycle gs-ts-lint@1.2.0~prepublish: gs-ts-lint@1.2.0
+14 verbose lifecycle gs-ts-lint@1.2.0~prepublish: unsafe-perm in lifecycle true
+15 verbose lifecycle gs-ts-lint@1.2.0~prepublish: PATH: /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/bin/node-gyp-bin:/Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint/node_modules/.bin:/Users/andrew.eisenberg/.rvm/gems/ruby-2.3.1/bin:/Users/andrew.eisenberg/.rvm/gems/ruby-2.3.1@global/bin:/Users/andrew.eisenberg/.rvm/rubies/ruby-2.3.1/bin:/Library/Frameworks/Python.framework/Versions/3.3/bin:/opt/local/bin:/opt/local/sbin:/opt/local/bin:/opt/local/sbin:/sw/bin:/sw/sbin:/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin:/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin:/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/bin:/usr/X11R6/bin:usr/local/X11/bin:/Users/andrew.eisenberg/bin:/usr/local/bin:/usr/X11R6/lib:/usr/X11R6/include/X11:/Users/andrew.eisenberg/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/lib:.:/usr/local/git/bin::/usr/local/nginx/sbin:/Users/andrew.eisenberg/.rvm/bin
+16 verbose lifecycle gs-ts-lint@1.2.0~prepublish: CWD: /Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint
+17 silly lifecycle gs-ts-lint@1.2.0~prepublish: Args: [ '-c', 'npm run tsc' ]
+18 silly lifecycle gs-ts-lint@1.2.0~prepublish: Returned: code: 0  signal: null
+19 info lifecycle gs-ts-lint@1.2.0~prepare: gs-ts-lint@1.2.0
+20 silly lifecycle gs-ts-lint@1.2.0~prepare: no script for prepare, continuing
+21 verbose tar pack [ '/Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package.tgz',
+21 verbose tar pack   '/Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint' ]
+22 verbose tarball /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package.tgz
+23 verbose folder /Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint
+24 verbose addLocalTarball adding from inside cache /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package.tgz
+25 verbose correctMkdir /Users/andrew.eisenberg/.npm correctMkdir not in flight; initializing
+26 silly cache afterAdd gs-ts-lint@1.2.0
+27 verbose afterAdd /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package/package.json not in flight; writing
+28 verbose correctMkdir /Users/andrew.eisenberg/.npm correctMkdir not in flight; initializing
+29 verbose afterAdd /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package/package.json written
+30 silly publish { name: 'gs-ts-lint',
+30 silly publish   version: '1.2.0',
+30 silly publish   description: 'TSLint rules for Ganchrow Scientific Typescript projects',
+30 silly publish   main: 'tslint.json',
+30 silly publish   scripts:
+30 silly publish    { prepublish: 'npm run tsc',
+30 silly publish      test: 'npm run tsc && npm run lint',
+30 silly publish      tsc: 'tsc',
+30 silly publish      lint: 'tslint -c tslint.json ./rules/*.ts' },
+30 silly publish   repository:
+30 silly publish    { type: 'git',
+30 silly publish      url: 'git+https://github.com/GanchrowScientific/gs-ts-lint.git' },
+30 silly publish   keywords: [ 'tslint', 'typescript' ],
+30 silly publish   author: { name: 'Ganchrow Scientific' },
+30 silly publish   license: 'MIT',
+30 silly publish   devDependencies:
+30 silly publish    { 'gs-typescript-config': '>=1.1.0',
+30 silly publish      tslint: '>=4.3.1',
+30 silly publish      typescript: '>=2.1.4' },
+30 silly publish   dependencies: {},
+30 silly publish   readme: 'A [ts-lint](https://github.com/palantir/tslint) configuration that can be shared across projects. This configuration is the one used by Ganchrow Scientific for all of its typescript projects\n\n# Installation\n\nnpm install -D gs-ts-int\n\n# Usage\n\nIn your `tslint.json` file, add the following entry:\n\n{\n  "extends": "gs-ts-lint"\n}\n\nYou can override any option provided by `gs-ts-lint` by explicitly specifying it in the `tslint.json`.\n\n# Notes\n\nThis package includes a custom linting rule that ensures the Ganchrow Scientific copyright file is at the top of all `*.ts` files.',
+30 silly publish   readmeFilename: 'README.md',
+30 silly publish   gitHead: '047695abadee5aa15570445065772c2eafb1375c',
+30 silly publish   bugs: { url: 'https://github.com/GanchrowScientific/gs-ts-lint/issues' },
+30 silly publish   homepage: 'https://github.com/GanchrowScientific/gs-ts-lint#readme',
+30 silly publish   _id: 'gs-ts-lint@1.2.0',
+30 silly publish   _shasum: 'eb3139905e5fee74a86fe23442b36be5622c1bf5',
+30 silly publish   _from: '.' }
+31 info lifecycle gs-ts-lint@1.2.0~prepublishOnly: gs-ts-lint@1.2.0
+32 silly lifecycle gs-ts-lint@1.2.0~prepublishOnly: no script for prepublishOnly, continuing
+33 verbose getPublishConfig undefined
+34 silly mapToRegistry name gs-ts-lint
+35 silly mapToRegistry using default registry
+36 silly mapToRegistry registry http://ashley:4873/
+37 silly mapToRegistry data Result {
+37 silly mapToRegistry   raw: 'gs-ts-lint',
+37 silly mapToRegistry   scope: null,
+37 silly mapToRegistry   escapedName: 'gs-ts-lint',
+37 silly mapToRegistry   name: 'gs-ts-lint',
+37 silly mapToRegistry   rawSpec: '',
+37 silly mapToRegistry   spec: 'latest',
+37 silly mapToRegistry   type: 'tag' }
+38 silly mapToRegistry uri http://ashley:4873/gs-ts-lint
+39 verbose publish registryBase http://ashley:4873/
+40 silly publish uploading /Users/andrew.eisenberg/.npm/gs-ts-lint/1.2.0/package.tgz
+41 verbose request uri http://ashley:4873/gs-ts-lint
+42 verbose request sending authorization for write operation
+43 info attempt registry request try #1 at 8:36:30 AM
+44 verbose request using bearer token for auth
+45 verbose request id 3826fa0cf1a43052
+46 http request PUT http://ashley:4873/gs-ts-lint
+47 http 409 http://ashley:4873/gs-ts-lint
+48 verbose headers { 'x-powered-by': 'Sinopia/1.4.0',
+48 verbose headers   'content-type': 'application/json; charset=utf-8',
+48 verbose headers   'content-length': '49',
+48 verbose headers   vary: 'Accept-Encoding',
+48 verbose headers   'x-status-cat': 'http://flic.kr/p/aV6jzz',
+48 verbose headers   date: 'Sun, 13 Aug 2017 14:36:30 GMT',
+48 verbose headers   connection: 'keep-alive' }
+49 verbose request invalidating /Users/andrew.eisenberg/.npm/ashley_4873/gs-ts-lint on PUT
+50 verbose request uri http://ashley:4873/gs-ts-lint?write=true
+51 verbose request no auth needed
+52 info attempt registry request try #1 at 8:36:31 AM
+53 verbose request using bearer token for auth
+54 http request GET http://ashley:4873/gs-ts-lint?write=true
+55 http 200 http://ashley:4873/gs-ts-lint?write=true
+56 verbose headers { 'x-powered-by': 'Sinopia/1.4.0',
+56 verbose headers   'content-type': 'application/json; charset=utf-8',
+56 verbose headers   etag: '"51219a643d417eed9fcd16f4738048ce"',
+56 verbose headers   vary: 'Accept-Encoding',
+56 verbose headers   'content-encoding': 'gzip',
+56 verbose headers   'x-status-cat': 'http://flic.kr/p/aVuVsF',
+56 verbose headers   date: 'Sun, 13 Aug 2017 14:36:31 GMT',
+56 verbose headers   connection: 'keep-alive',
+56 verbose headers   'transfer-encoding': 'chunked' }
+57 verbose stack Error: cannot modify pre-existing version
+57 verbose stack     at conflictError (/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:183:11)
+57 verbose stack     at CachingRegistryClient.putNext (/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:145:15)
+57 verbose stack     at /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:128:15
+57 verbose stack     at /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/lib/cache/caching-client.js:53:8
+57 verbose stack     at f (/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/once/once.js:25:25)
+57 verbose stack     at /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:78:16
+57 verbose stack     at /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:105:12
+57 verbose stack     at f (/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/once/once.js:25:25)
+57 verbose stack     at CachingRegistryClient.<anonymous> (/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:299:12)
+57 verbose stack     at /Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:218:7
+58 verbose pkgid gs-ts-lint
+59 verbose cwd /Users/andrew.eisenberg/Eclipse/git-repos/gs-ts-lint
+60 error Darwin 15.6.0
+61 error argv "/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin/node" "/Users/andrew.eisenberg/.nvm/versions/node/v7.7.2/bin/npm" "publish"
+62 error node v7.7.2
+63 error npm  v4.1.2
+64 error code EPUBLISHCONFLICT
+65 error publish fail Cannot publish over existing version.
+66 error publish fail Update the 'version' field in package.json and try again.
+67 error publish fail
+68 error publish fail To automatically increment version numbers, see:
+69 error publish fail npm help version
+70 verbose exit [ 1, true ]
