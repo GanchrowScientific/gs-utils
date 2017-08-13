@@ -1,6 +1,6 @@
 {
   "name": "gs-typescript-config",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "configuration files for ganchrow scientific typescript projects",
   "main": "tsconfig.json",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://andy@gerrit.ganchrow.com:29418/gs-typescript-config"
+    "url": "https://github.com/GanchrowScientific/gs-typescript-config.git"
   },
   "keywords": [
     "typescript"
   ],
   "author": "Ganchrow Scientific",
-  "license": "",
+  "license": "MIT",
   "devDependencies": {
-    "typescript": "2.2.1"
+    "typescript": ">=2.2.1"
   }
 }
