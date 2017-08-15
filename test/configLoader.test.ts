@@ -165,6 +165,24 @@ module.exports = {
     test.done();
   },
 
+  testLoadExtensionsPath(test: nodeunit.Test) {
+    let loader = new ConfigLoader();
+    test.deepEqual(loader.loadConfig(getCompletePath('configWithPathExtension')), {
+      path1: `${__dirname}/resources/here`,
+      path2: `${__dirname}/resources/here/there`,
+      path3: `${__dirname}/resources/here/there/`,
+      path4: `${__dirname}/resources/`,
+      path5: `${__dirname}/resources/with/an/unprintable/\\u003B/char/`
+    });
+    test.done();
+  },
+
+  testLoadExtensionsBadPath(test: nodeunit.Test) {
+    let loader = new ConfigLoader();
+    test.throws(() => loader.loadConfig(getCompletePath('configWithBadPathExtension')));
+    test.done();
+  },
+
   tearDown(cb) {
     delete process.env.EXECUTION_ENVIRONMENT;
     cb();

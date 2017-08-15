@@ -3,9 +3,10 @@
 'use strict';
 
 import * as yaml from 'js-yaml';
+import * as path from 'path';
 import * as fs from 'fs';
 import {getLogger} from './gsLogger';
-import {SCHEMA as CUSTOM_SCHEMA} from './yamlExtensions';
+import {schemaFactory} from './yamlExtensions';
 
 const EXECUTION_ENVIRONMENT = 'EXECUTION_ENVIRONMENT';
 const ENVIRONMENTS = 'ENVIRONMENTS';
@@ -21,8 +22,8 @@ export class ConfigLoader {
 
   constructor(private executionEnvironment?: string, private basePath = '') {
     this.executionEnvironment = this.getExecutionEnvironmentFromEnv(executionEnvironment);
-    if (basePath && !basePath.endsWith('/')) {
-      basePath += '/';
+    if (basePath && !basePath.endsWith(path.sep)) {
+      basePath += path.sep;
     } else {
       basePath = '';
     }
@@ -30,7 +31,9 @@ export class ConfigLoader {
   }
 
   public loadConfig(fileName: string): any {
-    let parsedYaml = yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8'), {schema: CUSTOM_SCHEMA});
+    let parsedYaml = yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8'), {
+      schema: schemaFactory(path.dirname(`${this.basePath}${fileName}`))
+    });
     return this.applyEnvironment(parsedYaml);
   }
 

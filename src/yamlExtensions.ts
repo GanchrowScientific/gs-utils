@@ -1,6 +1,7 @@
 /* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
+import * as path from 'path';
 import {Type, Schema, DEFAULT_SAFE_SCHEMA} from 'js-yaml';
 
 class Range extends Type {
@@ -72,4 +73,26 @@ class Range extends Type {
   }
 }
 
-export const SCHEMA = Schema.create(DEFAULT_SAFE_SCHEMA, [ new Range() ]);
+/**
+ * A custom yaml type that describes a path relative to the file being loaded
+ * @type {Path}
+ */
+class Path extends Type {
+  constructor(basePath: string) {
+    super('!path', {
+      kind: 'scalar',
+      construct(data) {
+        return basePath + path.sep + data;
+      },
+
+      resolve(data) {
+        return typeof data === 'string';
+      }
+    });
+  }
+}
+
+export function schemaFactory(basePath: string) {
+  // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
+  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath) ]);
+}

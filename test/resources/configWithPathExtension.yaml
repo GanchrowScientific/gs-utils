@@ -1,0 +1,5 @@
+path1: !path here
+path2: !path here/there
+path3: !path here/there/
+path4: !path ''
+path5: !path with/an/unprintable/\u003B/char/
