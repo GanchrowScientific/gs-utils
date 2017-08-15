@@ -16,8 +16,8 @@ type LuaScripts = RegisteredScripts & {
   bar?: ScriptInvoker;
   fooList?: ScriptInvoker;
   raisesError?: ScriptInvoker;
-  lrange?: (...args: any[]) => Promise<any>;
-  script?: (...args: string[]) => Promise<any>;
+  lrange?: ScriptInvoker;
+  script?: ScriptInvoker;
 };
 const LRANGE_KEY = '__LUA_REGISTRAR_INTEGRATION_TEST__';
 
@@ -75,7 +75,7 @@ module.exports = {
         args: ['hello', 'man']
       });
       test.strictEqual(res, 1);
-      let resList = await scripts.lrange(LRANGE_KEY, 0, -1);
+      let resList = await scripts.lrange({args: [ LRANGE_KEY, 0, -1 ] });
       test.deepEqual(resList, ['foo:hello:man']);
     } catch (e) {
       logger.error(e);
@@ -88,12 +88,15 @@ module.exports = {
   },
 
   async testHandlesMissingScript(test: nodeunit.Test) {
-    let result = await scripts.script('FLUSH');
+    let result = await scripts.script({ args: ['FLUSH']});
     test.strictEqual(result, 'OK');
-    result = await scripts.script('EXISTS',
-      scripts.bar[SHA_SYMBOL],
-      scripts.foo[SHA_SYMBOL],
-      scripts.fooList[SHA_SYMBOL]);
+    result = await scripts.script({
+      args: [
+        'EXISTS',
+        scripts.bar[SHA_SYMBOL],
+        scripts.foo[SHA_SYMBOL],
+        scripts.fooList[SHA_SYMBOL]
+      ]});
 
     test.deepEqual(result, [0, 0, 0], 'No scripts should exist');
 
@@ -106,10 +109,13 @@ module.exports = {
         args: ['extra']
       })]);
 
-      result = await scripts.script('EXISTS',
-        scripts.bar[SHA_SYMBOL],
-        scripts.foo[SHA_SYMBOL],
-        scripts.fooList[SHA_SYMBOL]);
+      result = await scripts.script({
+        args: [
+          'EXISTS',
+          scripts.bar[SHA_SYMBOL],
+          scripts.foo[SHA_SYMBOL],
+          scripts.fooList[SHA_SYMBOL]
+        ]});
       test.deepEqual(result, [1, 1, 0], 'bar and foo scripts only should exist');
       test.done();
     } catch (e) {

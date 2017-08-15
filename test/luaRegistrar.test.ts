@@ -119,7 +119,7 @@ module.exports = {
   testOtherCommand(test: nodeunit.Test) {
     scripts = register();
 
-    (scripts as any).hgetall('a', 'b').then(res => {
+    scripts.hgetall({ args: ['a', 'b']}).then(res => {
       test.strictEqual(res, 'yay!');
       test.done();
     });
@@ -132,7 +132,7 @@ module.exports = {
   testOtherCommandThrowsError(test: nodeunit.Test) {
     scripts = register();
 
-    (scripts as any).hgetall('a', 'b').catch(err => {
+    scripts.hgetall({ args: ['a', 'b']}).catch(err => {
       test.strictEqual(err.message, 'uh oh!');
       test.done();
     });

@@ -9,7 +9,7 @@ import {wrapAsync} from './wrapAsync';
 const DEFAULT_RETRY_MS = 1000;
 export const SHA_SYMBOL = Symbol('sha');
 
-export type ScriptInvoker = (luaArgs?: { keys?: string[], args?: string[] }) => Promise<any>;
+export type ScriptInvoker = (luaArgs?: { keys?: string[], args?: any[] }) => Promise<any>;
 
 export type RegisteredScripts = Record<string, ScriptInvoker>;
 
@@ -32,7 +32,7 @@ export function registerScripts(
         return target[name];
       }
       if (commandExists(name)) {
-        return (...args: any[]) => {
+        return ( { args = [] }) => {
           return wrapAsync(client[name].bind(client), ...args);
         };
       }
