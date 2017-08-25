@@ -17,7 +17,13 @@ let logger = getLogger('config-loader');
 
 export class ConfigLoader {
   public static viewEnvironments(fileName: string): any {
-    return Object.keys(yaml.safeLoad(fs.readFileSync(fileName, 'utf-8'))[ENVIRONMENTS] || {});
+    return Object.keys(ConfigLoader.loadConfig(fileName)[ENVIRONMENTS] || {});
+  }
+
+  private static loadConfig(fileName: string, baseName = ''): any {
+    return yaml.safeLoad(fs.readFileSync(fileName, 'utf-8'), {
+      schema: schemaFactory(baseName)
+    });
   }
 
   constructor(private executionEnvironment?: string, private basePath = '') {
@@ -31,9 +37,7 @@ export class ConfigLoader {
   }
 
   public loadConfig(fileName: string): any {
-    let parsedYaml = yaml.safeLoad(fs.readFileSync(`${this.basePath}${fileName}`, 'utf-8'), {
-      schema: schemaFactory(path.dirname(`${this.basePath}${fileName}`))
-    });
+    let parsedYaml = ConfigLoader.loadConfig(`${this.basePath}${fileName}`, path.dirname(`${this.basePath}${fileName}`));
     return this.applyEnvironment(parsedYaml);
   }
 
