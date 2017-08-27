@@ -79,14 +79,7 @@ class Invoker {
   }
 
   private async loadScript() {
-    return new Promise((resolve, reject) => {
-      this.client.script('LOAD', this.contents, async (err: Error, res) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(res);
-      });
-    });
+    return wrapAsync(this.client.script.bind(this.client, 'LOAD', this.contents));
   }
 
   private isMissingScriptError(err: Error) {
