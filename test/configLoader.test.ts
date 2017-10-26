@@ -4,6 +4,7 @@
 // include this line to fix stack traces
 import 'source-map-support/register';
 import * as nodeunit from 'nodeunit';
+import * as yaml from 'js-yaml';
 
 import {ConfigLoader, loadConfig} from '../src/configLoader';
 
@@ -21,6 +22,31 @@ module.exports = {
     let configSimple = loadConfig(getCompletePath('configSimple'));
     test.deepEqual(configSimple, {
       key1: [ 'value1', 'value2' ]
+    });
+    test.done();
+  },
+
+  testLoadConfigRaw(test: nodeunit.Test) {
+    let data = {
+      foo: 'bar', baz: [1, 2, 3],
+      ENVIRONMENTS: {
+        DEVELOPMENT: {
+          foo: 'baz'
+        },
+        TESTING: {
+          baz: [2, 3, 4]
+        }
+      }
+    };
+    let loader = new ConfigLoader('TESTING');
+    let config = loader.loadConfigRaw(yaml.dump(data));
+    test.deepEqual(config, {
+      foo: 'bar', baz: [2, 3, 4]
+    });
+    loader = new ConfigLoader();
+    config = loader.loadConfigRaw(yaml.dump(data));
+    test.deepEqual(config, {
+      foo: 'baz', baz: [1, 2, 3]
     });
     test.done();
   },

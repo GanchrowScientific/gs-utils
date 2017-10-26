@@ -21,9 +21,11 @@ export class ConfigLoader {
   }
 
   private static loadConfig(fileName: string, baseName = ''): any {
-    return yaml.safeLoad(fs.readFileSync(fileName, 'utf-8'), {
-      schema: schemaFactory(baseName)
-    });
+    return ConfigLoader.loadConfigRaw(fs.readFileSync(fileName, 'utf-8'), baseName);
+  }
+
+  private static loadConfigRaw(yamlString: string, baseName = '') {
+    return yaml.safeLoad(yamlString, { schema: schemaFactory(baseName) });
   }
 
   constructor(private executionEnvironment?: string, private basePath = '') {
@@ -38,6 +40,11 @@ export class ConfigLoader {
 
   public loadConfig(fileName: string): any {
     let parsedYaml = ConfigLoader.loadConfig(`${this.basePath}${fileName}`, path.dirname(`${this.basePath}${fileName}`));
+    return this.applyEnvironment(parsedYaml);
+  }
+
+  public loadConfigRaw(yamlString: string) {
+    let parsedYaml = ConfigLoader.loadConfigRaw(yamlString);
     return this.applyEnvironment(parsedYaml);
   }
 
@@ -81,4 +88,8 @@ export class ConfigLoader {
 let defaultConfigLoader = new ConfigLoader();
 export function loadConfig(fileName: string): any {
   return defaultConfigLoader.loadConfig(fileName);
+}
+
+export function loadConfigRaw(yamlString: string) {
+  return defaultConfigLoader.loadConfigRaw(yamlString);
 }

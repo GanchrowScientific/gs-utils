@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "http://gerrit.ganchrow.com:8080/gs-utils",
-  "version": "2.6.3",
+  "version": "2.6.5",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
