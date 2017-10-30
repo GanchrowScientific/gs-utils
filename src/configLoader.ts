@@ -47,8 +47,8 @@ export class ConfigLoader {
     return this.applyEnvironment(parsedYaml);
   }
 
-  public loadConfigRaw(yamlString: string) {
-    let parsedYaml = ConfigLoader.loadConfigRaw(yamlString);
+  public loadConfigRaw(yamlString: string, baseName = '') {
+    let parsedYaml = ConfigLoader.loadConfigRaw(yamlString, baseName);
     return this.applyEnvironment(parsedYaml);
   }
 
@@ -94,6 +94,6 @@ export function loadConfig(fileName: string): any {
   return defaultConfigLoader.loadConfig(fileName);
 }
 
-export function loadConfigRaw(yamlString: string) {
-  return defaultConfigLoader.loadConfigRaw(yamlString);
+export function loadConfigRaw(yamlString: string, baseName = '') {
+  return defaultConfigLoader.loadConfigRaw(yamlString, baseName);
 }
