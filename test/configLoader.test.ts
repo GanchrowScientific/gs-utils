@@ -3,6 +3,8 @@
 
 // include this line to fix stack traces
 import 'source-map-support/register';
+
+import * as fs from 'fs';
 import * as nodeunit from 'nodeunit';
 import * as yaml from 'js-yaml';
 
@@ -12,6 +14,14 @@ module.exports = {
   testViewEnvironments(test: nodeunit.Test) {
     test.deepEqual(
       ConfigLoader.viewEnvironments(getCompletePath('configWithMultipleEnvironments')),
+      ['DEVELOPMENT', 'STAGING']
+    );
+    test.done();
+  },
+
+  testViewEnvironmentsRaw(test: nodeunit.Test) {
+    test.deepEqual(
+      ConfigLoader.viewEnvironmentsRaw(fs.readFileSync(getCompletePath('configWithMultipleEnvironments'), 'utf-8')),
       ['DEVELOPMENT', 'STAGING']
     );
     test.done();

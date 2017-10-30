@@ -16,8 +16,12 @@ const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
 let logger = getLogger('config-loader');
 
 export class ConfigLoader {
-  public static viewEnvironments(fileName: string): any {
+  public static viewEnvironments(fileName: string): string[] {
     return Object.keys(ConfigLoader.loadConfig(fileName)[ENVIRONMENTS] || {});
+  }
+
+  public static viewEnvironmentsRaw(rawYaml: string): string[] {
+    return Object.keys(ConfigLoader.loadConfigRaw(rawYaml)[ENVIRONMENTS] || {});
   }
 
   private static loadConfig(fileName: string, baseName = ''): any {
