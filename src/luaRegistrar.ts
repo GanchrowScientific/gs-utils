@@ -21,7 +21,7 @@ export function registerScripts(
 
   let scriptInvokers = {};
   Object.keys(scripts).forEach(name => {
-    let invoker = new Invoker(scripts[name], name, client, retryMs);
+    let invoker = new ShaInvoker(scripts[name], name, client, retryMs);
     let bound = invoker.invoke.bind(invoker);
     bound[SHA_SYMBOL] = invoker.sha;
     scriptInvokers[name] = bound;
@@ -30,20 +30,56 @@ export function registerScripts(
     get: (target, name) => {
       if (name in target) {
         return target[name];
-      }
-      if (commandExists(name)) {
-        return ( { args = [] }) => {
-          return wrapAsync(client[name].bind(client), ...args);
-        };
+      } else if (typeof name === 'string' && commandExists(name)) {
+        let invoker = new CommandInvoker(name, client, retryMs);
+        return target[name] = invoker.invoke.bind(invoker);
+      } else {
+        return client[name];
       }
     }
   });
 }
 
-class Invoker {
+abstract class Invoker {
+
+  constructor(protected client: redis.RedisClient, private retryMs = DEFAULT_RETRY_MS) { /**/ }
+
+  public abstract invoke({ keys, args }): Promise<any>;
+
+  protected async attemptRetry(err: Error, { keys = [], args = [] } = {}) {
+    if (this.isMissingScriptError(err)) {
+      await this.loadScript();
+      return await this.invoke({ keys, args });
+    } else if (this.isBusyWaitingError(err)) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(this.invoke({ keys, args }));
+        }, this.retryMs);
+      });
+    } else {
+      throw err;
+    }
+  }
+
+  protected async loadScript() {
+    /**/
+  }
+
+  protected isMissingScriptError(err: Error) {
+    return /NOSCRIPT/.test(err.message);
+  }
+
+  private isBusyWaitingError(err: Error) {
+    return /BUSY/.test(err.message);
+  }
+
+}
+
+class ShaInvoker extends Invoker {
   public sha: string;
 
-  constructor(private contents: string, public name: string, private client: redis.RedisClient, private retryMs = DEFAULT_RETRY_MS) {
+  constructor(private contents: string, public name: string, client: redis.RedisClient, retryMs: number) {
+    super(client, retryMs);
     this.sha = shasum(contents);
   }
 
@@ -63,30 +99,35 @@ class Invoker {
     });
   }
 
-  private async attemptRetry(err: Error, { keys = [], args = [] } = {}) {
-    if (this.isMissingScriptError(err)) {
-      await this.loadScript();
-      return await this.invoke({ keys, args });
-    } else if (this.isBusyWaitingError(err)) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(this.invoke({ keys, args }));
-        }, this.retryMs);
-      });
-    } else {
-      throw err;
-    }
-  }
-
-  private async loadScript() {
+  protected async loadScript() {
     return wrapAsync(this.client.script.bind(this.client, 'LOAD', this.contents));
   }
+}
 
-  private isMissingScriptError(err: Error) {
-    return /NOSCRIPT/.test(err.message);
+class CommandInvoker extends Invoker {
+
+  constructor(public name: string, client: redis.RedisClient, retryMs: number) {
+    super(client, retryMs);
   }
 
-  private isBusyWaitingError(err: Error) {
-    return /BUSY/.test(err.message);
+  public invoke({ args = [] } = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.client[this.name](...args, async (err: Error, res) => {
+        try {
+          if (err) {
+            res = await this.attemptRetry(err, { args });
+          }
+          resolve(res);
+
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
   }
+
+  protected isMissingScriptError(err: Error) {
+    return false;
+  }
+
 }

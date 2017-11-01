@@ -70,15 +70,22 @@ module.exports = {
       // call script again
       client.evalsha.firstCall.args[6](null, 'yay!');
     }, 1);
-
   },
 
-  testRetryBusy(test: nodeunit.Test) {
-    retryBusyTest(test);
+  testRetryBusyEvalsha(test: nodeunit.Test) {
+    retryBusyTest(test, 'evalsha');
   },
 
-  testRetryBusyWithTimeout(test: nodeunit.Test) {
-    retryBusyTest(test, 3000);
+  testRetryBusyEvalshaWithTimeout(test: nodeunit.Test) {
+    retryBusyTest(test, 'evalsha', 3000);
+  },
+
+  testRetryBusyHgetall(test: nodeunit.Test) {
+    retryBusyTest(test, 'evalsha');
+  },
+
+  testRetryBusyHgetallWithTimeout(test: nodeunit.Test) {
+    retryBusyTest(test, 'evalsha', 3000);
   },
 
   async testError(test: nodeunit.Test) {
@@ -142,6 +149,14 @@ module.exports = {
     client.hgetall.firstCall.args[2](new Error('uh oh!'));
   },
 
+  testNotACommand(test: nodeunit.Test) {
+    scripts = register();
+    (client as any).other = 'iamateapot' ;
+
+    test.strictEqual(scripts.other, 'iamateapot');
+    test.done();
+  },
+
   tearDown(callback) {
     clock.restore();
     callback();
@@ -153,7 +168,7 @@ function createMockRedisClient() {
   return {
     evalsha: sinon.stub(),
     script: sinon.stub(),
-    hgetall: sinon.stub(),
+    hgetall: sinon.stub()
   };
 }
 
@@ -161,7 +176,7 @@ function register(customTimeout?) {
   return registerScripts(client as any, { a: 'abcd', b: 'efgh', }, customTimeout);
 }
 
-function retryBusyTest(test: nodeunit.Test, customTimeout?) {
+function retryBusyTest(test: nodeunit.Test, command, customTimeout?) {
   scripts = register(customTimeout);
 
   scripts.a({ keys: ['a', 'b'], args: ['c', 'd'] }).then(res => {
