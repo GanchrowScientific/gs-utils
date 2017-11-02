@@ -139,5 +139,5 @@ module.exports = {
 
 function getNow() {
   return Date.now();
-};
+}
 

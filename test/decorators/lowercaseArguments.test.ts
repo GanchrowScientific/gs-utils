@@ -29,7 +29,7 @@ module.exports = {
         get bad() {
           return true;
         }
-      };
+      }
       return new ShouldThrow();
     });
     test.done();

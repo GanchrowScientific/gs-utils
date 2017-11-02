@@ -40,8 +40,8 @@ export class FileSlurper {
 
   private createStream(): stream.Stream {
     if (this.isBinary) {
-      let stream = fs.createReadStream(this.filePath);
-      return stream.pipe(zlib.createGunzip());
+      let readStream = fs.createReadStream(this.filePath);
+      return readStream.pipe(zlib.createGunzip());
     } else {
       return fs.createReadStream(this.filePath, { encoding: 'utf8' });
     }

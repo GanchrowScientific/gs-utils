@@ -114,7 +114,7 @@ export interface RedisAtomicClient {
 }
 
 export class RedisAtomicDataLoader extends PrivateEventEmitter {
-  private isPersisted: boolean;
+  protected isPersisted: boolean;
 
   public static configurationValidator(config: Object) {
     return Object.keys(config).filter(key => {

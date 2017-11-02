@@ -104,10 +104,10 @@ class C {
   public setOncePropertyPredefined: any = SOME_VALUE;
 
   @setOnce
-  set setOnceAccessor(val: any) { /**/ };
+  set setOnceAccessor(val: any) { /**/ }
 
   @setOnce
-  get setOnceAccessorWithGet(): any { throw NO_VALUE_SET_ERROR; };
+  get setOnceAccessorWithGet(): any { throw NO_VALUE_SET_ERROR; }
 }
 
 function generateTestClassInstance(): C {

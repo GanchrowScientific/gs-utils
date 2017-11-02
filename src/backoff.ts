@@ -16,7 +16,7 @@ interface BackoffOpts {
 enum BackoffState {
   STOPPED = 0,
   FIRING
-};
+}
 
 export class Backoff {
   private registeredCBs = [];

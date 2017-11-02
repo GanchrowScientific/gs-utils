@@ -14,7 +14,7 @@ export function getNetworkIP(): string {
     // assume network is turned off
     return '';
   }
-};
+}
 
 function isExactMatchWrap(item: any): (otherItem: any) => boolean {
   return (otherItem: string) => item === otherItem;
