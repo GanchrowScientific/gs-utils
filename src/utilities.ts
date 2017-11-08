@@ -113,6 +113,15 @@ export function ensureObject(obj: Object, field: string): Object {
   return isStrictObject(obj[field]) && obj[field] || (obj[field] = {});
 }
 
+export function deepEnsureObject(obj: Object, fields: (string | number)[]): Object {
+  let field: string;
+  let stringifiedFields: string[] = fields.map(String);
+  while (field = stringifiedFields.shift()) {
+    obj = ensureObject(obj, field);
+  }
+  return obj;
+}
+
 export function deepFreeze<T>(obj: T): T {
   if (isObject(obj) || typeof obj === 'function') {
     Object.freeze(obj);

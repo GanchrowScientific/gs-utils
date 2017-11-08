@@ -11,11 +11,28 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
-  leftDigit, convertArrayValuesToObject} from '../src/utilities';
+  leftDigit, convertArrayValuesToObject, deepEnsureObject} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testDeepEnsureObject(test: nodeunit.Test) {
+    let obj = {};
+    test.deepEqual(deepEnsureObject(obj, ['foo', 'bar', 'baz', 'shabaz', '0']), {});
+    test.deepEqual(obj, {
+      foo: { bar: { baz: { shabaz: { 0: {} } } } }
+    });
+    obj = {};
+    test.deepEqual(deepEnsureObject(obj, ['foo', 'bar', 'baz', 'shabaz', 0]), {});
+    test.deepEqual(obj, {
+      foo: { bar: { baz: { shabaz: { 0: {} } } } }
+    });
+    obj = {foo: 5};
+    test.deepEqual(deepEnsureObject(obj, []), { foo: 5 });
+    test.deepEqual(obj, { foo: 5 });
+    test.done();
   },
 
   testConvertArrayValuesToObject(test: nodeunit.Test) {
