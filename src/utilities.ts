@@ -132,17 +132,22 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
-export function dup<T>(obj: T, ignoreKeys?: string[]): ParsedJson {
-  let cb = null;
-  if (ignoreKeys) {
-    cb = (k, v) => {
-      if (ignoreKeys.includes(k)) {
-        return undefined;
-      }
+export function dup<T>(obj: T, ignoreKeys: string[] = []): ParsedJson {
+  let cb = (k, v) => {
+    if (ignoreKeys.includes(k)) {
+      return undefined;
+    } else if (v === Infinity) {
+      return 'Infinity';
+    }
+    return v;
+  };
+  return JSON.parse(JSON.stringify(obj, cb), (k, v) => {
+    if (v === 'Infinity') {
+      return Infinity;
+    } else {
       return v;
-    };
-  }
-  return JSON.parse(JSON.stringify(obj, cb));
+    }
+  });
 }
 
 export function valuesAtCreate(...keys: any[]): (obj: Object) => Array<any> {
