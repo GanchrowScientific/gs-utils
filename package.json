@@ -1,10 +1,11 @@
 {
   "name": "gs-typescript-config",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "configuration files for ganchrow scientific typescript projects",
   "main": "tsconfig.json",
   "scripts": {
-    "test": "node_modules/.bin/tsc"
+    "test": "node_modules/.bin/tsc",
+    "prepublishOnly": "scripts/push-to-github.sh"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,8 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": ">=2.2.1"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.com"
   }
 }
