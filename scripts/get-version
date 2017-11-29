@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+'use strict';
+
+let path = require('path');
+
+let packagePath = path.resolve(process.argv[2]);
+let packageVersion = require(`${packagePath}/package.json`).version;
+
+console.log(packageVersion);

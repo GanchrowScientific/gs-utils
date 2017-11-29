@@ -1,13 +1,14 @@
 {
   "name": "gs-ts-lint",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "TSLint rules for Ganchrow Scientific Typescript projects",
   "main": "tslint.json",
   "scripts": {
     "prepare": "npm run tsc",
     "test": "npm run tsc && npm run lint",
     "tsc": "node_modules/.bin/tsc",
-    "lint": "node_modules/.bin/tslint -c tslint.json ./rules/*.ts"
+    "lint": "node_modules/.bin/tslint -c tslint.json ./rules/*.ts",
+    "prepublishOnly": "scripts/push-to-github.sh"  
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "gs-typescript-config": ">=1.1.0",
     "tslint": ">=4.3.1",
     "typescript": ">=2.1.4"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.com"
   },
   "dependencies": {}
 }
