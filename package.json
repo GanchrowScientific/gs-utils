@@ -1,8 +1,8 @@
 {
   "name": "gs-utils",
   "description": "Node utilities.",
-  "repository": "http://gerrit.ganchrow.com:8080/gs-utils",
-  "version": "2.7.1",
+  "repository": "https://github.com/GanchrowScientific/gs-utils",
+  "version": "2.7.2",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -14,10 +14,7 @@
     "shasum": "1.0.2",
     "source-map-support": "0.4.0"
   },
-  "publishConfig": {
-    "registry": "http://ashley:4873/"
-  },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "scripts": {
     "prepare": "scripts/post-install.sh",
     "test": "scripts/test.sh",
