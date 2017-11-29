@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -42,5 +42,8 @@
   },
   "engines": {
     "node": ">=7.0"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.com"
   }
 }
