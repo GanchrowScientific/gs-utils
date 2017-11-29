@@ -6,6 +6,8 @@
 let path = require('path');
 
 let packagePath = path.resolve(process.argv[2]);
-let packageVersion = require(`${packagePath}/package.json`).version;
+let propertyName = process.argv[3];
 
-console.log(packageVersion);
+let value = require(`${packagePath}/package.json`)[propertyName];
+
+console.log(value);
