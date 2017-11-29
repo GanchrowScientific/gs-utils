@@ -18,7 +18,8 @@
   "scripts": {
     "prepare": "scripts/post-install.sh",
     "test": "scripts/test.sh",
-    "clean": "rm -rf target lib"
+    "clean": "rm -rf target lib",
+    "prepublishOnly": "scripts/push-to-github.sh"
   },
   "devDependencies": {
     "@types/js-yaml": "3.9.0",
