@@ -2,7 +2,7 @@
 
 PROJECT_PATH="$(dirname $0)/../"
 
-VERSION=$(node ${PROJECT_PATH}scripts/get-version.js $PROJECT_PATH)
+VERSION=$(${PROJECT_PATH}scripts/get-version $PROJECT_PATH)
 
 echo Creating tag $VERSION
 git tag -f $VERSION
