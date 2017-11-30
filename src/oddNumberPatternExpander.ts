@@ -18,14 +18,14 @@ export function expand(numbersString: string): number[] {
     return [];
   }
   numbersPattern.lastIndex = 0;
-  let allIds = new Set();
+  let matches = new Set();
   let lastMatch;
   do {
     lastMatch = matchIteration(numbersString);
-    lastMatch.forEach(id => allIds.add(id));
+    lastMatch.forEach(id => matches.add(id));
   } while (lastMatch.length);
   numbersPattern.lastIndex = 0;
-  return Array.from(allIds).sort((x, y) => x - y).slice(0, MAX_EVENTS);
+  return Array.from(matches).sort((x, y) => x - y).slice(0, MAX_EVENTS);
 }
 
 function matchIteration(numbersString: string): number[] {
@@ -55,12 +55,12 @@ function matchIteration(numbersString: string): number[] {
     secondNum -= 1;
   }
 
-  let eventIds = [];
+  let matches = [];
   for (let i = firstNum; i <= secondNum; i += 2) {
-    eventIds.push(i);
+    matches.push(i);
   }
 
-  return eventIds;
+  return matches;
 }
 
 function isEven(num: number): boolean {

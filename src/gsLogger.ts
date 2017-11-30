@@ -64,17 +64,17 @@ export interface MailerOptions {
 }
 
 const MAILER_DEFAULTS: MailerOptions = {
+  to: 'Admin <admin@example.com>',
+  from: 'System <system@example.com>',
   minLogLevel: Level.FATAL,
-  from: 'System <system@ganchrow.com>',
-  to: 'Admin <admin@ganchrow.com>',
   subjectPrefix: 'Log notification'
 };
 
 // To set up email, invoke the following method:
 //
 // setUpMailer({
-//   to: 'Admin <admin@ganchrow.com>',
-//   from: 'System <system@ganchrow.com>',
+//   to: 'Admin <admin@example.com>',
+//   from: 'System <system@example.com>',
 //   subjectPrefix: 'Log notification',
 //   minLogLevel: Level.FATAL
 // });

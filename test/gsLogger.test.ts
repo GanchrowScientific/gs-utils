@@ -248,8 +248,8 @@ module.exports = {
 
     test.strictEqual(sendMailSpy.callCount, 1);
     test.deepEqual(sendMailSpy.firstCall.args[0], {
-      from: 'System <system@ganchrow.com>',
-      to: 'Admin <admin@ganchrow.com>',
+      from: 'System <system@example.com>',
+      to: 'Admin <admin@example.com>',
       subject: 'Log notification: FATAL',
       text: `FATAL [NotADate #${process.pid}] mailer --- a fatal message`
     });
