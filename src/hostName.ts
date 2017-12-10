@@ -3,6 +3,7 @@
 'use strict';
 
 import * as os from 'os';
+import * as ph from 'parse-hosts';
 
 export function getNetworkIP(): string {
   try {
@@ -21,7 +22,7 @@ function isExactMatchWrap(item: any): (otherItem: any) => boolean {
 }
 
 function possibleLocalHostNames(): any[] {
-  return ['localhost', '127.0.0.1', os.hostname(), getNetworkIP()];
+  return ['localhost', '127.0.0.1', os.hostname(), getNetworkIP()].concat((ph.get() || {})['127.0.0.1']);
 }
 
 export function isRemoteHost(host: any): boolean {
