@@ -6,6 +6,34 @@ import 'source-map-support/register';
 import * as nodeunit from 'nodeunit';
 import {lowercaseArguments} from '../../src/decorators/lowercaseArguments';
 
+class Mock {
+
+  constructor(private test: nodeunit.Test) { /**/ }
+
+
+  @lowercaseArguments
+  public testStringMethod(a: string, b: string) {
+    this.test.strictEqual(a, a.toLowerCase());
+    this.test.strictEqual(b, b.toLowerCase());
+    this.test.done();
+  }
+
+  @lowercaseArguments
+  public testNoModificationsMethod(a: number, b: number[], c: string[]) {
+    this.test.strictEqual(a, a);
+    this.test.deepEqual(b, b);
+    this.test.deepEqual(c, c);
+    this.test.done();
+  }
+
+  @lowercaseArguments
+  public testNoArguments() {
+    this.test.strictEqual(arguments.length, 0);
+    this.test.done();
+  }
+
+}
+
 module.exports = {
   setUp(callback) {
     callback();
@@ -45,30 +73,3 @@ module.exports = {
   }
 };
 
-class Mock {
-
-  constructor(private test: nodeunit.Test) { /**/ }
-
-
-  @lowercaseArguments
-  public testStringMethod(a: string, b: string) {
-    this.test.strictEqual(a, a.toLowerCase());
-    this.test.strictEqual(b, b.toLowerCase());
-    this.test.done();
-  }
-
-  @lowercaseArguments
-  public testNoModificationsMethod(a: number, b: number[], c: string[]) {
-    this.test.strictEqual(a, a);
-    this.test.deepEqual(b, b);
-    this.test.deepEqual(c, c);
-    this.test.done();
-  }
-
-  @lowercaseArguments
-  public testNoArguments() {
-    this.test.strictEqual(arguments.length, 0);
-    this.test.done();
-  }
-
-}

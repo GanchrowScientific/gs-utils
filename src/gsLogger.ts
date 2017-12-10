@@ -34,20 +34,6 @@ const transporter = nodemailer.createTransport({
 
 let globalLogLevel = DEFAULT_LOG_LEVEL;
 
-export function setGlobalLogLevel(logLevel: Level | string) {
-  let logLevelEnum: Level;
-  if (Level.hasOwnProperty(logLevel.toString())) {
-    logLevelEnum = Number.isNaN(Number.parseInt(<any>logLevel, 10)) ? Level[logLevel] : logLevel;
-  } else {
-    throw new Error(`Invalid default log level ${logLevel}.\nValid levels are ${levelString()}.`);
-  }
-  globalLogLevel = logLevelEnum;
-}
-
-export function getLogger(label: string, logLevel?: Level, maxDebugMessageLength?: number): Logger {
-  return new Logger(label, logLevel, maxDebugMessageLength);
-}
-
 export interface LoggerOptions {
   maxLength?: number;
   logPrefix?: string;
@@ -69,20 +55,6 @@ const MAILER_DEFAULTS: MailerOptions = {
   minLogLevel: Level.FATAL,
   subjectPrefix: 'Log notification'
 };
-
-// To set up email, invoke the following method:
-//
-// setUpMailer({
-//   to: 'Admin <admin@example.com>',
-//   from: 'System <system@example.com>',
-//   subjectPrefix: 'Log notification',
-//   minLogLevel: Level.FATAL
-// });
-//
-// Installs the email transport
-export function setUpMailer(mailerOptions: MailerOptions = MAILER_DEFAULTS) {
-  Logger.mailerOptions = Object.assign({}, MAILER_DEFAULTS, mailerOptions);
-}
 
 export class Logger {
   public static defaultLogLevel: Level = DEFAULT_LOG_LEVEL;
@@ -238,4 +210,32 @@ export class Logger {
         defaultMailerOptions && defaultMailerOptions.minLogLevel || globalLogLevel
     );
   }
+}
+
+// To set up email, invoke the following method:
+//
+// setUpMailer({
+//   to: 'Admin <admin@example.com>',
+//   from: 'System <system@example.com>',
+//   subjectPrefix: 'Log notification',
+//   minLogLevel: Level.FATAL
+// });
+//
+// Installs the email transport
+export function setUpMailer(mailerOptions: MailerOptions = MAILER_DEFAULTS) {
+  Logger.mailerOptions = Object.assign({}, MAILER_DEFAULTS, mailerOptions);
+}
+
+export function setGlobalLogLevel(logLevel: Level | string) {
+  let logLevelEnum: Level;
+  if (Level.hasOwnProperty(logLevel.toString())) {
+    logLevelEnum = Number.isNaN(Number.parseInt(<any>logLevel, 10)) ? Level[logLevel] : logLevel;
+  } else {
+    throw new Error(`Invalid default log level ${logLevel}.\nValid levels are ${levelString()}.`);
+  }
+  globalLogLevel = logLevelEnum;
+}
+
+export function getLogger(label: string, logLevel?: Level, maxDebugMessageLength?: number): Logger {
+  return new Logger(label, logLevel, maxDebugMessageLength);
 }

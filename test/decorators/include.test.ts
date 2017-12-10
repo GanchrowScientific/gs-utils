@@ -48,14 +48,6 @@ module.exports = {
   }
 };
 
-function createBar() {
-  return new Bar();
-}
-
-function createFoobar() {
-  return new Foobar();
-}
-
 class Shabaz {
   get shabaz() { return 5; }
   get common() { return 5; }
@@ -107,3 +99,12 @@ class Foobar {
     /**/
   }
 }
+
+function createBar() {
+  return new Bar();
+}
+
+function createFoobar() {
+  return new Foobar();
+}
+

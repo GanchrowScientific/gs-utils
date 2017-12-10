@@ -13,36 +13,6 @@ const FIRST_NAME_VAL = 'Leonhard';
 const LAST_NAME_VAL = 'Euler';
 const FUNC_VAL = 'Gamma';
 
-module.exports = {
-  setUp(callback) {
-    this.clTarget = new ClassifyTarget();
-    this.clFuncTarget = new ClassifyFuncTarget();
-    this.clTargetEmpty = new ClassifyTargetWithEmpty();
-    this.originalLog = console.log;
-    console.log = sinon.spy();
-    callback();
-  },
-
-  testClassify(test: nodeunit.Test) {
-    test.strictEqual(this.clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
-    test.strictEqual(this.clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
-    test.done();
-  },
-
-  testClassifyWithMissingKey(test: nodeunit.Test) {
-    delete this.clTarget.first_name;
-    test.strictEqual(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
-    test.strictEqual((<sinon.SinonSpy>console.log).callCount, 1);
-    test.ok((<sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
-    test.done();
-  },
-
-  tearDown(callback) {
-    console.log = this.originalLog;
-    callback();
-  }
-};
-
 @classify('id', 'last_name')
 class ClassifyTarget {
   get id() {
@@ -92,3 +62,33 @@ class ClassifyFuncTarget {
     return FUNC_VAL;
   }
 }
+
+module.exports = {
+  setUp(callback) {
+    this.clTarget = new ClassifyTarget();
+    this.clFuncTarget = new ClassifyFuncTarget();
+    this.clTargetEmpty = new ClassifyTargetWithEmpty();
+    this.originalLog = console.log;
+    console.log = sinon.spy();
+    callback();
+  },
+
+  testClassify(test: nodeunit.Test) {
+    test.strictEqual(this.clTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL].join(':'));
+    test.strictEqual(this.clFuncTarget[S_CLASSIFY], [ID_VAL, LAST_NAME_VAL, FUNC_VAL].join(':'));
+    test.done();
+  },
+
+  testClassifyWithMissingKey(test: nodeunit.Test) {
+    delete this.clTarget.first_name;
+    test.strictEqual(this.clTargetEmpty[S_CLASSIFY], '271828:<MISSING>');
+    test.strictEqual((<sinon.SinonSpy>console.log).callCount, 1);
+    test.ok((<sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
+    test.done();
+  },
+
+  tearDown(callback) {
+    console.log = this.originalLog;
+    callback();
+  }
+};

@@ -293,7 +293,7 @@ module.exports = {
 
     let mockError = {};
     try {
-      process.emit('uncaughtException', mockError);
+      (process as any).emit('uncaughtException', mockError);
     } catch (e) {
       test.strictEqual(e, mockError);
     }
@@ -338,7 +338,7 @@ module.exports = {
       'SendMailWithLoggerInstance',
       Level.INFO,
       _,
-      {transporter: transporterMock, mailerOptions: mailerOptions}
+      {transporter: transporterMock as any, mailerOptions: mailerOptions}
     );
 
     mockConsole.expects('log')
