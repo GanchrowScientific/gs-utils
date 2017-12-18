@@ -1,4 +1,4 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2017 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -8,11 +8,11 @@ export class ByteSizedChunker {
   private partial: Buffer;
 
   constructor(private bufferHeaderLength: number, private packFormat: string) {
-    this.partial = new Buffer(0);
+    this.partial = Buffer.alloc(0);
   }
 
   public prepare(data: Buffer|string, dataType = 'ascii'): Buffer {
-    let dataBuf = Buffer.isBuffer(data) ? data : new Buffer(data, dataType);
+    let dataBuf = Buffer.isBuffer(data) ? data : Buffer.from(data, dataType);
     return Buffer.concat([
       bufferpack.pack(this.packFormat, [dataBuf.length]),
       dataBuf
