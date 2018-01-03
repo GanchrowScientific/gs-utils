@@ -11,11 +11,39 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
-  leftDigit, convertArrayValuesToObject, deepEnsureObject} from '../src/utilities';
+  leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testPickKeys(test: nodeunit.Test) {
+    let obj: any = {foo: 5, bar: 7, shabaz: 10};
+    test.deepEqual(pickKeys(obj, 'foo', 'bar'), {foo: 5, bar: 7});
+    test.deepEqual(obj, {foo: 5, bar: 7, shabaz: 10});
+    obj = {foo: 5, bar: 7, shabaz: 10, deep: {hey: 9}};
+    let pickedObj = pickKeys(obj, 'foo', 'deep');
+    test.deepEqual(pickedObj, {foo: 5, deep: {hey: 9}});
+    test.deepEqual(obj, {foo: 5, bar: 7, shabaz: 10, deep: {hey: 9}});
+
+    // no reference
+    pickedObj.foo = 1;
+    test.strictEqual(obj.foo, 5);
+    pickedObj.deep.hey = 21;
+    test.strictEqual(obj.deep.hey, 9);
+    test.done();
+  },
+
+  testRejectKeys(test: nodeunit.Test) {
+    let obj: any = {foo: 5, bar: 7, shabaz: 10};
+    test.deepEqual(rejectKeys(obj, 'foo', 'bar'), {foo: 5, bar: 7});
+    test.deepEqual(obj, {shabaz: 10});
+    obj = {foo: 5, bar: 7, shabaz: 10, deep: {hey: 9}};
+    let pickedObj = rejectKeys(obj, 'foo', 'deep');
+    test.deepEqual(pickedObj, {foo: 5, deep: {hey: 9}});
+    test.deepEqual(obj, {bar: 7, shabaz: 10});
+    test.done();
   },
 
   testDeepEnsureObject(test: nodeunit.Test) {

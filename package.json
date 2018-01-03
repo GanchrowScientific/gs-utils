@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.5",
+  "version": "2.7.6",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -20,6 +20,7 @@
     "prepare": "scripts/post-install.sh",
     "test": "scripts/test.sh",
     "clean": "rm -rf target lib",
+    "unit": "node_modules/.bin/nodeunit",
     "prepublishOnly": "scripts/push-to-github.sh"
   },
   "devDependencies": {
@@ -32,7 +33,7 @@
     "gs-ts-lint": "1.2.0",
     "gs-typescript-config": "1.0.3",
     "istanbul": "0.4.2",
-    "nodeunit": "0.9.1",
+    "nodeunit": "^0.11.2",
     "proxyquire": "1.7.10",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",

@@ -294,6 +294,21 @@ export function convertArrayValuesToObject(obj: {[a: string]: any[]}): {[a: stri
   }, []);
 }
 
+export function rejectKeys<O, K extends keyof O>(obj: O, ...keys: K[]): Pick<O, K> {
+  return keys.reduce((o, k) => {
+    let val = obj[k];
+    delete obj[k];
+    return (o[k] = val, o);
+  }, {} as any);
+}
+
+export function pickKeys<O, K extends keyof O>(obj: O, ...keys: K[]): Pick<O, K> {
+  return keys.reduce((o, k) => {
+    let val = obj[k];
+    return (o[k] = isObject(val) ? dup(val) : val, o);
+  }, {} as any);
+}
+
 export const TYPEOF_UNDEFINED = 'undefined';
 export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
