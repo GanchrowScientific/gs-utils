@@ -33,7 +33,7 @@
     "gs-ts-lint": "1.2.0",
     "gs-typescript-config": "1.0.3",
     "istanbul": "0.4.2",
-    "nodeunit": "^0.11.2",
+    "nodeunit": "0.11.2",
     "proxyquire": "1.7.10",
     "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
