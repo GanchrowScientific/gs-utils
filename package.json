@@ -2,7 +2,7 @@
   "name": "gs-utils",
   "description": "Node utilities.",
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.6",
+  "version": "2.7.7",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -12,7 +12,6 @@
     "nodemailer": "4.0.1",
     "parse-hosts": "1.0.1",
     "rxjs": "5.4.0",
-    "shasum": "1.0.2",
     "source-map-support": "0.4.0"
   },
   "license": "MIT",
