@@ -10,14 +10,11 @@ mkdir -p target
 mkdir -p target/test-reports
 
 echo Copying test resources to target folder
-rm -rf target/dist/test/resources target/dist/integration-test/resources
 cp -r test/resources target/dist/test/
-cp -r integration-test/resources target/dist/integration-test/
 
 NODEUNIT="node_modules/.bin/nodeunit"
 NUOPTS="--reporter junit --output target/test-reports"
 TESTDIR="target/dist/test"
-INTTESTDIR="target/dist/integration-test"
 ALL_RESULTS=0
 ERROR_MESSAGE=""
 FAILURES=0
@@ -43,7 +40,6 @@ runTests() {
 }
 
 runTests $TESTDIR
-runTests $INTTESTDIR
 
 if [[ "$FAILURES" -gt 1 ]]; then
   TEST+='s'
