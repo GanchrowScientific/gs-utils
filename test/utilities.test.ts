@@ -11,11 +11,31 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
-  leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys} from '../src/utilities';
+  leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys,
+  isNumber, isString, isUndefined, isFunction, NOOP} from '../src/utilities';
 
 module.exports = {
   setUp: function (callback) {
     callback();
+  },
+
+  testIs(test: nodeunit.Test) {
+    test.ok(isNumber(5));
+    test.ok(isNumber(-115));
+    test.ok(isNumber(NaN));
+    test.ok(!(['5', 'hey', NOOP, undefined, null, {}, []].every(isNumber)));
+    test.ok(isString('hey'));
+    test.ok(isString('123'));
+    test.ok(isString(''));
+    test.ok(!([5, NaN, NOOP, undefined, null, {}, []].every(isString)));
+    test.ok(isUndefined(undefined));
+    test.ok(!([5, NaN, NOOP, null, {}, [], 'hey', ''].every(isUndefined)));
+    test.ok(isFunction(NOOP));
+    test.ok(isFunction(isJSON));
+    test.ok(isFunction(SimpleStore));
+    test.ok(isFunction(deepFreeze));
+    test.ok(![5, NaN, undefined, null, 'hey', {}, []].every(isFunction));
+    test.done();
   },
 
   testPickKeys(test: nodeunit.Test) {

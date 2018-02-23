@@ -2,6 +2,13 @@
 
 'use strict';
 
+export const TYPEOF_UNDEFINED = 'undefined';
+export const TYPEOF_NUMBER = 'number';
+export const TYPEOF_STRING = 'string';
+export const TYPEOF_OBJECT = 'object';
+export const TYPEOF_FUNCTION = 'function';
+export const NOOP = () => { /**/ };
+
 export type Bing = string | Buffer;
 
 export type ParsedJson = any;
@@ -94,15 +101,23 @@ export function toArray<T>(obj?: T[] | T): T[] {
 }
 
 export function isFunction(fn: any): boolean {
-  return typeof fn === 'function';
+  return typeof fn === TYPEOF_FUNCTION;
 }
 
 export function isNumber(n: any): boolean {
-  return typeof n === 'number';
+  return typeof n === TYPEOF_NUMBER;
+}
+
+export function isString(s: any): boolean {
+  return typeof s === TYPEOF_STRING;
+}
+
+export function isUndefined(d: any): boolean {
+  return typeof d === TYPEOF_UNDEFINED;
 }
 
 export function isObject(obj: any): boolean {
-  return obj != null && typeof obj === 'object';
+  return obj != null && typeof obj === TYPEOF_OBJECT;
 }
 
 export function isStrictObject(obj: any): boolean {
@@ -309,8 +324,3 @@ export function pickKeys<O, K extends keyof O>(obj: O, ...keys: K[]): Pick<O, K>
   }, {} as any);
 }
 
-export const TYPEOF_UNDEFINED = 'undefined';
-export const TYPEOF_NUMBER = 'number';
-export const TYPEOF_STRING = 'string';
-export const TYPEOF_OBJECT = 'object';
-export const TYPEOF_FUNCTION = 'function';
