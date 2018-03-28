@@ -4,6 +4,8 @@
 import * as path from 'path';
 import {Type, Schema, DEFAULT_SAFE_SCHEMA} from 'js-yaml';
 
+import {RangeExclusive, RangeInclusive} from './range';
+
 class Range extends Type {
   constructor() {
     super('!range', {
@@ -17,59 +19,12 @@ class Range extends Type {
   protected transform(v: string): any {
     v = String(v);
     if (/^-*[0-9.]+\.\.\.-*[0-9.]+/.test(v)) {
-      let [start, end, step] = this.getRangeArguments(v.split(','), '...');
-      return this.rangeExclusive(start, end, step);
+      return new RangeExclusive(v);
     }
     if (/^-*[.0-9]+\.\.-*[0-9.]+/.test(v)) {
-      let [start, end, step] = this.getRangeArguments(v.split(','), '..');
-      return this.rangeInclusive(start, end, step);
+      return new RangeInclusive(v);
     }
     return [];
-  }
-
-  private rangeInclusive(start: number, end: number, step?: number): number[] {
-    let array = [];
-    step = Number(step);
-    if (start < end && Math.abs(step || 1) > 0) {
-      step = Math.abs(step || 1);
-      for (let i = start; i <= end; i = i + step) {
-        array.push(i);
-      }
-      return array;
-    }
-    if (start > end && Math.abs(step || 1) > 0) {
-      step = Math.abs(step || 1);
-      for (let i = start; i >= end; i = i - step) {
-        array.push(i);
-      }
-      return array;
-    }
-    return [start];
-  }
-
-  private rangeExclusive(start: number, end: number, step?: number): number[] {
-    let array = [];
-    step = Number(step);
-    if (start < end && Math.abs(step || 1) > 0) {
-      step = Math.abs(step || 1);
-      for (let i = start + step; i < end; i = i + step) {
-        array.push(i);
-      }
-      return array;
-    }
-    if (start > end && Math.abs(step || 1) > 0) {
-      step = Math.abs(step || 1);
-      for (let i = start - step; i > end; i = i - step) {
-        array.push(i);
-      }
-      return array;
-    }
-    return [start];
-  }
-
-  private getRangeArguments(items: string[], splitter = '..'): number[] {
-    let [rawRange, step] = items;
-    return [...rawRange.split(splitter).map(Number), Number(step)];
   }
 }
 

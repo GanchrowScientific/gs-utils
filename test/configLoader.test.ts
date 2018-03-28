@@ -10,6 +10,8 @@ import * as yaml from 'js-yaml';
 
 import {ConfigLoader, loadConfig} from '../src/configLoader';
 
+import {dup} from '../src/utilities';
+
 module.exports = {
   testViewEnvironments(test: nodeunit.Test) {
     test.deepEqual(
@@ -167,8 +169,8 @@ module.exports = {
   testLoadExtensionsRange(test: nodeunit.Test) {
     let loader = new ConfigLoader();
     test.deepEqual(
-      loader.loadConfig(getCompletePath('configWithRangeExtension')),
-      {
+      dup(loader.loadConfig(getCompletePath('configWithRangeExtension'))),
+      dup({
         key1: 'hey',
         key2: {
           range: [1, 3, 5, 7, 9],
@@ -188,7 +190,7 @@ module.exports = {
         key5: {
           range: []
         }
-      }
+      })
     );
     test.done();
   },
