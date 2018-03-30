@@ -1,8 +1,9 @@
 {
   "name": "gs-utils",
   "description": "Node utilities.",
+  "keywords": ["system", "library", "utilities", "yaml", "config"],
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.12",
+  "version": "2.7.13",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
