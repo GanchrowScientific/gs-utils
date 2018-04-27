@@ -1,52 +1,44 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line in all test files to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper} from '../../src/jasmineTestWrapper';
 import {include} from '../../src/decorators/include';
 
-module.exports = {
-  setUp(callback) {
-    callback();
-  },
+const test = testWrapper.init(expect);
 
-  testBarInclude(test: nodeunit.Test) {
+describe('@include', () => {
+  it('should include bar', () => {
     let bar = createBar();
     test.strictEqual(bar.bar, 'bar');
     test.ok(!('foobar' in bar));
     test.strictEqual(bar.shabaz, 5);
     test.strictEqual(bar.shabazMethod(), 10);
     test.strictEqual(bar.poofMethod(), 'poof up in the air');
-    test.done();
-  },
+  });
 
-  testBarIncludeMethodOverride(test: nodeunit.Test) {
+  it('should include bar and override method', () => {
     let bar = createBar();
     test.strictEqual(bar.common(), 'COMMON');
-    test.done();
-  },
+  });
 
-  testFoobarInclude(test: nodeunit.Test) {
+  it('should include foobar', () => {
     let foobar = createFoobar();
     test.strictEqual(foobar.foobar, 'foobar');
     test.strictEqual(foobar.bar, 'bar');
     test.strictEqual(foobar.shabaz, 5);
     test.strictEqual(foobar.shabazMethod(), 10);
     test.strictEqual(foobar.poofMethod(), 'poof up in the air');
-    test.done();
-  },
+  });
 
-  testFoobarIncludeMethodOverride(test: nodeunit.Test) {
+  it('should include foobar and override method', () => {
     let foobar = createFoobar();
     test.strictEqual(foobar.common(), 'COMMON');
-    test.done();
-  },
-
-  tearDown(callback) {
-    callback();
-  }
-};
+  });
+});
 
 class Shabaz {
   get shabaz() { return 5; }

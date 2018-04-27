@@ -2,21 +2,20 @@
 
 'use strict';
 
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
 
 import {between} from '../src/between';
 
-module.exports = {
-  testBetween(test: nodeunit.Test) {
-    test.ok(between(2, 1, 3));
-    test.ok(!between(2, 2, 3));
-    test.ok(!between(3, 2, 3));
+describe('between', () => {
+  it('should be between', () => {
+    expect(between(2, 1, 3)).toBe(true);
+    expect(!between(2, 2, 3)).toBe(true);
+    expect(!between(3, 2, 3)).toBe(true);
     [50, 500, 5000, 50000].forEach(n => {
       let iterations = 100;
       while (iterations--) {
-        test.ok(between(Math.random() * n + n, n, n * 2));
+        expect(between(Math.random() * n + n, n, n * 2)).toBe(true);
       }
     });
-    test.done();
-  }
-};
+  });
+});

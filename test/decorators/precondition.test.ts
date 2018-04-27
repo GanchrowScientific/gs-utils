@@ -4,9 +4,13 @@
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper} from '../../src/jasmineTestWrapper';
 
 import {precondition} from '../../src/decorators/precondition';
+
+const test = testWrapper.init(expect);
 
 class Datastore {
 
@@ -38,13 +42,12 @@ class Datastore {
   }
 }
 
-module.exports = {
-  setUp(cb: nodeunit.ICallbackFunction) {
+describe('@precondition', () => {
+  beforeEach(() => {
     this.store = new Datastore();
-    cb();
-  },
+  });
 
-  testStoreValue(test: nodeunit.Test) {
+  it('should test precondition and throw', () => {
     test.throws(() =>
       this.store.storeValue(null, 'hucairz'));
     test.throws(() =>
@@ -54,25 +57,27 @@ module.exports = {
     test.throws(() =>
       this.store.storeValue('hucairz', null));
     test.throws(() =>
-      this.store.storeValue('hucairz', undefined),
-`Function storeValue failed its precondition with args: [hucairz,].
-Reason: Key must be non-empty`);
+      this.store.storeValue('hucairz', undefined), new Error([
+        'Function storeValue failed its precondition with args: [hucairz,].',
+        'Reason: Value must be defined'
+      ].join('\n'))
+    );
 
     test.doesNotThrow(() =>
       this.store.storeValue('key', 1));
-    test.done();
-  },
+  });
 
-  testGetValue(test: nodeunit.Test) {
+  it('should test precondition and throw (2)', () => {
     this.store.storeValue('key', 1);
 
     test.strictEqual(1, this.store.getValue('key'));
 
     test.throws(() =>
-      this.store.getValue('hucairz'),
-`Function storeValue failed its precondition with args: [hucairz].
-Reason: Key does not exist in datastore`);
+      this.store.getValue('hucairz'), new Error([
+        'Function getValue failed its precondition with args: [hucairz].',
+        'Reason: Key does not exist in datastore'
+      ].join('\n'))
+    );
 
-    test.done();
-  }
-};
+  });
+});

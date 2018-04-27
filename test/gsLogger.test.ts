@@ -6,11 +6,16 @@ import 'source-map-support/register';
 
 import * as sinon from 'sinon';
 import * as pq from 'proxyquire';
-import * as nodeunit from 'nodeunit';
 import * as chalk from 'chalk';
+
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
 
 import {Logger, getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
 from '../src/gsLogger';
+
+const test = testWrapper.init(expect);
 
 let proxyquire = pq.noPreserveCache();
 let mockConsole: sinon.SinonMock;
@@ -18,17 +23,21 @@ let originalISOString = Date.prototype.toISOString;
 let createTransportSpy: sinon.SinonStub;
 let sendMailSpy: sinon.SinonSpy;
 
-module.exports = {
-  setUp(callback) {
+describe('Logger', () => {
+  beforeEach(() => {
     setGlobalLogLevel(Level.DEBUG);
     mockConsole = sinon.mock(console);
     Date.prototype.toISOString = function () {
       return 'NotADate';
     };
-    callback();
-  },
+  });
 
-  testLogLevel(test: nodeunit.Test) {
+  afterEach(() => {
+    mockConsole.restore();
+    Date.prototype.toISOString = originalISOString;
+  });
+
+  it('should return log level', () => {
     let logger: any = getLogger('hucairz', Level.DEBUG);
     test.strictEqual(logger.logLevel, Level.DEBUG);
     test.strictEqual(logger.label, 'hucairz');
@@ -55,10 +64,9 @@ module.exports = {
     logger.fatal('fatal!');
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testPrefix(test: nodeunit.Test) {
+  it('should have prefix', () => {
     let logger: any = getLogger('hucairz');
     test.strictEqual(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] hucairz --- `);
 
@@ -66,10 +74,9 @@ module.exports = {
     test.strictEqual(logger.generatePrefix(Level.DEBUG), `DEBUG [NotADate #${process.pid}] other --- `);
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testColorMessage(test: nodeunit.Test) {
+  it('should color message', () => {
     let logger: any = getLogger('hucairz');
 
     test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.DEFAULT)), 'xxx');
@@ -77,10 +84,9 @@ module.exports = {
     test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.MEDIUM)), 'xxx');
     test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.STRONG)), 'xxx');
     test.strictEqual(chalk.stripColor(logger.colorMessage('xxx', Emphasis.VERY_STRONG)), 'xxx');
-    test.done();
-  },
+  });
 
-  testNonString(test: nodeunit.Test) {
+  it('should handle non strings', () => {
     let logger: any = getLogger('hucairz', Level.DEBUG);
     let obj = generateObject();
     let maxDebugMessageLength = logger.maxDebugMessageLength;
@@ -99,10 +105,9 @@ module.exports = {
     logger.info(null);
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testMaxDebugMessageLength(test: nodeunit.Test) {
+  it('should have max debug message length', () => {
     let logger: any = getLogger('hucairz', Level.DEBUG, 1);
     test.strictEqual(logger.maxDebugMessageLength, 1);
 
@@ -121,10 +126,9 @@ module.exports = {
     logger.info('XXX');
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testLoggerOptions(test: nodeunit.Test) {
+  it('should handle logger options', () => {
     let logger: any = getLogger('hucairz', Level.DEBUG);
     test.strictEqual(logger.logLevel, Level.DEBUG);
     test.strictEqual(logger.label, 'hucairz');
@@ -162,10 +166,9 @@ module.exports = {
     logger.debug('empty options', {});
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testStringify(test: nodeunit.Test) {
+  it('should stringify', () => {
     let logger: any = getLogger('hucairz');
     let e = new Error('message');
     let obj = { a: 123 };
@@ -175,11 +178,9 @@ module.exports = {
     test.strictEqual(logger.stringify(1), '1');
     test.strictEqual(logger.stringify(obj, 3), JSON.stringify(obj).substr(0, 3));
     test.strictEqual(logger.stringify(obj, -1), JSON.stringify(obj));
+  });
 
-    test.done();
-  },
-
-  testSetGlobalLogLevelEnum(test: nodeunit.Test) {
+  it('should set global enum log level', () => {
     let logger = getLogger('hucairz', Level.WARN);
     mockConsole.expects('log').twice();
 
@@ -193,10 +194,9 @@ module.exports = {
     logger.warn('hi');
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testSetGlobalLogLevelString(test: nodeunit.Test) {
+  it('should set global string log level', () => {
     let logger = getLogger('hucairz', Level.WARN);
     mockConsole.expects('log').twice();
 
@@ -209,14 +209,19 @@ module.exports = {
     setGlobalLogLevel('WARN');
     logger.warn('hi');
 
-    test.throws(() => setGlobalLogLevel('NOTALOGLEVEL'), Error, 'Invalid default log level NOTALOGLEVEL');
-    test.throws(() => setGlobalLogLevel(<any>false), Error, 'Invalid default log level false');
+    test.throws(() => setGlobalLogLevel('NOTALOGLEVEL'), new Error([
+      'Invalid default log level NOTALOGLEVEL.',
+      'Valid levels are DEBUG, INFO, WARN, ERROR, FATAL, NONE.'
+    ].join('\n')));
+    test.throws(() => setGlobalLogLevel(<any>false), new Error([
+      'Invalid default log level false.',
+      'Valid levels are DEBUG, INFO, WARN, ERROR, FATAL, NONE.'
+    ].join('\n')));
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testSuppressTag(test: nodeunit.Test) {
+  it('should suppress tag', () => {
     let logger = getLogger('hucairz', Level.DEBUG);
 
     mockConsole.expects('log').withExactArgs(`DEBUG [NotADate #${process.pid}] hucairz --- with tag`);
@@ -226,11 +231,9 @@ module.exports = {
     logger.debug('suppress tag', { suppressTag: true });
 
     mockConsole.verify();
-    test.done();
+  });
 
-  },
-
-  testSetUpEmailWithDefaults(test: nodeunit.Test) {
+  it('should setup email with defaults', () => {
     let module = createMocks();
     test.strictEqual(createTransportSpy.callCount, 1);
     test.deepEqual(createTransportSpy.firstCall.args, [{
@@ -254,10 +257,9 @@ module.exports = {
       text: `FATAL [NotADate #${process.pid}] mailer --- a fatal message`
     });
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testSetUpEmailWithLogLevel(test: nodeunit.Test) {
+  it('should set up email with log level', () => {
     let module = createMocks();
     test.strictEqual(createTransportSpy.callCount, 1);
 
@@ -283,25 +285,21 @@ module.exports = {
       text: `WARN [NotADate #${process.pid}] mailer --- a warn message`
     });
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testInstallUncaughtExceptionLogger(test: nodeunit.Test) {
+  it('should install uncaught exception logger', () => {
+    // removes jasmine's uncaughtException handler
+    process.removeAllListeners('uncaughtException');
     let logger = getLogger('handler');
-    mockConsole.expects('log');
+    mockConsole.expects('log').exactly(1);
     logger.installUncaughtExceptionLogger();
 
-    let mockError = {};
-    try {
-      (process as any).emit('uncaughtException', mockError);
-    } catch (e) {
-      test.strictEqual(e, mockError);
-    }
+    let mockError = new Error('abc');
+    expect(() => (process as any).emit('uncaughtException', mockError)).toThrow(mockError);
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testInvokeCallback(test: nodeunit.Test) {
+  it('should invoke callback', () => {
     let label = 'invoke callback';
     let logger = getLogger(label, Level.DEBUG);
     let logMessage = 'test callback';
@@ -317,10 +315,9 @@ module.exports = {
     /* tslint:disable:no-console */
 
     mockConsole.verify();
-    test.done();
-  },
+  });
 
-  testSendMailWithLoggerInstance(test: nodeunit.Test) {
+  it('should send mail with logger instance', () => {
     let _ = undefined;
     let transporterMock = {
       sendMail: sinon.spy(),
@@ -370,15 +367,8 @@ module.exports = {
     });
 
     mockConsole.verify();
-    test.done();
-  },
-
-  tearDown(callback) {
-    mockConsole.restore();
-    Date.prototype.toISOString = originalISOString;
-    callback();
-  }
-};
+  });
+});
 
 function createMocks() {
   sendMailSpy = sinon.spy();

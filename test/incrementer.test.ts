@@ -1,32 +1,38 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
-
-import * as nodeunit from 'nodeunit';
-import * as sinon from 'sinon';
-
-import {createIncrementer} from '../src/incrementer';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-module.exports = {
-  setUp(cb) {
-    this.clock = sinon.useFakeTimers();
-    cb();
-  },
+import * as sinon from 'sinon';
 
-  testIncrementer(test: nodeunit.Test) {
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
+import {createIncrementer} from '../src/incrementer';
+
+const test = testWrapper.init(expect);
+
+describe('Incrementer', () => {
+  beforeEach(() => {
+    this.clock = sinon.useFakeTimers();
+  });
+
+  afterEach(() => {
+    this.clock.restore();
+  });
+
+  it('should be an incrementer', () => {
     let incrementer = createIncrementer();
     test.strictEqual(incrementer.get('hello'), 0);
     test.strictEqual(incrementer.incr('hello'), undefined);
     test.strictEqual(incrementer.get('hello'), 1);
     test.strictEqual(incrementer.clear('hello'), true);
     test.strictEqual(incrementer.get('hello'), 0);
-    test.done();
-  },
+  });
 
-  testIncrementer2(test: nodeunit.Test) {
+  it('should be another incrementer', () => {
     let incrementer = createIncrementer();
     test.strictEqual(incrementer.get('hello'), 0);
     test.strictEqual(incrementer.incr('hello', 2), undefined);
@@ -35,10 +41,9 @@ module.exports = {
     test.strictEqual(incrementer.get('hello'), -1);
     test.strictEqual(incrementer.clear('hello'), true);
     test.strictEqual(incrementer.get('hello'), 0);
-    test.done();
-  },
+  });
 
-  testIncrementerIdleTime(test: nodeunit.Test) {
+  it('should be an incrementer with idle time', () => {
     let incrementer = createIncrementer(10000, 30000);
     test.strictEqual(incrementer.incr('hello', 2), undefined);
     this.clock.tick(10000);
@@ -57,10 +62,9 @@ module.exports = {
     test.strictEqual(incrementer.get('hello1'), 0);
     test.strictEqual(incrementer.get('hello2'), 4);
     test.strictEqual(incrementer.get('hello3'), 5);
-    test.done();
-  },
+  });
 
-  testIncrementerIdleTime2(test: nodeunit.Test) {
+  it('should be another incrementer with idle time', () => {
     let incrementer = createIncrementer(10000, 30000);
     test.strictEqual(incrementer.incr('hello', 2), undefined);
     this.clock.tick(10000);
@@ -79,11 +83,5 @@ module.exports = {
     test.strictEqual(incrementer.get('hello1'), 0);
     test.strictEqual(incrementer.get('hello2'), 0);
     test.strictEqual(incrementer.get('hello3'), 5);
-    test.done();
-  },
-
-  tearDown(cb) {
-    this.clock.restore();
-    cb();
-  }
-};
+  });
+});

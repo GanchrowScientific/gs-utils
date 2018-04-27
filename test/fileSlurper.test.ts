@@ -3,59 +3,64 @@
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
 import * as path from 'path';
+
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
 
 import {FileSlurper} from '../src/fileSlurper';
 
-module.exports = {
-  testTextFileSlurp(test: nodeunit.Test) {
+const test = testWrapper.init(expect);
+
+describe('FileSlurper', () => {
+  it('should text file slurp', done => {
     let s = new FileSlurper(path.join(__dirname, 'resources/slurper/file1.txt'));
     let count = 0;
     s.slurp().subscribe(line => {
-      test.equal(line, `line${++count}`);
+      test.strictEqual(line, `line${++count}`);
     }, (err) => {
       test.ok(false, err);
-      test.done();
+      done();
     }, () => {
-      test.equal(count, 3);
-      test.done();
+      test.strictEqual(count, 3);
+      done();
     });
-  },
+  });
 
-  testTextFileSlurpSpecialSplitter(test: nodeunit.Test) {
+  it('should text file slurp special splitter', done => {
     let s = new FileSlurper(path.join(__dirname, 'resources/slurper/file3.txt'), ',');
     let count = 0;
     s.slurp().subscribe(line => {
-      test.equal(line, `line${++count}`);
+      test.strictEqual(line, `line${++count}`);
     }, (err) => {
       test.ok(false, err);
-      test.done();
+      done();
     }, () => {
-      test.equal(count, 3);
-      test.done();
+      test.strictEqual(count, 3);
+      done();
     });
-  },
+  });
 
-  testBinaryFileSlurp(test: nodeunit.Test) {
+  it('should binary file slurp', done => {
     let s = new FileSlurper(path.join(__dirname, 'resources/slurper/file2.txt.gz'));
     let count = 0;
     s.slurp().subscribe(line => {
-      test.equal(line, `line${++count + 3}`);
+      test.strictEqual(line, `line${++count + 3}`);
     }, (err) => {
       test.ok(false, err);
-      test.done();
+      done();
     }, () => {
-      test.equal(count, 3);
-      test.done();
+      test.strictEqual(count, 3);
+      done();
     });
-  },
+  });
 
-  testIsBinary(test: nodeunit.Test) {
+  it('should return is binary', done => {
     let s: any = new FileSlurper('xxx.gz');
     test.ok(s.isBinary);
     s = new FileSlurper('xxx.txt');
     test.ok(!s.isBinary);
-    test.done();
-  }
-};
+    done();
+  });
+});

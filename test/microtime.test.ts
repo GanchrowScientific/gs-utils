@@ -1,12 +1,16 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
 
 import {now, initialTime} from '../src/microtime';
+
+const test = testWrapper.init(expect);
 
 let oldProcessHr = process.hrtime;
 let nanos = 0;
@@ -14,16 +18,19 @@ let secondIncrement = 0;
 let initialSeconds = Math.ceil(initialTime / 1e6);
 let initialMicros = initialTime % 1e6;
 
-module.exports = {
-  setUp(cb) {
+describe('microtime', () => {
+  beforeEach(() => {
     process.hrtime = () => [
       secondIncrement,
       initialMicros * 1e3 + nanos
     ];
-    cb();
-  },
+  });
 
-  testMicroTime(test: nodeunit.Test) {
+  afterEach(() => {
+    process.hrtime = oldProcessHr;
+  });
+
+  it('should do microtime', () => {
     const timeIncrement = 200;
 
     let prevTime = 0;
@@ -39,11 +46,5 @@ module.exports = {
       }
       secondIncrement += timeIncrement;
     }
-    test.done();
-  },
-
-  tearDown(cb) {
-    process.hrtime = oldProcessHr;
-    cb();
-  }
-};
+  });
+});

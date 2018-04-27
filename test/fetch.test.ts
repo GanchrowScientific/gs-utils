@@ -4,12 +4,16 @@
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
 
 import {Fetch} from '../src/fetch';
 
-module.exports = {
-  testFetch(test: nodeunit.Test) {
+const test = testWrapper.init(expect);
+
+describe('Fetch', () => {
+  it('should fetch', () => {
     let fetcher = new Fetch({
       values: {
         key: 5,
@@ -22,6 +26,5 @@ module.exports = {
     test.strictEqual(fetcher.fetch('key1'), 6);
     test.strictEqual(fetcher.fetch('key2'), 7);
     test.strictEqual(fetcher.fetch('key3'), 99);
-    test.done();
-  }
-};
+  });
+});

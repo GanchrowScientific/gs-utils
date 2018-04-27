@@ -1,59 +1,58 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+
+import * as bufferpack from 'bufferpack';
+
+import 'jasmine';
 
 import {ByteSizedChunker} from '../src/byteSizedChunker';
-import * as bufferpack from 'bufferpack';
+import {testWrapper} from '../src/jasmineTestWrapper';
+
+const test = testWrapper.init(expect);
 
 let bsc: ByteSizedChunker, a: string[];
 let f = function(x) {
   a.push(x);
 };
 
-module.exports = {
-  setUp(cb) {
+describe('ByteSizedChunker', () => {
+  beforeEach(() => {
     bsc = new ByteSizedChunker(4, 'L>');
     a = [];
-    cb();
-  },
+  });
 
-  testPrepareMessage: function(test: nodeunit.Test) {
+  it('should prepare message', () => {
     test.deepEqual([bsc.prepare('test')],
       [Buffer.concat([new Buffer([0, 0, 0, 4]), new Buffer('test')])]
     );
-    test.done();
-  },
+  });
 
-  testPrepareMessageBuffer: function(test: nodeunit.Test) {
+  it('should prepare buffer message', () => {
     test.deepEqual([bsc.prepare(new Buffer('test'))],
       [Buffer.concat([new Buffer([0, 0, 0, 4]), new Buffer('test')])]
     );
-    test.done();
-  },
+  });
 
-  testChunkerOneFullMessage: function(test: nodeunit.Test) {
+  it('should chunk one full message', () => {
     // full message in one chunk
     bsc.forEachCompleteChunk(createASCIIMessages('msg1'), f);
     test.deepEqual(a, [new Buffer('msg1')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
-    test.done();
-  },
+  });
 
-  testChunkerTwoFullMessaages: function(test: nodeunit.Test) {
+  it('should chunk two messages', () => {
     // 2 full messages
     bsc.forEachCompleteChunk(createASCIIMessages('msg1', 'msg2'), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
+  });
 
-    test.done();
-  },
-
-  testChunkerOnePartialAndRest: function(test: nodeunit.Test) {
+  it('should chunk one partial and the rest', () => {
     // 1 partial message and rest of message later
     let msgs = createASCIIMessages('msg1');
     bsc.forEachCompleteChunk(msgs.slice(0, 5), f);
@@ -62,10 +61,9 @@ module.exports = {
     test.deepEqual(a, [new Buffer('msg1')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
 
-    test.done();
-  },
+  });
 
-  testChunkerOnePartialThenPartialAndNextThenRest: function(test: nodeunit.Test) {
+  it('should chunk one partial then partial and next rest', () => {
     // 1 partial message, 1.5 messages and rest
     let msgs = createASCIIMessages('msg1', 'msg2xx', 'msg3xxx');
     bsc.forEachCompleteChunk(msgs.slice(0, 6), f);
@@ -75,11 +73,9 @@ module.exports = {
     bsc.forEachCompleteChunk(msgs.slice(14), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2xx'), new Buffer('msg3xxx')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
+  });
 
-    test.done();
-  },
-
-  testChunkerTwoBytesThenRest: function(test: nodeunit.Test) {
+  it('should chunk two bytes then rest', () => {
     // first 2 bytes of message then rest
     let msgs = createASCIIMessages('msg1');
     bsc.forEachCompleteChunk(msgs.slice(0, 2), f);
@@ -87,11 +83,9 @@ module.exports = {
     bsc.forEachCompleteChunk(msgs.slice(2), f);
     test.deepEqual(a, [new Buffer('msg1')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
+  });
 
-    test.done();
-  },
-
-  testChunkerFullMessageTwoBytesThenRest: function(test: nodeunit.Test) {
+  it('should chunk full message two bytes then rest', () => {
     // full message, next 2 bytes then rest
     let msgs = createASCIIMessages('msg1', 'msg2');
     bsc.forEachCompleteChunk(msgs.slice(0, 10), f);
@@ -99,11 +93,9 @@ module.exports = {
     bsc.forEachCompleteChunk(msgs.slice(10), f);
     test.deepEqual(a, [new Buffer('msg1'), new Buffer('msg2')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
+  });
 
-    test.done();
-  },
-
-  testChunker8BitClean: function(test: nodeunit.Test) {
+  it('should chunk 8 bit clean', () => {
     let byteBuffer = new Buffer(6);
     byteBuffer[0] = 56;
     byteBuffer[1] = 66;
@@ -114,9 +106,8 @@ module.exports = {
     bsc.forEachCompleteChunk(createMessages(byteBuffer), f);
     test.deepEqual(a, [new Buffer('8BIT©')]);
     test.strictEqual((<any>bsc).partial.toString('utf8'), '');
-    test.done();
-  }
-};
+  });
+});
 
 function createASCIIMessages(...msgs: string[]): Buffer {
   return msgs.reduce((result: Buffer, msg: string) => {

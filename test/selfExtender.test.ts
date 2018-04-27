@@ -1,14 +1,19 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
 
 import {selfExtender} from '../src/selfExtender';
 
-module.exports = {
-  testArrayPropertiesInherited(test: nodeunit.Test) {
+import {testWrapper} from '../src/jasmineTestWrapper';
+
+const test = testWrapper.init(expect);
+
+describe('SelfExtender', () => {
+
+  it('should inherit array properties', () => {
     let config = {
         foo: {
           inherits: 'bar',
@@ -35,10 +40,9 @@ module.exports = {
 
     test.deepEqual(config, expectConfig);
 
-    test.done();
-  },
+  });
 
-  testArrayPropertiesInheritedNoOverwrite(test: nodeunit.Test) {
+  it('should inherit array properties and not overwrite', () => {
     let config = {
         foo: {
           inherits: 'bar',
@@ -66,10 +70,9 @@ module.exports = {
 
     test.deepEqual(config, expectConfig);
 
-    test.done();
-  },
+  });
 
-  testInheritsPropertyNotInherited(test: nodeunit.Test) {
+  it('should not inherit property', () => {
     let config = {
         foo: {
           inherits: 'bar',
@@ -95,11 +98,9 @@ module.exports = {
     // also test mutation
 
     test.deepEqual(config, expectConfig);
+  });
 
-    test.done();
-  },
-
-  testInheritsTargetNotInBlob(test: nodeunit.Test) {
+  it('should inherit target not in blob', () => {
     let config = {
         foo: {
           inherits: 'bar',
@@ -121,10 +122,9 @@ module.exports = {
 
     test.deepEqual(config, expectConfig);
 
-    test.done();
-  },
+  });
 
-  testNonObjectPropertiesInheritedOrder(test: nodeunit.Test) {
+  it('should handle non object properties', () => {
     let config = {
       bar: {
         inherits: ['a', 'b', 'c'],
@@ -177,10 +177,9 @@ module.exports = {
     test.deepEqual(config, expectConfig);
     test.ok(config !== expectConfig);
 
-    test.done();
-  },
+  });
 
-  testNonObjectPropertiesInherited(test: nodeunit.Test) {
+  it('should handle non object properties (2)', () => {
     let config = {
       foo: {
         inherits: ['a', 'b', 'c'],
@@ -260,10 +259,9 @@ module.exports = {
 
     test.deepEqual(nextConfig, nextExpectConfig);
 
-    test.done();
-  },
+  });
 
-  testObjectPropertiesInherited(test: nodeunit.Test) {
+  it('should handle object properties', () => {
     let config = {
       foo: {
         inherits: ['a', 'b', 'c'],
@@ -318,10 +316,9 @@ module.exports = {
 
     test.deepEqual(config, expectConfig);
 
-    test.done();
-  },
+  });
 
-  testObjectPropertiesInheritedSpecificInner(test: nodeunit.Test) {
+  it('should inherit inner object properties', () => {
     let config = {
       foo: {
         inherits: ['a', 'b', 'c'],
@@ -381,7 +378,6 @@ module.exports = {
 
     test.deepEqual(config, expectConfig);
 
-    test.done();
-  }
-};
+  });
+});
 

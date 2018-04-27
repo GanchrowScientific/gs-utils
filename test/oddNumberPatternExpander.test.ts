@@ -1,15 +1,18 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper} from '../src/jasmineTestWrapper';
 
 import * as oddNumberPatternExpander from '../src/oddNumberPatternExpander';
 
+const test = testWrapper.init(expect);
 
-module.exports = {
-  testExpand(test: nodeunit.Test) {
+describe('OddNumberPatternExpander', () => {
+  it('should expand', () => {
     test.deepEqual(oddNumberPatternExpander.expand(null), []);
     test.deepEqual(oddNumberPatternExpander.expand(''), []);
     test.deepEqual(oddNumberPatternExpander.expand('hucairz'), []);
@@ -50,6 +53,5 @@ module.exports = {
     test.deepEqual(oddNumberPatternExpander.expand('   10   xxxx.-    13xxx'), [9, 13]);
     test.deepEqual(oddNumberPatternExpander.expand('1-   10   xxxx.-    13xxx'), [1, 3, 5, 7, 9, 13]);
     test.deepEqual(oddNumberPatternExpander.expand('1.5.9.13'), [1, 3, 5, 9, 11, 13]);
-    test.done();
-  }
-};
+  });
+});

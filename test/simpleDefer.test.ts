@@ -1,39 +1,42 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
 
 import * as defer from '../src/simpleDefer';
 
-module.exports = {
-  testSimpleDefer(test: nodeunit.Test) {
+import {testWrapper} from '../src/jasmineTestWrapper';
+
+const test = testWrapper.init(expect);
+
+describe('simpleDefer', () => {
+  it('should resolve simple defer', done => {
     let deferred: defer.Deferred<number> = defer.defer();
     deferred.promise.then(res => {
       test.strictEqual(res, 5);
-      test.done();
+      done();
     }).catch(e => {
       test.ok(false, e);
-      test.done();
+      done();
     });
     deferred.resolve(5);
-  },
+  });
 
-  testSimpleDeferReject(test: nodeunit.Test) {
+  it('should reject simple defer', done => {
     let deferred: defer.Deferred<number> = defer.defer();
     deferred.promise.then(res => {
       test.ok(false);
-      test.done();
+      done();
     }).catch(e => {
       test.strictEqual(e.message, 'Howdy');
-      test.done();
+      done();
     });
     deferred.reject(new Error('Howdy'));
-  },
+  });
 
-  async testSimpleDeferAsyncSyntax(test: nodeunit.Test) {
+  it('should resolve simple defer async syntax', async done => {
     let deferred: defer.Deferred<number> = defer.defer();
     process.nextTick(() => {
       deferred.resolve(10);
@@ -44,11 +47,11 @@ module.exports = {
     } catch (e) {
       test.ok(false, e);
     } finally {
-      test.done();
+      done();
     }
-  },
+  });
 
-  async testSimpleDeferRejectAsyncSyntax(test: nodeunit.Test) {
+  it('should reject simple defer async syntax', async done => {
     let deferred: defer.Deferred<number> = defer.defer();
     process.nextTick(() => {
       deferred.reject(new Error('Partner!'));
@@ -60,8 +63,8 @@ module.exports = {
     } catch (e) {
       test.strictEqual(e.message, 'Partner!');
     } finally {
-      test.done();
+      done();
     }
-  }
-};
+  });
+});
 

@@ -1,11 +1,18 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper, JasmineExpectation} from '../src/jasmineTestWrapper';
+
 import {wrapAsync} from '../src/wrapAsync';
 
-module.exports = {
-  async testWrapAsync(test: nodeunit.Test) {
+const MODULE = {
+  setUp(cb) {
+    cb();
+  },
+
+  async testWrapAsync(test: JasmineExpectation) {
     let asyncCBFunction = (arg: any, cb: (err, res) => void) => {
       setTimeout(() => {
         cb(null, arg);
@@ -16,7 +23,7 @@ module.exports = {
     test.done();
   },
 
-  async testWrapAsyncMultiArgs(test: nodeunit.Test) {
+  async testWrapAsyncMultiArgs(test: JasmineExpectation) {
     let asyncCBFunction = (arg: any, arg1: any, cb: (err, res) => void) => {
       setTimeout(() => {
         cb(null, [arg, arg1]);
@@ -27,7 +34,7 @@ module.exports = {
     test.done();
   },
 
-  async testWrapAsyncError(test: nodeunit.Test) {
+  async testWrapAsyncError(test: JasmineExpectation) {
     let asyncCBFunction = (arg: any, arg1: any, cb: (err, res) => void) => {
       setTimeout(() => {
         cb(new Error('toasty'), [arg, arg1]);
@@ -43,3 +50,5 @@ module.exports = {
     test.done();
   }
 };
+
+testWrapper.run(MODULE, expect, 'wrapAsync');

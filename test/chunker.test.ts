@@ -1,14 +1,14 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
 
 import {Chunker} from '../src/chunker';
 
-module.exports = {
-  testChunker: function(test: nodeunit.Test) {
+describe('Chunker', () => {
+  it('should chunk things', () => {
     let c = new Chunker();
     let a = [];
     let f = function(x) {
@@ -22,8 +22,6 @@ module.exports = {
     c.forEachCompleteChunk('\n', f);
     c.forEachCompleteChunk('7\n', f);
     c.forEachCompleteChunk('\n', f);
-    test.strictEqual(a.toString(), ['1', '23', '4', '56', '7', ''].toString());
-
-    test.done();
-  }
-};
+    expect(a.toString()).toEqual(['1', '23', '4', '56', '7', ''].toString());
+  });
+});

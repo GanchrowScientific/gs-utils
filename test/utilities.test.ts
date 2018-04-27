@@ -1,10 +1,12 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
 import 'source-map-support/register';
 
-import * as nodeunit from 'nodeunit';
+import 'jasmine';
+
+import {testWrapper, JasmineExpectation} from '../src/jasmineTestWrapper';
 
 import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
@@ -14,12 +16,12 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys,
   isNumber, isString, isUndefined, isFunction, NOOP} from '../src/utilities';
 
-module.exports = {
+const MODULE = {
   setUp: function (callback) {
     callback();
   },
 
-  testIs(test: nodeunit.Test) {
+  testIs(test: JasmineExpectation) {
     test.ok(isNumber(5));
     test.ok(isNumber(-115));
     test.ok(isNumber(NaN));
@@ -38,7 +40,7 @@ module.exports = {
     test.done();
   },
 
-  testPickKeys(test: nodeunit.Test) {
+  testPickKeys(test: JasmineExpectation) {
     let obj: any = {foo: 5, bar: 7, shabaz: 10};
     test.deepEqual(pickKeys(obj, 'foo', 'bar'), {foo: 5, bar: 7});
     test.deepEqual(obj, {foo: 5, bar: 7, shabaz: 10});
@@ -55,7 +57,7 @@ module.exports = {
     test.done();
   },
 
-  testRejectKeys(test: nodeunit.Test) {
+  testRejectKeys(test: JasmineExpectation) {
     let obj: any = {foo: 5, bar: 7, shabaz: 10};
     test.deepEqual(rejectKeys(obj, 'foo', 'bar'), {foo: 5, bar: 7});
     test.deepEqual(obj, {shabaz: 10});
@@ -66,7 +68,7 @@ module.exports = {
     test.done();
   },
 
-  testDeepEnsureObject(test: nodeunit.Test) {
+  testDeepEnsureObject(test: JasmineExpectation) {
     let obj = {};
     test.deepEqual(deepEnsureObject(obj, ['foo', 'bar', 'baz', 'shabaz', '0']), {});
     test.deepEqual(obj, {
@@ -83,7 +85,7 @@ module.exports = {
     test.done();
   },
 
-  testConvertArrayValuesToObject(test: nodeunit.Test) {
+  testConvertArrayValuesToObject(test: JasmineExpectation) {
     test.deepEqual(convertArrayValuesToObject({foobar: [1, 2, 3], baz: [4, 5, 6]}), [
       {
         foobar: 1,
@@ -109,13 +111,13 @@ module.exports = {
     test.done();
   },
 
-  testSwapItems(test: nodeunit.Test) {
+  testSwapItems(test: JasmineExpectation) {
     test.deepEqual(swapItems([1, 2, 3]), [2, 1, 3]);
     test.deepEqual(swapItems([{hey: 5}, {ho: 6}]), [{ho: 6}, {hey: 5}]);
     test.done();
   },
 
-  testArrayPartition(test: nodeunit.Test) {
+  testArrayPartition(test: JasmineExpectation) {
     test.deepEqual(arrayPartition([1, 2, 3, 4], () => true), [[1, 2, 3, 4], []]);
     test.deepEqual(arrayPartition([1, 2, 3, 4], () => false), [[], [1, 2, 3, 4]]);
     test.deepEqual(arrayPartition(
@@ -125,7 +127,7 @@ module.exports = {
     test.done();
   },
 
-  testMultiArrayEvery(test: nodeunit.Test) {
+  testMultiArrayEvery(test: JasmineExpectation) {
     test.ok(multiArrayEvery([[1, 2, 3], [1, 3, 2]], 2));
     test.ok(multiArrayEvery([['foo', 'man', 'chu'], ['bob', 'man', 'bubba']], 'man', 1));
     test.ok(!multiArrayEvery([['hey', 'how', 'are', 'you'], ['i', 'am', 'fine']], 'chimp'));
@@ -135,7 +137,7 @@ module.exports = {
     test.done();
   },
 
-  testMultiArraySome(test: nodeunit.Test) {
+  testMultiArraySome(test: JasmineExpectation) {
     test.ok(multiArraySome([[1, 2, 3], [1, 3, 2]], 2));
     test.ok(multiArraySome([['foo', 'man', 'chu'], ['bob', 'mah', 'bubba']], 'man', 1));
     test.ok(!multiArraySome([['hey', 'how', 'are', 'you'], ['i', 'am', 'fine']], 'chimp'));
@@ -144,13 +146,13 @@ module.exports = {
     test.done();
   },
 
-  testIsStrictObject(test: nodeunit.Test) {
+  testIsStrictObject(test: JasmineExpectation) {
     test.ok(isStrictObject({}));
     test.ok(!isStrictObject([]));
     test.done();
   },
 
-  testEnsureObject(test: nodeunit.Test) {
+  testEnsureObject(test: JasmineExpectation) {
     let a = {foo: 5};
     let b = {foo: []};
     let c = {foo: {baz: 5}};
@@ -160,7 +162,7 @@ module.exports = {
     test.done();
   },
 
-  testHasAllPropertyValues(test: nodeunit.Test) {
+  testHasAllPropertyValues(test: JasmineExpectation) {
     test.ok(hasAllPropertyValues({ foo: 5, bar: 6 }, { foo: 5, bar: 6, baz: 7 }));
     test.ok(!hasAllPropertyValues({ foo: 5, bar: 6 }, { foo: 5, bar: 7, baz: 7 }));
     test.ok(hasAllPropertyValues([1, 2, 3], [1, 2, 3, 4]));
@@ -208,7 +210,7 @@ module.exports = {
     test.done();
   },
 
-  testFlattenArray(test: nodeunit.Test) {
+  testFlattenArray(test: JasmineExpectation) {
     test.deepEqual(flattenArray([1, 2]), [1, 2]);
     test.deepEqual(flattenArray([[1], 2]), [1, 2]);
     test.deepEqual(flattenArray([[1], [2]]), [1, 2]);
@@ -216,7 +218,7 @@ module.exports = {
     test.done();
   },
 
-  testStripAnyValues(test: nodeunit.Test) {
+  testStripAnyValues(test: JasmineExpectation) {
     let obj = { hey: 'mental', foo: 'sigfigs', a: 'bored', _id: 4 };
     test.deepEqual(stripAnyValues(obj, '_id'), {
       hey: 'mental', foo: 'sigfigs', a: 'bored'
@@ -228,7 +230,7 @@ module.exports = {
     test.done();
   },
 
-  testCaseInsensitiveBucket(test: nodeunit.Test) {
+  testCaseInsensitiveBucket(test: JasmineExpectation) {
     let is = new CaseInsensitiveBucket('Hos', 'aKa');
     test.ok(is.has('hos'));
     test.ok(is.has('Hos'));
@@ -240,25 +242,25 @@ module.exports = {
     test.done();
   },
 
-  testFetchSimpleStore(test: nodeunit.Test) {
+  testFetchSimpleStore(test: JasmineExpectation) {
     let ss = new SimpleStore();
     test.strictEqual(ss.fetch(5), 5);
     test.done();
   },
 
-  testStoreReturnValueSimpleStore(test: nodeunit.Test) {
+  testStoreReturnValueSimpleStore(test: JasmineExpectation) {
     let ss = new SimpleStore();
     test.strictEqual(ss.store(5, 7), 7);
     test.done();
   },
 
-  testStoreAndFetchSimpleStore(test: nodeunit.Test) {
+  testStoreAndFetchSimpleStore(test: JasmineExpectation) {
     let ss = new SimpleStore();
     test.strictEqual(ss.store(6, 3), ss.fetch(6));
     test.done();
   },
 
-  testBasicObject: function (test: nodeunit.Test) {
+  testBasicObject: function (test: JasmineExpectation) {
     let b = new BasicObject();
 
     test.strictEqual(typeof b, 'object');
@@ -269,11 +271,11 @@ module.exports = {
     test.done();
   },
 
-  testIsJSON: function (test: nodeunit.Test) {
-    test.throws(() => isJSON(5), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isJSON(null), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isJSON({}), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isJSON([]), 'Should throw -- Argument is neither string nor Buffer');
+  testIsJSON: function (test: JasmineExpectation) {
+    test.throws(() => isJSON(5), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isJSON(null), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isJSON({}), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isJSON([]), new TypeError('Argument is neither string nor Buffer'));
     test.ok(isJSON(JSON.stringify({ foobar: 5 })));
     test.ok(isJSON(JSON.stringify([1, 2, 3])));
     test.ok(!isJSON(JSON.stringify([1, 2, 3]) + '4'));
@@ -281,11 +283,11 @@ module.exports = {
     test.done();
   },
 
-  testIsXML: function (test: nodeunit.Test) {
-    test.throws(() => isXML(5), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isXML(null), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isXML({}), 'Should throw -- Argument is neither string nor Buffer');
-    test.throws(() => isXML([]), 'Should throw -- Argument is neither string nor Buffer');
+  testIsXML: function (test: JasmineExpectation) {
+    test.throws(() => isXML(5), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isXML(null), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isXML({}), new TypeError('Argument is neither string nor Buffer'));
+    test.throws(() => isXML([]), new TypeError('Argument is neither string nor Buffer'));
     test.ok(!isXML(JSON.stringify({ foobar: 5 })));
     test.ok(!isXML(JSON.stringify([1, 2, 3])));
     test.ok(!isXML('narwhals conveniently possess unmatched unicorn-like traits'));
@@ -300,7 +302,7 @@ module.exports = {
     test.done();
   },
 
-  testIsObject: function (test: nodeunit.Test) {
+  testIsObject: function (test: JasmineExpectation) {
     test.ok(isObject([]), 'isObject([]) === true');
     test.ok(isObject({}), 'isObject({}) === true');
     test.ok(!isObject('foo'), 'isObject(\'foo\') === false');
@@ -311,7 +313,7 @@ module.exports = {
     test.done();
   },
 
-  testToArray: function (test: nodeunit.Test) {
+  testToArray: function (test: JasmineExpectation) {
     let o = {};
     let ota = toArray(o);
 
@@ -326,7 +328,7 @@ module.exports = {
     test.done();
   },
 
-  testDeepFreeze: function (test: nodeunit.Test) {
+  testDeepFreeze: function (test: JasmineExpectation) {
     let o = { a: { b: [{}] } };
     deepFreeze(o);
     test.ok(Object.isFrozen(o.a.b[0]));
@@ -334,7 +336,7 @@ module.exports = {
     test.done();
   },
 
-  testDup: function (test: nodeunit.Test) {
+  testDup: function (test: JasmineExpectation) {
     // let o = { 5: 4, 3: 2, foobar: 'foobar', func: (function () { /**/ }) };
     // test.deepEqual(dup(o), { 5: 4, 3: 2, foobar: 'foobar' });
     // let p = new (function Test() {
@@ -353,7 +355,7 @@ module.exports = {
     test.done();
   },
 
-  testValuesAtCreate: function (test: nodeunit.Test) {
+  testValuesAtCreate: function (test: JasmineExpectation) {
     let o = { 1: 2, 3: 34, 5: 6 };
     let emptyThunk = valuesAtCreate();
     let partialValuesThunk = valuesAtCreate(5, 6);
@@ -374,7 +376,7 @@ module.exports = {
     test.done();
   },
 
-  testIsSameTypeOf: function (test: nodeunit.Test) {
+  testIsSameTypeOf: function (test: JasmineExpectation) {
     let undefinedType = isSameTypeOf(undefined);
     let objectType = isSameTypeOf({});
     let numberType = isSameTypeOf(1);
@@ -401,7 +403,7 @@ module.exports = {
     test.done();
   },
 
-  testAllArrayItemTypesMatch: function (test: nodeunit.Test) {
+  testAllArrayItemTypesMatch: function (test: JasmineExpectation) {
     test.ok(allArrayItemTypesMatch([0, 1, 2, 3]));
     test.ok(!allArrayItemTypesMatch([null, 0, 1]));
     test.ok(!allArrayItemTypesMatch([0, 'hey', null]));
@@ -412,7 +414,7 @@ module.exports = {
     test.done();
   },
 
-  testIsNumeric: function (test: nodeunit.Test) {
+  testIsNumeric: function (test: JasmineExpectation) {
     test.ok(isNumeric(4));
     test.ok(isNumeric(0));
     test.ok(isNumeric(-6));
@@ -436,7 +438,7 @@ module.exports = {
     test.done();
   },
 
-  testStringifyJSONNoEmptyArrays: function (test: nodeunit.Test) {
+  testStringifyJSONNoEmptyArrays: function (test: JasmineExpectation) {
     let emptyArray = [];
     let arrayOfEmptyArrays = [emptyArray, emptyArray];
     let arrayOfUndefineds = [undefined, undefined];
@@ -451,7 +453,7 @@ module.exports = {
     test.done();
   },
 
-  testLeftDigits(test: nodeunit.Test) {
+  testLeftDigits(test: JasmineExpectation) {
     test.strictEqual(leftDigit(7001, 2), 70);
     test.strictEqual(leftDigit(7001, 1), 7);
     test.strictEqual(leftDigit(95681, 4), 9568);
@@ -465,7 +467,7 @@ module.exports = {
     test.done();
   },
 
-  testArraysEquivalent(test: nodeunit.Test) {
+  testArraysEquivalent(test: JasmineExpectation) {
     let val1 = {};
     let val2 = {};
 
@@ -485,7 +487,7 @@ module.exports = {
     test.done();
   },
 
-  testArrayIsSubset(test: nodeunit.Test) {
+  testArrayIsSubset(test: JasmineExpectation) {
     test.ok(arrayIsSubset(null, null));
     test.ok(arrayIsSubset([], null));
     test.ok(arrayIsSubset(null, []));
@@ -505,3 +507,5 @@ module.exports = {
     callback();
   }
 };
+
+testWrapper.run(MODULE, expect, 'utilities');
