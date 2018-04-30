@@ -59,9 +59,10 @@ export const testWrapper = {
   },
   run(module: BasicTests & BasicTestsSetup, expect: jasmineExpect, desc = 'Test') {
     describe(desc, () => {
+      let ctx: any = {};
       if (module.setUp) {
         beforeEach(done => {
-          module.setUp(done);
+          module.setUp.call(ctx, done);
         });
       }
 
@@ -69,13 +70,13 @@ export const testWrapper = {
         let func = module[prop];
         it(`should ${prop}`, done => {
           let test = new JasmineExpectation(expect, done);
-          func(test);
+          func.call(ctx, test);
         });
       });
 
       if (module.tearDown) {
         afterEach(done => {
-          module.tearDown(done);
+          module.tearDown.call(ctx, done);
         });
       }
     });
