@@ -21,6 +21,10 @@ export class JasmineExpectation {
     this.expect(a).toBe(b);
   }
 
+  public notStrictEqual(a, b, ...args: any[]) {
+    this.expect(a).not.toBe(b);
+  }
+
   public throws(a, b?, ...args: any[]) {
     if (b) {
       this.expect(a).toThrow(b);
