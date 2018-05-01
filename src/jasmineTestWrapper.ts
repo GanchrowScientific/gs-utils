@@ -41,9 +41,9 @@ export class JasmineExpectation {
     }
   }
 
-  public done() {
+  public done(e?: Error) {
     if (this.jasmineDone) {
-      this.jasmineDone();
+      this.jasmineDone(e);
     }
   }
 }
