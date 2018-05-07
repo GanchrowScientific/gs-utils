@@ -4,28 +4,38 @@
 import {expect as jasmineExpect} from 'jasmine-core';
 
 export class JasmineExpectation {
+  private expectedTestCalls = 0;
   constructor(private expect: jasmineExpect, private jasmineDone?: Function) { /**/ }
   public ok(val, ...args: any[]) {
     this.expect(val).toBeTruthy();
   }
 
+  public expectCount(num: number) {
+    this.strictEqual(num, this.expectedTestCalls);
+  }
+
   public deepEqual(a, b, ...args: any[]) {
+    this.expectedTestCalls++;
     this.expect(a).toEqual(b);
   }
 
   public notDeepEqual(a, b, ...args: any[]) {
+    this.expectedTestCalls++;
     this.expect(a).not.toEqual(b);
   }
 
   public strictEqual(a, b, ...args: any[]) {
+    this.expectedTestCalls++;
     this.expect(a).toBe(b);
   }
 
   public notStrictEqual(a, b, ...args: any[]) {
+    this.expectedTestCalls++;
     this.expect(a).not.toBe(b);
   }
 
   public throws(a, b?, ...args: any[]) {
+    this.expectedTestCalls++;
     if (b) {
       this.expect(a).toThrow(b);
     } else {
@@ -34,6 +44,7 @@ export class JasmineExpectation {
   }
 
   public doesNotThrow(a, b?, ...args: any[]) {
+    this.expectedTestCalls++;
     if (b) {
       this.expect(a).not.toThrow(b);
     } else {
@@ -45,6 +56,7 @@ export class JasmineExpectation {
     if (this.jasmineDone) {
       this.jasmineDone(e);
     }
+    this.expectedTestCalls = 0;
   }
 }
 
