@@ -1,0 +1,17 @@
+flatten1: !flatten
+  - 1
+  - 2
+  - 3
+  - 4
+  - 8
+
+flatten2: !flatten
+  - [hey: dog]
+  - sunny: day
+  - [foo]
+
+flatten3: !flatten
+  - [[1]]
+  - [2]
+  - 3
+  - [['foo']]

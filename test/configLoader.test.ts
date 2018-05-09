@@ -197,6 +197,24 @@ describe('ConfigLoader', () => {
     test.throws(() => loader.loadConfig(getCompletePath('configWithBadRangeExtensionObject')));
   });
 
+  it('should load flatten extensions', () => {
+    let loader = new ConfigLoader();
+    test.deepEqual(loader.loadConfig(getCompletePath('configWithFlattenExtension')), {
+      flatten1: [1, 2, 3, 4, 8],
+      flatten2: [{hey: 'dog'}, {sunny: 'day'}, 'foo'],
+      flatten3: [[1], 2, 3, ['foo']]
+    });
+    test.done();
+  });
+
+  it('should load flatten extensions (bad)', () => {
+    let loader = new ConfigLoader();
+    test.throws(() => loader.loadConfig(getCompletePath('configWithFlattenExtensionBadNull')));
+    test.throws(() => loader.loadConfig(getCompletePath('configWithFlattenExtensionBadObject')));
+    test.throws(() => loader.loadConfig(getCompletePath('configWithFlattenExtensionBadScalar')));
+    test.done();
+  });
+
   it('should load path extension', () => {
     let loader = new ConfigLoader();
     test.deepEqual(loader.loadConfig(getCompletePath('configWithPathExtension')), {

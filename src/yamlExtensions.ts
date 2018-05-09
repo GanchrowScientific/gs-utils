@@ -1,11 +1,16 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import * as path from 'path';
 import {Type, Schema, DEFAULT_SAFE_SCHEMA} from 'js-yaml';
 
 import {RangeExclusive, RangeInclusive} from './range';
+import {flattenArray as flatten} from './utilities';
 
+/**
+ * A custom yaml type that converts a range into an array
+ * @type {Range}
+ */
 class Range extends Type {
   constructor() {
     super('!range', {
@@ -47,7 +52,25 @@ class Path extends Type {
   }
 }
 
+/**
+ * A custom yaml type that flattens yaml arrays, useful for merging in array configurations
+ * @type {Flatten}
+ */
+class Flatten extends Type {
+  constructor() {
+    super('!flatten', {
+      kind: 'sequence',
+      construct(data) {
+        return flatten(data);
+      },
+      resolve(data) {
+        return Array.isArray(data);
+      }
+    });
+  }
+}
+
 export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
-  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath) ]);
+  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath), new Flatten() ]);
 }

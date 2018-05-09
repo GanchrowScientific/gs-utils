@@ -1,0 +1,3 @@
+flatten: !flatten
+  hey: 5
+  foo: 6
