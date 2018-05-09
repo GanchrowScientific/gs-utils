@@ -13,3 +13,4 @@ gs-utils.sublime-workspace
 .vscode
 patch.diff
 package.yml
+package-lock.json
