@@ -1,9 +1,8 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
 import * as os from 'os';
-import * as ph from 'parse-hosts';
 
 export function getNetworkIP(): string {
   try {
@@ -22,7 +21,7 @@ function isExactMatchWrap(item: any): (otherItem: any) => boolean {
 }
 
 function possibleLocalHostNames(): any[] {
-  return ['localhost', '127.0.0.1', os.hostname(), getNetworkIP()].concat((ph.get() || {})['127.0.0.1']);
+  return ['localhost', '127.0.0.1', os.hostname(), getNetworkIP()];
 }
 
 export function isRemoteHost(host: any): boolean {
