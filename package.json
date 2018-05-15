@@ -9,7 +9,7 @@
     "config"
   ],
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.20",
+  "version": "2.7.21",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -37,13 +37,10 @@
     "@types/sinon": "4.1.0",
     "gs-ts-lint": "1.2.0",
     "gs-typescript-config": "1.0.3",
-    "istanbul": "0.4.2",
     "jasmine": "3.1.0",
     "jasmine-xml-reporter": "1.1.0",
     "proxyquire": "1.7.10",
-    "remap-istanbul": "0.5.1",
     "sinon": "1.17.4",
-    "temp": "0.8.3",
     "tslint": "5.8.0",
     "typescript": "2.6.1",
     "typescript-formatter": "7.0.0"
