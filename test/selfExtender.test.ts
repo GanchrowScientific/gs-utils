@@ -96,7 +96,6 @@ describe('SelfExtender', () => {
     test.deepEqual(selfExtender(config, ['array']), expectConfig);
 
     // also test mutation
-
     test.deepEqual(config, expectConfig);
   });
 
@@ -119,7 +118,6 @@ describe('SelfExtender', () => {
     test.deepEqual(selfExtender(config, ['array']), expectConfig);
 
     // also test mutation
-
     test.deepEqual(config, expectConfig);
 
   });
@@ -375,9 +373,267 @@ describe('SelfExtender', () => {
     test.deepEqual(selfExtender(config, null, 'inner'), expectConfig);
 
     // also test mutation
-
     test.deepEqual(config, expectConfig);
+  });
 
+  it('should handle long hierarchies out of order', () => {
+    let config = {
+      a: {
+        inherits: ['b'],
+        a: 1
+      },
+      b: {
+        inherits: ['c'],
+        b: 2
+      },
+      c: {
+        c: 3
+      }
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['b'],
+        a: 1,
+        b: 2,
+        c: 3
+      },
+      b: {
+        inherits: ['c'],
+        b: 2,
+        c: 3
+      },
+      c: {
+        c: 3
+      }
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle long hierarchies out of order2', () => {
+    let config = {
+      a: {
+        inherits: ['c'],
+        a: 1
+      },
+      b: {
+        inherits: ['a'],
+        b: 2
+      },
+      c: {
+        c: 3
+      }
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['c'],
+        a: 1,
+        c: 3,
+      },
+      b: {
+        inherits: ['a'],
+        a: 1,
+        b: 2,
+        c: 3,
+      },
+      c: {
+        c: 3
+      },
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle long hierarchies out of order3', () => {
+    let config = {
+      a: {
+        a: 1
+      },
+      b: {
+        inherits: ['a'],
+        b: 2
+      },
+      c: {
+        inherits: ['b'],
+        c: 3
+      }
+    };
+
+    let expectConfig = {
+      a: {
+        a: 1,
+      },
+      b: {
+        inherits: ['a'],
+        a: 1,
+        b: 2,
+      },
+      c: {
+        inherits: ['b'],
+        a: 1,
+        b: 2,
+        c: 3,
+      },
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle long hierarchies with multi-inheritance out of order', () => {
+    let config = {
+      a: {
+        inherits: ['c', 'b'],
+        a: 1
+      },
+      b: {
+        inherits: ['c2', 'c'],
+        b: 2
+      },
+      c: {
+        c: 3
+      },
+      c2: {
+        c: 4
+      }
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['c', 'b'],
+        a: 1,
+        b: 2,
+        c: 3
+      },
+      b: {
+        inherits: ['c2', 'c'],
+        b: 2,
+        c: 4
+      },
+      c: {
+        c: 3
+      },
+      c2: {
+        c: 4
+      }
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle extending self', () => {
+    let config = {
+      a: {
+        inherits: ['a'],
+        a: 1
+      },
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['a'],
+        a: 1,
+      }
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle cycle', () => {
+    let config = {
+      a: {
+        inherits: ['b'],
+        a: 1
+      },
+      b: {
+        inherits: ['a'],
+        b: 2
+      },
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['b'],
+        a: 1,
+        b: 2
+      },
+      b: {
+        inherits: ['a'],
+        a: 1,
+        b: 2,
+      },
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
+  });
+
+  it('should handle cycle in larger hierarchy', () => {
+    let config = {
+      a: {
+        inherits: ['b', 'e'],
+        a: 1
+      },
+      b: {
+        inherits: ['a', 'c'],
+        b: 2
+      },
+      c: {
+        inherits: ['d'],
+        c: 3
+      },
+      d: {
+        d: 4
+      },
+      e: {
+        e: 5
+      },
+    };
+
+    let expectConfig = {
+      a: {
+        inherits: ['b', 'e'],
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+        e: 5,
+      },
+      b: {
+        inherits: ['a', 'c'],
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+        // notice b does not have property 'e'
+      },
+      c: {
+        inherits: ['d'],
+        c: 3,
+        d: 4
+      },
+      d: {
+        d: 4
+      },
+      e: {
+        e: 5
+      }
+    };
+
+    expect(selfExtender(config)).toEqual(expectConfig);
+    // also test mutation
+    expect(config as any).toEqual(expectConfig);
   });
 });
-
