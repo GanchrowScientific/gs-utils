@@ -280,6 +280,18 @@ const MODULE = {
     test.ok(isJSON(JSON.stringify([1, 2, 3])));
     test.ok(!isJSON(JSON.stringify([1, 2, 3]) + '4'));
     test.ok(!isJSON('narwhals conveniently possess unmatched unicorn-like traits'));
+    test.ok(isJSON('false'));
+    test.ok(isJSON('true'));
+    test.ok(!isJSON('True'));
+    test.ok(!isJSON('TRUE'));
+    test.ok(!isJSON('FALSE'));
+    test.ok(!isJSON('False'));
+    test.ok(isJSON(Buffer.from('false')));
+    test.ok(isJSON(Buffer.from('true')));
+    test.ok(!isJSON(Buffer.from('True')));
+    test.ok(!isJSON(Buffer.from('TRUE')));
+    test.ok(!isJSON(Buffer.from('FALSE')));
+    test.ok(!isJSON(Buffer.from('False')));
     test.done();
   },
 

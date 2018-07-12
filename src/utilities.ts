@@ -1,4 +1,4 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -16,22 +16,27 @@ export type ParsedJson = any;
 export const isJSON = Object.defineProperties(function (str: Bing): boolean {
 
   if (typeof str === 'string') {
-
-    return (isJSON.BEGIN_OBJECT_JSON.test(str) && isJSON.END_OBJECT_JSON.test(str)) ||
+    return (str === 'false') || (str === 'true') ||
+      (isJSON.BEGIN_OBJECT_JSON.test(str) && isJSON.END_OBJECT_JSON.test(str)) ||
       (isJSON.BEGIN_ARRAY_JSON.test(str) && isJSON.END_ARRAY_JSON.test(str))
-      ;
+    ;
 
   } else if (str instanceof Buffer) {
 
-    return (str[0] === isJSON.BUFFER_BEGIN_OBJECT_JSON && str[str.length - 1] === isJSON.BUFFER_END_OBJECT_JSON) ||
+    return isJSON.isFalseBuffer(str) || isJSON.isTrueBuffer(str) ||
+      (str[0] === isJSON.BUFFER_BEGIN_OBJECT_JSON && str[str.length - 1] === isJSON.BUFFER_END_OBJECT_JSON) ||
       (str[0] === isJSON.BUFFER_BEGIN_ARRAY_JSON && str[str.length - 1] === isJSON.BUFFER_END_ARRAY_JSON)
-      ;
+    ;
 
   }
 
   throw new TypeError('Argument is neither string nor Buffer');
 },
   {
+    FALSE_BUFFER: { value: Buffer.from('false') },
+    TRUE_BUFFER: { value: Buffer.from('true') },
+    isFalseBuffer: { value: (buf: Buffer) => isJSON.FALSE_BUFFER.every((b, i) => b === buf[i]) },
+    isTrueBuffer: { value: (buf: Buffer) => isJSON.TRUE_BUFFER.every((b, i) => b === buf[i]) },
     BEGIN_OBJECT_JSON: { value: /^\{/ },
     END_OBJECT_JSON: { value: /\}$/ },
     BEGIN_ARRAY_JSON: { value: /^\[/ },
