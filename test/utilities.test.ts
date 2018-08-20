@@ -9,7 +9,7 @@ import 'jasmine';
 import {testWrapper, JasmineExpectation} from '../src/jasmineTestWrapper';
 
 import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
-  toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues,
+  toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues, safeSetProperty,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
@@ -512,6 +512,36 @@ const MODULE = {
     test.ok(arrayIsSubset([1, 2], [1, 2, 3]));
     test.ok(arrayIsSubset([2, 3, 5], [3, 5, 2]));
     test.ok(!arrayIsSubset([1, 2, 3], [1, 2]));
+    test.done();
+  },
+
+  testSafeSetProperty(test: JasmineExpectation) {
+    let obj = { };
+    expect(safeSetProperty(obj, 123, 'a')).toBe(true);
+    expect(obj).toEqual({ a: 123 });
+
+    obj = { a: 456 };
+    expect(safeSetProperty(obj, 123, 'a')).toBe(true);
+    expect(obj).toEqual({ a: 123 });
+
+    obj = { a: { b: {} } };
+    expect(safeSetProperty(obj, 123, 'a', 'b')).toBe(true);
+    expect(obj).toEqual({ a: { b: 123 } });
+
+    obj = { a: { b: {} } };
+    expect(safeSetProperty(obj, 123, 'a', 'b', 'c')).toBe(true);
+    expect(obj).toEqual({ a: { b: { c: 123 } } });
+
+    obj = { a: { } };
+    expect(safeSetProperty(obj, 123, 'a', 'b', 'c')).toBe(false);
+    expect(obj).toEqual({ a: {} });
+
+    expect(() => safeSetProperty(null, 123, 'a', 'b', 'c')).toThrow(new Error('Must supply an object'));
+    expect(() => safeSetProperty({}, 123)).toThrow(new Error('Must specify at least one field'));
+
+    expect(() => safeSetProperty(undefined, 123, 'a', 'b', 'c')).toThrow(new Error('Must supply an object'));
+    expect(() => safeSetProperty({}, 123)).toThrow(new Error('Must specify at least one field'));
+
     test.done();
   },
 

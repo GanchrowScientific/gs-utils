@@ -152,6 +152,35 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
+/**
+ * Deeply sets a value on an object if the list of nested fields exist.
+ * The nested objects will be recursivey traversed in the order specified by
+ * the parameters. If none of the objects are missing, the final value will
+ * be set.
+ *
+ * @param  {Object}     obj object to set value on
+ * @param  {any}        val the value to set
+ * @param  {(string |   number)[]}   ...fields  the list of fields to traverse in order to set the value
+ * @return {boolean}        true if the field set exists on the object. false otherwise.
+ */
+export function safeSetProperty(obj: Object, val: any, ...fields: (string | number)[]): boolean {
+  if (fields.length === 0) {
+    throw new Error('Must specify at least one field');
+  }
+  if (typeof obj === 'undefined' || obj === null) {
+    throw new Error('Must supply an object');
+  }
+  while (fields.length > 1) {
+    let field = fields.shift();
+    obj = obj[field];
+    if (typeof obj === 'undefined') {
+      return false;
+    }
+  }
+  obj[fields.shift()] = val;
+  return true;
+}
+
 export function dup<T>(obj: T, ignoreKeys: string[] = []): ParsedJson {
   let cb = (k, v) => {
     if (ignoreKeys.includes(k)) {
