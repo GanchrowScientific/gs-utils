@@ -82,13 +82,20 @@ export const testWrapper = {
         });
       }
 
-      Object.keys(module).filter(prop => prop.startsWith('test')).forEach(prop => {
+      let testCb = prop => {
         let func = module[prop];
         it(`should ${prop}`, done => {
           let test = new JasmineExpectation(expect, done);
           func.call(ctx, test);
         });
-      });
+      };
+
+      let onlyTests = Object.keys(module).filter(prop => prop.startsWith('ftest'));
+      if (onlyTests.length) {
+        onlyTests.forEach(testCb);
+      } else {
+        Object.keys(module).filter(prop => prop.startsWith('test')).forEach(testCb);
+      }
 
       if (module.tearDown) {
         afterEach(done => {
