@@ -358,3 +358,7 @@ export function pickKeys<O, K extends keyof O>(obj: O, ...keys: K[]): Pick<O, K>
   }, {} as any);
 }
 
+export function shuffleArray(array: any[]): any[] {
+  return array.sort(_ => Math.random() < Math.random() ? -1 : 1);
+}
+

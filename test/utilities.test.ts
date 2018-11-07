@@ -14,11 +14,17 @@ import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arrays
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
   leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys,
-  isNumber, isString, isUndefined, isFunction, NOOP} from '../src/utilities';
+  isNumber, isString, isUndefined, isFunction, NOOP, shuffleArray} from '../src/utilities';
 
 const MODULE = {
   setUp: function (callback) {
     callback();
+  },
+
+  testShuffleArray(test: JasmineExpectation) {
+    let array = [1, 5, 23, 4, 56, 150, -1, 8, 'hey', 'ho'];
+    test.notDeepEqual(shuffleArray(dup(array)), array);
+    test.done();
   },
 
   testIs(test: JasmineExpectation) {
