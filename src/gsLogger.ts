@@ -124,9 +124,11 @@ export class Logger {
       /* tslint:enable:no-console */
       if (this.shouldSendMail(level)) {
         this.sendEmailNotification(fullMessage, level, callback);
-      } else if (callback) {
-        callback();
+        return;
       }
+    }
+    if (callback) {
+      process.nextTick(callback);
     }
   }
 

@@ -299,7 +299,7 @@ describe('Logger', () => {
     mockConsole.verify();
   });
 
-  it('should invoke callback', () => {
+  it('should invoke callback', done => {
     let label = 'invoke callback';
     let logger = getLogger(label, Level.DEBUG);
     let logMessage = 'test callback';
@@ -311,10 +311,11 @@ describe('Logger', () => {
     /* tslint:disable:no-console */
     logger.info(logMessage, () => {
       console.log(callbackMessage);
+      mockConsole.verify();
+      done();
     });
     /* tslint:disable:no-console */
 
-    mockConsole.verify();
   });
 
   it('should send mail with logger instance', () => {
