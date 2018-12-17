@@ -17,7 +17,12 @@ import {ConfigLoader, loadConfig} from '../src/configLoader';
 import {dup} from '../src/utilities';
 
 describe('ConfigLoader', () => {
+  beforeEach(() => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2018-12-17'));
+  });
   afterEach(() => {
+    jasmine.clock().uninstall();
     delete process.env.EXECUTION_ENVIRONMENT;
   });
 
@@ -229,6 +234,16 @@ describe('ConfigLoader', () => {
   it('should load path extension (bad)', () => {
     let loader = new ConfigLoader();
     test.throws(() => loader.loadConfig(getCompletePath('configWithBadPathExtension')));
+  });
+
+  it('should load ymd extension', () => {
+    let loader = new ConfigLoader();
+    test.deepEqual(loader.loadConfig(getCompletePath('configWithYmd')), {
+      key: '20181215',
+      key1: '20181217', // bad config returns same date
+      key2: '20181207',
+      key3: '20181207'
+    });
   });
 });
 

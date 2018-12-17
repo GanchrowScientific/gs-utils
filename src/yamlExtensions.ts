@@ -70,7 +70,23 @@ class Flatten extends Type {
   }
 }
 
+class Ymd extends Type {
+  private static PATTERN = /last ([0-9]+) day[s]?$/i;
+  private static ONE_DAY = 1000 * 60 * 60 * 24;
+
+  constructor() {
+    super('!ymd', {
+      kind: 'scalar',
+      construct(data) {
+        let day = Number((data.match(Ymd.PATTERN) || [])[1]) || 0;
+        let newDate = new Date(Date.now() - Ymd.ONE_DAY * day);
+        return `${newDate.toISOString().split('T')[0].replace(/\-/g, '')}`;
+      }
+    });
+  }
+}
+
 export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
-  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath), new Flatten() ]);
+  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath), new Flatten(), new Ymd() ]);
 }
