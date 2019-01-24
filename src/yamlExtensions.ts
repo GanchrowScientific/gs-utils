@@ -1,11 +1,35 @@
-/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2019 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import * as path from 'path';
-import {Type, Schema, DEFAULT_SAFE_SCHEMA} from 'js-yaml';
+import * as fs from 'fs';
+import { Type, Schema, DEFAULT_SAFE_SCHEMA } from 'js-yaml';
 
-import {RangeExclusive, RangeInclusive} from './range';
-import {flattenArray as flatten} from './utilities';
+import { RangeExclusive, RangeInclusive } from './range';
+import { flattenArray as flatten } from './utilities';
+
+/**
+ * A custom yaml type that populates yaml field with items from relative file
+ * @type {FromFile}
+ */
+class FromFile extends Type {
+  constructor(basePath: string) {
+    super('!fromFile', {
+      kind: 'sequence',
+      construct(fileAndDefault) {
+        let file = fileAndDefault[0];
+        try {
+          return fs.readFileSync(/^\//.test(file) ? file : basePath + path.sep + file).toString('utf8').trim().split('\n');
+        } catch (e) {
+          return fileAndDefault[1];
+        }
+      },
+      resolve(fileAndDefault) {
+        return fileAndDefault.length === 2;
+      }
+    });
+  }
+}
 
 /**
  * A custom yaml type that converts a range into an array
@@ -88,5 +112,7 @@ class Ymd extends Type {
 
 export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
-  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [ new Range(), new Path(basePath), new Flatten(), new Ymd() ]);
+  return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
+    new Range(), new Path(basePath), new Flatten(), new Ymd(), new FromFile(basePath)
+  ]);
 }

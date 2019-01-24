@@ -8,13 +8,13 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import 'jasmine';
 
-import {testWrapper} from '../src/jasmineTestWrapper';
+import { testWrapper } from '../src/jasmineTestWrapper';
 
 const test = testWrapper.init(expect);
 
-import {ConfigLoader, loadConfig} from '../src/configLoader';
+import { ConfigLoader, loadConfig } from '../src/configLoader';
 
-import {dup} from '../src/utilities';
+import { dup } from '../src/utilities';
 
 describe('ConfigLoader', () => {
   beforeEach(() => {
@@ -243,6 +243,15 @@ describe('ConfigLoader', () => {
       key1: '20181217', // bad config returns same date
       key2: '20181207',
       key3: '20181207'
+    });
+  });
+
+  it('should load fromFile extension', () => {
+    let loader = new ConfigLoader();
+    test.deepEqual(loader.loadConfig(getCompletePath('configWithFromFile')), {
+      array: [1, 2, 3],
+      arrayFromFile: ['hey', 'foo', 'bar'],
+      defaultFromNoFile: 'default'
     });
   });
 });
