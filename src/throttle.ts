@@ -3,7 +3,7 @@
 'use strict';
 
 export class GSThrottle {
-  private timeoutId = 0;
+  private timeoutId: NodeJS.Timer;
   private cycleEndTime = 0;
   private registeredCallback: (...args) => void;
   private hardDelay: number;

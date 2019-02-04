@@ -66,6 +66,7 @@ class ClassifyFuncTarget {
   }
 }
 
+/* tslint:disable no-console */
 describe('@classify', () => {
   beforeEach(() => {
     this.clTarget = new ClassifyTarget();
@@ -91,3 +92,4 @@ describe('@classify', () => {
     test.ok((<sinon.SinonSpy>console.log).firstCall.args[0].indexOf('Cannot create classifier for key: last_name in object: {}') > 0);
   });
 });
+/* tslint:enable no-console */
