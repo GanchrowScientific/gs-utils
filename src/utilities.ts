@@ -365,3 +365,14 @@ export function shuffleArray(array: any[]): any[] {
 export function leftPad (n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
 }
+
+export function isToday(utcMilliSeconds: number): boolean {
+  let todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+
+  let tomorrowMidnight = new Date();
+  tomorrowMidnight.setHours(0, 0, 0, 0);
+  tomorrowMidnight.setDate(tomorrowMidnight.getDate() + 1);
+
+  return todayMidnight.getTime() <= utcMilliSeconds && utcMilliSeconds < tomorrowMidnight.getTime();
+}

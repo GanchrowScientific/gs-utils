@@ -9,7 +9,7 @@
     "config"
   ],
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "2.7.33",
+  "version": "2.7.34",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
