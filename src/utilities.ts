@@ -362,3 +362,6 @@ export function shuffleArray(array: any[]): any[] {
   return array.sort(_ => Math.random() < Math.random() ? -1 : 1);
 }
 
+export function leftPad (n: number): string {
+  return n < 10 ? `0${n}` : `${n}`;
+}
