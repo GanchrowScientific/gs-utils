@@ -6,7 +6,21 @@ import * as fs from 'fs';
 import { Type, Schema, DEFAULT_SAFE_SCHEMA } from 'js-yaml';
 
 import { RangeExclusive, RangeInclusive } from './range';
-import { flattenArray as flatten } from './utilities';
+import { shuffleArray, flattenArray as flatten } from './utilities';
+
+class RandomElement extends Type {
+  constructor() {
+    super('!randomElement', {
+      kind: 'sequence',
+      construct(array: any[]) {
+        return shuffleArray(array)[0];
+      },
+      resolve(array: any[]) {
+        return Array.isArray(array);
+      }
+    });
+  }
+}
 
 /**
  * A custom yaml type that populates yaml field with items from relative file
@@ -113,6 +127,7 @@ class Ymd extends Type {
 export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
   return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
-    new Range(), new Path(basePath), new Flatten(), new Ymd(), new FromFile(basePath)
+    new Range(), new Path(basePath), new Flatten(), new Ymd(), new FromFile(basePath),
+    new RandomElement()
   ]);
 }

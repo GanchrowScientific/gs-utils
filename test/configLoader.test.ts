@@ -254,6 +254,26 @@ describe('ConfigLoader', () => {
       defaultFromNoFile: 'default'
     });
   });
+
+  it('should load randomElement extension', () => {
+    let loader = new ConfigLoader();
+    let loader1 = new ConfigLoader();
+    let loader2 = new ConfigLoader();
+    let loader3 = new ConfigLoader();
+    let loader4 = new ConfigLoader();
+    let loaderData = loader.loadConfig(getCompletePath('configWithRandomElement'));
+    let loaderData1 = loader1.loadConfig(getCompletePath('configWithRandomElement'));
+    let loaderData2 = loader2.loadConfig(getCompletePath('configWithRandomElement'));
+    let loaderData3 = loader3.loadConfig(getCompletePath('configWithRandomElement'));
+    let loaderData4 = loader4.loadConfig(getCompletePath('configWithRandomElement'));
+    [ loaderData, loaderData1, loaderData2, loaderData3, loaderData4 ].forEach(d => {
+      test.ok([1, 2, 3, 4, 5].includes(d.hey));
+    });
+    test.ok([ loaderData1, loaderData2, loaderData3, loaderData4 ].some(d => {
+      return d.hey !== loaderData.hey;
+    }));
+  });
+
 });
 
 function getCompletePath(file: string): string {
