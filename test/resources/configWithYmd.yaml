@@ -2,4 +2,7 @@ key: !ymd last 2 days
 key1: !ymd lats 2 days
 key2: !ymd last 10 day
 key3: !ymd last 10 days
+key4: !ymd next 10 days
+key5: !ymd_timestamp last 2 days
+key6: !ymd_timestamp next 10 days
 

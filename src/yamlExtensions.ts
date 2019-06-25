@@ -108,26 +108,49 @@ class Flatten extends Type {
   }
 }
 
-class Ymd extends Type {
-  private static PATTERN = /last ([0-9]+) day[s]?$/i;
+abstract class Ymd<T> extends Type {
+  private static PATTERN = /(last|next) ([0-9]+) day[s]?$/i;
   private static ONE_DAY = 1000 * 60 * 60 * 24;
 
-  constructor() {
-    super('!ymd', {
+  constructor(key = '!ymd') {
+    super(key, {
       kind: 'scalar',
       construct(data) {
-        let day = Number((data.match(Ymd.PATTERN) || [])[1]) || 0;
-        let newDate = new Date(Date.now() - Ymd.ONE_DAY * day);
-        return `${newDate.toISOString().split('T')[0].replace(/\-/g, '')}`;
+        let match = data.match(Ymd.PATTERN) || [];
+        let step = match[1] === 'last' ? -1 : 1;
+        let day = match[2] || 0;
+        let newDate = new Date(Date.now() + step * Ymd.ONE_DAY * day);
+        return this.dateFormat(newDate);
       }
     });
+  }
+
+  protected abstract dateFormat(date: Date): T;
+}
+
+class YmdTimestamp extends Ymd<number> {
+
+  constructor() {
+    super('!ymd_timestamp');
+  }
+
+  /* tslint:disable no-bitwise */
+  protected dateFormat(date: Date): number {
+    return (+date / 1000) | 0;
+  }
+  /* tslint:enable no-bitwise */
+}
+
+class YmdString extends Ymd<string> {
+  protected dateFormat(date: Date): string {
+    return `${date.toISOString().split('T')[0].replace(/\-/g, '')}`;
   }
 }
 
 export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
   return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
-    new Range(), new Path(basePath), new Flatten(), new Ymd(), new FromFile(basePath),
-    new RandomElement()
+    new Range(), new Path(basePath), new Flatten(), new YmdString(), new FromFile(basePath),
+    new RandomElement(), new YmdTimestamp()
   ]);
 }

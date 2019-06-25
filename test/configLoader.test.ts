@@ -242,7 +242,10 @@ describe('ConfigLoader', () => {
       key: '20181215',
       key1: '20181217', // bad config returns same date
       key2: '20181207',
-      key3: '20181207'
+      key3: '20181207',
+      key4: '20181227',
+      key5: Math.round( ( Date.now() - 24 * 2 * 60 * 60 * 1000 ) / 1000 ),
+      key6: Math.round( ( Date.now() + 24 * 10 * 60 * 60 * 1000 ) / 1000 )
     });
   });
 
