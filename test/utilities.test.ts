@@ -1,4 +1,4 @@
-/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2019 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -6,18 +6,18 @@ import 'source-map-support/register';
 
 import 'jasmine';
 
-import {testWrapper, JasmineExpectation} from '../src/jasmineTestWrapper';
+import { testWrapper, JasmineExpectation } from '../src/jasmineTestWrapper';
 
-import {SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
+import { SimpleStore, BasicObject, isObject, isStrictObject, ensureObject, arraysEquivalent,
   toArray, deepFreeze, isJSON, isXML, dup, stripAnyValues, safeSetProperty,
   valuesAtCreate, isSameTypeOf, allArrayItemTypesMatch, CaseInsensitiveBucket,
   isNumeric, flattenArray, stringifyJSONNoEmptyArrays, hasAllPropertyValues,
   arrayIsSubset, multiArraySome, multiArrayEvery, arrayPartition, swapItems,
   leftDigit, convertArrayValuesToObject, deepEnsureObject, pickKeys, rejectKeys,
-  isNumber, isString, isUndefined, isFunction, NOOP, shuffleArray} from '../src/utilities';
+  isNumber, isString, isUndefined, isFunction, NOOP, shuffleArray } from '../src/utilities';
 
 const MODULE = {
-  setUp: function (callback) {
+  setUp(callback) {
     callback();
   },
 
@@ -266,7 +266,7 @@ const MODULE = {
     test.done();
   },
 
-  testBasicObject: function (test: JasmineExpectation) {
+  testBasicObject(test: JasmineExpectation) {
     let b = new BasicObject();
 
     test.strictEqual(typeof b, 'object');
@@ -277,7 +277,7 @@ const MODULE = {
     test.done();
   },
 
-  testIsJSON: function (test: JasmineExpectation) {
+  testIsJSON(test: JasmineExpectation) {
     test.throws(() => isJSON(5), new TypeError('Argument is neither string nor Buffer'));
     test.throws(() => isJSON(null), new TypeError('Argument is neither string nor Buffer'));
     test.throws(() => isJSON({}), new TypeError('Argument is neither string nor Buffer'));
@@ -301,7 +301,7 @@ const MODULE = {
     test.done();
   },
 
-  testIsXML: function (test: JasmineExpectation) {
+  testIsXML(test: JasmineExpectation) {
     test.throws(() => isXML(5), new TypeError('Argument is neither string nor Buffer'));
     test.throws(() => isXML(null), new TypeError('Argument is neither string nor Buffer'));
     test.throws(() => isXML({}), new TypeError('Argument is neither string nor Buffer'));
@@ -320,7 +320,7 @@ const MODULE = {
     test.done();
   },
 
-  testIsObject: function (test: JasmineExpectation) {
+  testIsObject(test: JasmineExpectation) {
     test.ok(isObject([]), 'isObject([]) === true');
     test.ok(isObject({}), 'isObject({}) === true');
     test.ok(!isObject('foo'), 'isObject(\'foo\') === false');
@@ -331,7 +331,7 @@ const MODULE = {
     test.done();
   },
 
-  testToArray: function (test: JasmineExpectation) {
+  testToArray(test: JasmineExpectation) {
     let o = {};
     let ota = toArray(o);
 
@@ -346,7 +346,7 @@ const MODULE = {
     test.done();
   },
 
-  testDeepFreeze: function (test: JasmineExpectation) {
+  testDeepFreeze(test: JasmineExpectation) {
     let o = { a: { b: [{}] } };
     deepFreeze(o);
     test.ok(Object.isFrozen(o.a.b[0]));
@@ -354,7 +354,7 @@ const MODULE = {
     test.done();
   },
 
-  testDup: function (test: JasmineExpectation) {
+  testDup(test: JasmineExpectation) {
     // let o = { 5: 4, 3: 2, foobar: 'foobar', func: (function () { /**/ }) };
     // test.deepEqual(dup(o), { 5: 4, 3: 2, foobar: 'foobar' });
     // let p = new (function Test() {
@@ -369,11 +369,17 @@ const MODULE = {
     test.deepEqual(dup(Infinity), Infinity);
     test.deepEqual(dup({ val: Infinity }), { val: Infinity });
     test.deepEqual(dup([ Infinity ]), [ Infinity ]);
+    test.deepEqual(dup({ a: 5, b: 6 }, ['a']), { b: 6 });
+    test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b']), { });
+    test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { b: 6 }), { b: 6 });
+    test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { a: 5 }), { a: 5 });
+    test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { a: 4 }), { });
+    test.deepEqual(dup({ a: Infinity, b: 6 }, ['a', 'b'], { a: Infinity }), { a: Infinity });
 
     test.done();
   },
 
-  testValuesAtCreate: function (test: JasmineExpectation) {
+  testValuesAtCreate(test: JasmineExpectation) {
     let o = { 1: 2, 3: 34, 5: 6 };
     let emptyThunk = valuesAtCreate();
     let partialValuesThunk = valuesAtCreate(5, 6);
@@ -394,7 +400,7 @@ const MODULE = {
     test.done();
   },
 
-  testIsSameTypeOf: function (test: JasmineExpectation) {
+  testIsSameTypeOf(test: JasmineExpectation) {
     let undefinedType = isSameTypeOf(undefined);
     let objectType = isSameTypeOf({});
     let numberType = isSameTypeOf(1);
@@ -421,7 +427,7 @@ const MODULE = {
     test.done();
   },
 
-  testAllArrayItemTypesMatch: function (test: JasmineExpectation) {
+  testAllArrayItemTypesMatch(test: JasmineExpectation) {
     test.ok(allArrayItemTypesMatch([0, 1, 2, 3]));
     test.ok(!allArrayItemTypesMatch([null, 0, 1]));
     test.ok(!allArrayItemTypesMatch([0, 'hey', null]));
@@ -432,7 +438,7 @@ const MODULE = {
     test.done();
   },
 
-  testIsNumeric: function (test: JasmineExpectation) {
+  testIsNumeric(test: JasmineExpectation) {
     test.ok(isNumeric(4));
     test.ok(isNumeric(0));
     test.ok(isNumeric(-6));
@@ -456,7 +462,7 @@ const MODULE = {
     test.done();
   },
 
-  testStringifyJSONNoEmptyArrays: function (test: JasmineExpectation) {
+  testStringifyJSONNoEmptyArrays(test: JasmineExpectation) {
     let emptyArray = [];
     let arrayOfEmptyArrays = [emptyArray, emptyArray];
     let arrayOfUndefineds = [undefined, undefined];
@@ -551,7 +557,7 @@ const MODULE = {
     test.done();
   },
 
-  tearDown: function (callback) {
+  tearDown(callback) {
     callback();
   }
 };

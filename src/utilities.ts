@@ -181,11 +181,14 @@ export function safeSetProperty(obj: Object, val: any, ...fields: (string | numb
   return true;
 }
 
-export function dup<T>(obj: T, ignoreKeys: string[] = []): ParsedJson {
+export function dup<T>(obj: T, ignoreKeys: string[] = [], exceptValues = {}): ParsedJson {
   let cb = (k, v) => {
     if (ignoreKeys.includes(k)) {
-      return undefined;
-    } else if (v === Infinity) {
+      if (!(exceptValues[k] === v)) {
+        return undefined;
+      }
+    }
+    if (v === Infinity) {
       return 'Infinity';
     }
     return v;
