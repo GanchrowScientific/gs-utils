@@ -191,14 +191,19 @@ export function dup<T>(obj: T, ignoreKeys: string[] = [], exceptValues = {}): Pa
     if (v === Infinity) {
       return 'Infinity';
     }
+    if (v === -Infinity) {
+      return '-Infinity';
+    }
     return v;
   };
   return JSON.parse(JSON.stringify(obj, cb), (k, v) => {
     if (v === 'Infinity') {
       return Infinity;
-    } else {
-      return v;
     }
+    if (v === '-Infinity') {
+      return -Infinity;
+    }
+    return v;
   });
 }
 

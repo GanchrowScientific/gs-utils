@@ -369,12 +369,17 @@ const MODULE = {
     test.deepEqual(dup(Infinity), Infinity);
     test.deepEqual(dup({ val: Infinity }), { val: Infinity });
     test.deepEqual(dup([ Infinity ]), [ Infinity ]);
+    test.deepEqual(dup(-Infinity), -Infinity);
+    test.deepEqual(dup({ val: -Infinity }), { val: -Infinity });
+    test.deepEqual(dup([ -Infinity ]), [ -Infinity ]);
     test.deepEqual(dup({ a: 5, b: 6 }, ['a']), { b: 6 });
     test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b']), { });
     test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { b: 6 }), { b: 6 });
     test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { a: 5 }), { a: 5 });
     test.deepEqual(dup({ a: 5, b: 6 }, ['a', 'b'], { a: 4 }), { });
     test.deepEqual(dup({ a: Infinity, b: 6 }, ['a', 'b'], { a: Infinity }), { a: Infinity });
+    test.deepEqual(dup({ a: Infinity, b: 6 }, ['a', 'b'], { a: -Infinity }), { });
+    test.deepEqual(dup({ a: -Infinity, b: 6 }, ['a', 'b'], { a: -Infinity }), { a: -Infinity });
 
     test.done();
   },
