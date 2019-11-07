@@ -18,7 +18,7 @@ export function expand(numbersString: string): number[] {
     return [];
   }
   numbersPattern.lastIndex = 0;
-  let matches = new Set();
+  let matches: Set<number> = new Set();
   let lastMatch;
   do {
     lastMatch = matchIteration(numbersString);
