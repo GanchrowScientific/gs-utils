@@ -1,4 +1,4 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2020 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -13,7 +13,16 @@ const ENVIRONMENTS = 'ENVIRONMENTS';
 
 const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
 
-let logger = getLogger('config-loader');
+const STRICT_ENVIRONMENT_MODE = 'strict_environment_mode';
+
+const logger = getLogger('config-loader');
+
+class ConfigLoaderError extends Error {
+  constructor(msg: string) {
+    super(`ConfigLoader: ${msg}`);
+  }
+}
+
 
 export class ConfigLoader {
   public static viewEnvironments(fileName: string): string[] {
@@ -54,7 +63,7 @@ export class ConfigLoader {
 
   private applyEnvironment(config = {}): any {
     let allEnvironments = config[ENVIRONMENTS] || {};
-    let thisEnvironment = this.matchEnvironments(allEnvironments);
+    let thisEnvironment = this.matchEnvironments(allEnvironments, config[STRICT_ENVIRONMENT_MODE]);
 
     delete config[ENVIRONMENTS];
 
@@ -75,13 +84,17 @@ export class ConfigLoader {
     return envString;
   }
 
-  private matchEnvironments<T>(allEnvironments: T): T {
+  private matchEnvironments<T>(allEnvironments: T, strictEnvironmentMode = false): T {
     if (allEnvironments[this.executionEnvironment]) {
       return allEnvironments[this.executionEnvironment];
     }
     let possibleEnvironmentKeys = Object.keys(allEnvironments).filter(e => /\*$/.test(e));
     let curEnv = possibleEnvironmentKeys.find(env => this.generateEnvironmentExpression(env).test(this.executionEnvironment));
-    return allEnvironments[curEnv] || {};
+    let config = allEnvironments[curEnv];
+    if (!config && strictEnvironmentMode) {
+      throw new ConfigLoaderError(`Environment ${this.executionEnvironment} not defined`);
+    }
+    return config || {};
   }
 
   private generateEnvironmentExpression(env: string): RegExp {

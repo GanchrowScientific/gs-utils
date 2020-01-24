@@ -277,6 +277,40 @@ describe('ConfigLoader', () => {
     }));
   });
 
+  it('should throw error when environment is missing in strict environment mode', () => {
+    let loader = new ConfigLoader('NOT_MISSING_ENVIRONMENT');
+    try {
+      let config = loader.loadConfigRaw(yaml.dump({
+        strict_environment_mode: true,
+        ENVIRONMENTS: {
+          NOT_MISSING_ENVIRONMENT: {
+            hey: 'foo',
+            foo: 5
+          }
+        }
+      }));
+      expect(config).toEqual({strict_environment_mode: true, hey: 'foo', foo: 5});
+    } catch (e) {
+      expect(true).toEqual(false);
+    }
+    loader = new ConfigLoader('MISSING_ENVIRONMENT');
+    try {
+      loader.loadConfigRaw(yaml.dump({
+        strict_environment_mode: true,
+        ENVIRONMENTS: {
+          NOT_MISSING_ENVIRONMENT: {
+            hey: 'foo',
+            foo: 5
+          }
+        }
+      }));
+      expect(true).toEqual(false);
+    } catch (e) {
+      expect(e.message).toEqual('ConfigLoader: Environment MISSING_ENVIRONMENT not defined');
+    }
+
+  });
+
 });
 
 function getCompletePath(file: string): string {
