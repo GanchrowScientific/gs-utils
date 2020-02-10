@@ -1,10 +1,10 @@
-/* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2020 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
 import 'jasmine';
 
-import {between} from '../src/between';
+import { between } from '../src/between';
 
 describe('between', () => {
   it('should be between', () => {
