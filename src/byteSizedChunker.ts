@@ -11,8 +11,13 @@ export class ByteSizedChunker {
     this.partial = Buffer.alloc(0);
   }
 
-  public prepare(data: Buffer|string, dataType = 'ascii'): Buffer {
-    let dataBuf = Buffer.isBuffer(data) ? data : Buffer.from(data, dataType);
+  public prepare(data: Buffer | string, dataType = 'ascii'): Buffer {
+    let dataBuf: Buffer;
+    if (data instanceof Buffer) {
+      dataBuf = data;
+    } else {
+      dataBuf = Buffer.from(data, dataType as BufferEncoding);
+    }
     return Buffer.concat([
       bufferpack.pack(this.packFormat, [dataBuf.length]),
       dataBuf

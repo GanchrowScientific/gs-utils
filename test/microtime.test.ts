@@ -20,10 +20,14 @@ let initialMicros = initialTime % 1e6;
 
 describe('microtime', () => {
   beforeEach(() => {
-    process.hrtime = () => [
-      secondIncrement,
-      initialMicros * 1e3 + nanos
-    ];
+    process.hrtime = (() => {
+      let f: any = () => [
+        secondIncrement,
+        initialMicros * 1e3 + nanos
+      ];
+      f.bigint = () => BigInt(1);
+      return f;
+    })();
   });
 
   afterEach(() => {
