@@ -1,4 +1,4 @@
-/* Copyright © 2018-2020 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -189,18 +189,18 @@ export function dup<T>(obj: T, ignoreKeys: string[] = [], exceptValues = {}): Pa
       }
     }
     if (v === Infinity) {
-      return '#∞#';
+      return 'Infinity';
     }
     if (v === -Infinity) {
-      return '#-∞#';
+      return '-Infinity';
     }
     return v;
   };
   return JSON.parse(JSON.stringify(obj, cb), (k, v) => {
-    if (v === '#∞#') {
+    if (v === 'Infinity') {
       return Infinity;
     }
-    if (v === '#-∞#') {
+    if (v === '-Infinity') {
       return -Infinity;
     }
     return v;
