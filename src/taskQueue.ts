@@ -3,31 +3,49 @@
 
 import { delay } from './delay';
 import { IndexQueue } from './indexQueue';
+import { EventEmitter } from 'events';
 
-type Handler = (type: string, task: any) => void;
-type ErrorHandlder = (error) => void;
+export type Handler = (type: string, task: any) => void;
+export type ErrorHandler = (error: Error, type: string, task: any, pushBack: () => void ) => void;
+
+export type TasksDump = {
+  [index: number]: {type: string, task: any, seq: number}
+};
 
 export class TaskQueue {
   private nextQueue = new IndexQueue<any>();
   private pendantQueue = new IndexQueue<any>();
-  private processing: {[index: string]: boolean } = Object.create(null);
+  private processingTypes: {[index: string]: boolean } = Object.create(null);
   private moreRecentTypes: {[index: string]: number } = Object.create(null);
   private handler: Handler;
-  private handleError: ErrorHandlder;
+  private handleError: ErrorHandler;
   private discardTask: Handler;
   private maxConcurrency: number;
+  private realMaxConcurrency: number;
+  private pausePromiseResolver = () => {/* */};
+  private isPaused = false;
   private working = false;
+  private isDumping = false;
   private executingPromises: {[index: number]: Promise<any> } = Object.create(null);
   private sequence = 0;
+  private shouldPause: Promise<void> = Promise.resolve();
+  private eventEmitter = new EventEmitter();
 
-  constructor(concurrency: number, handler: Handler, handleError?: ErrorHandlder, discardTask?: Handler) {
+  constructor(concurrency: number, handler: Handler, handleError?: ErrorHandler, discardTask?: Handler, restoredTasks?: TasksDump) {
     this.maxConcurrency = concurrency;
+    this.realMaxConcurrency = concurrency;
     this.handler = handler;
     this.handleError = handleError;
     this.discardTask = discardTask;
+    if (restoredTasks) {
+      this.restore(restoredTasks);
+    }
   }
 
-  public push(type: string, task: any): void {
+  public push(type: string, task: any): void | never {
+    if (this.isDumping) {
+      throw 'The queue has dumped the items and is unusable';
+    }
     let seq = this.sequence++;
     this.nextQueue.enqueue({task, type, seq});
     this.moreRecentTypes[type] = seq;
@@ -36,22 +54,82 @@ export class TaskQueue {
     }
   }
 
+  public pause(): void {
+    if (!this.isPaused) {
+      this.isPaused = true;
+      this.maxConcurrency = 0;
+      this.shouldPause = new Promise((resolve) => { this.pausePromiseResolver = resolve; });
+    }
+  }
+
+  public resume(): void {
+    if (this.isPaused && !this.isDumping) {
+      this.isPaused = false;
+      this.maxConcurrency = this.realMaxConcurrency;
+      this.pausePromiseResolver();
+    }
+  }
+
+  public async dump(): Promise<void> {
+    if (!this.isDumping) {
+      this.isDumping = true;
+      let dumpedTasks = Object.create(null);
+      this.pause();
+      // we need to give time to the handle function to put all the
+      // tasks that couldn't be catched by the pause into the executingPromises object.
+      await delay(0);
+      let executingPromisesArray = Object.values(this.executingPromises);
+      await Promise.all(executingPromisesArray);
+      while (!this.nextQueue.isEmpty()) {
+        let item = this.nextQueue.dequeue();
+        dumpedTasks[item.seq] = item;
+      }
+      while (!this.pendantQueue.isEmpty()) {
+        let item = this.pendantQueue.dequeue();
+        dumpedTasks[item.seq] = item;
+      }
+      this.eventEmitter.emit('dump', dumpedTasks);
+    }
+  }
+
+  public onDump(listener) {
+    this.eventEmitter.addListener('dump', listener);
+  }
+
   private isProccesingType(type): boolean {
-    return this.processing[type];
+    return this.processingTypes[type];
+  }
+
+
+  private restore(tasks: TasksDump) {
+    Object.values(tasks)
+      .sort((a, b) => a.seq - b.seq)
+      .forEach(taskItem => {
+        this.push(taskItem.type, taskItem.task);
+      });
+  }
+
+  private pushBackFactory(type, task, seq): () => void {
+    return () => {
+      this.pendantQueue.enqueue({task, type, seq});
+      if (!this.working) {
+        this.execute();
+      }
+    };
   }
 
   private async handle({type, task, seq}): Promise<void> {
     if (this.moreRecentTypes[type] === seq) {
-      this.processing[type] = true;
+      this.processingTypes[type] = true;
       let worker = Promise.resolve()
         .then(() => this.handler(type, task))
         .catch((e) => {
           if (typeof this.handleError === 'function') {
-            this.handleError(e);
+            this.handleError(e, type, task, this.pushBackFactory(type, task, seq));
           }
         })
         .finally(() => {
-          this.processing[type] = false;
+          this.processingTypes[type] = false;
           delete this.executingPromises[seq];
         });
       this.executingPromises[seq] = worker;
@@ -72,6 +150,7 @@ export class TaskQueue {
   private async execute(): Promise<void> {
     this.working = true;
     while (!this.nextQueue.isEmpty() || !this.pendantQueue.isEmpty()) {
+      await this.shouldPause;
       if (!this.pendantQueue.isEmpty()) {
         let pendant = this.pendantQueue.dequeue();
         if (this.isProccesingType(pendant.type)) {
@@ -99,7 +178,4 @@ export class TaskQueue {
     }
     this.working = false;
   }
-
 }
-
-
