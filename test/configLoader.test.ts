@@ -258,6 +258,13 @@ describe('ConfigLoader', () => {
     });
   });
 
+  it('should load concat extension', () => {
+    let loader = new ConfigLoader();
+    test.deepEqual(loader.loadConfig(getCompletePath('configWithConcat')), {
+      key1: 'value1value2'
+    });
+  });
+
   it('should load randomElement extension', () => {
     let loader = new ConfigLoader();
     let loader1 = new ConfigLoader();

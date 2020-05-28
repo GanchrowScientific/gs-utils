@@ -23,6 +23,25 @@ class RandomElement extends Type {
 }
 
 /**
+ * A custom yaml type that concatenates strings
+ * @type {Concat}
+ */
+class Concat extends Type {
+  constructor() {
+    super('!concat', {
+      kind: 'sequence',
+      construct(items) {
+        return items.join('');
+      },
+      resolve(items) {
+        return Array.isArray(items);
+      }
+    });
+  }
+}
+
+
+/**
  * A custom yaml type that populates yaml field with items from relative file
  * @type {FromFile}
  */
@@ -151,6 +170,6 @@ export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
   return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
     new Range(), new Path(basePath), new Flatten(), new YmdString(), new FromFile(basePath),
-    new RandomElement(), new YmdTimestamp()
+    new RandomElement(), new YmdTimestamp(), new Concat()
   ]);
 }
