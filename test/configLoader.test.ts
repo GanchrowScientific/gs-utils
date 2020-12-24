@@ -284,6 +284,23 @@ describe('ConfigLoader', () => {
     }));
   });
 
+  it('should load expand extension', () => {
+    let loader = new ConfigLoader();
+    test.deepEqual(
+      loader.loadConfig(getCompletePath('configWithExpand')),
+      {
+        key1: 'hey',
+        key2: [
+          { foo: [1, 2, '0'] },
+          { foo: [1, 2, '1'] },
+          { foo: [1, 2, '2'] },
+          { foo: [1, 2, '3'] },
+          { foo: [1, 2, '4'] }
+        ]
+      }
+    );
+  });
+
   it('should throw error when environment is missing in strict environment mode', () => {
     let loader = new ConfigLoader('NOT_MISSING_ENVIRONMENT');
     try {

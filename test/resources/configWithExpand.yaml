@@ -1,0 +1,5 @@
+key1: hey
+key2: !expand
+  content:
+    foo: [1, 2, '%%%']
+  expand: 5

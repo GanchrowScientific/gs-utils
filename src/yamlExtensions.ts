@@ -1,4 +1,4 @@
-/* Copyright © 2017-2019 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2020 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import * as path from 'path';
@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { Type, Schema, DEFAULT_SAFE_SCHEMA } from 'js-yaml';
 
 import { RangeExclusive, RangeInclusive } from './range';
-import { shuffleArray, flattenArray as flatten } from './utilities';
+import { isObject, shuffleArray, flattenArray as flatten } from './utilities';
 
 class RandomElement extends Type {
   constructor() {
@@ -127,6 +127,25 @@ class Flatten extends Type {
   }
 }
 
+/**
+ * A custom yaml type that expands an object into an array of length { expand: number }
+ */
+class Expand extends Type {
+  constructor() {
+    super('!expand', {
+      kind: 'mapping',
+      construct(data: { expand: number; content: Object }) {
+        return (new Array(data.expand)).fill(0).map((_, i) => {
+          return JSON.parse(JSON.stringify(data.content).replace(/%%%/g, `${i}`));
+        });
+      },
+      resolve(data) {
+        return isObject(data) && isObject(data.content) && data.expand > 0;
+      }
+    });
+  }
+}
+
 abstract class Ymd<T> extends Type {
   private static PATTERN = /(last|next) ([0-9]+) day[s]?$/i;
   private static ONE_DAY = 1000 * 60 * 60 * 24;
@@ -170,6 +189,6 @@ export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
   return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
     new Range(), new Path(basePath), new Flatten(), new YmdString(), new FromFile(basePath),
-    new RandomElement(), new YmdTimestamp(), new Concat()
+    new RandomElement(), new YmdTimestamp(), new Concat(), new Expand()
   ]);
 }
