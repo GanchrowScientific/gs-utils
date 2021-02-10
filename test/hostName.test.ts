@@ -60,11 +60,11 @@ describe('hostname', () => {
 
     it('should return isLocalHost', async () => {
       const { isLocalHost } = createMocks(networkInterfacesSpy);
-      test.ok(await isLocalHost('localhost'));
-      test.ok(await isLocalHost('127.0.0.1'));
-      test.ok(!await isLocalHost('notlocal'));
-      test.ok(!await isLocalHost('1.2.3.4'));
-      test.ok(await isLocalHost('some.host'));
+      test.ok(isLocalHost('localhost'));
+      test.ok(isLocalHost('127.0.0.1'));
+      test.ok(!isLocalHost('notlocal'));
+      test.ok(!isLocalHost('1.2.3.4'));
+      test.ok(isLocalHost('some.host'));
     });
 
   });
@@ -73,15 +73,8 @@ describe('hostname', () => {
 function createMocks(networkInterfacesSpy) {
   return proxyquire('../src/hostName',
   {
-    dns: {
-      promises: {
-        lookup: (host) => {
-          if (host === 'some.host') {
-            return Promise.resolve({ address: '10.10.10.10' });
-          }
-          return Promise.reject();
-        }
-      }
+    'dns-sync': {
+      resolve: (host) => host === 'some.host' ? '10.10.10.10' : null
     },
     os:  {
       networkInterfaces: networkInterfacesSpy

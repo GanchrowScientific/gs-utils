@@ -3,8 +3,7 @@
 'use strict';
 
 import * as os from 'os';
-import { promises } from 'dns';
-const { lookup } = promises;
+import * as dnsSync from 'dns-sync';
 
 export function getNetworkIP(): string {
   try {
@@ -41,13 +40,8 @@ export function isRemoteHost(host: any): boolean {
   return !(!host || possibleLocalHostNames().some(isExactMatchWrap(host)));
 }
 
-export async function isLocalHost(host: string): Promise<boolean> {
-  let ip;
-  try {
-    ip = await lookup(host);
-  } catch (error) {
-    // the name coudn't be resolved so it will be ignored
-  }
-  return ip?.address ? possibleLocalHostNames().some(isExactMatchWrap(ip.address)) :
+export function isLocalHost(host: string): boolean {
+  const ip = dnsSync.resolve(host);
+  return ip ? possibleLocalHostNames().some(isExactMatchWrap(ip)) :
     !isRemoteHost(host);
 }
