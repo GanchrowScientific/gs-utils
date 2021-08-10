@@ -5,10 +5,10 @@ import * as lzstring from 'lz-string';
 
 export function compress(payload: Record<any, any>): string {
   const compressedJson = jsonpack.pack(payload);
-  return lzstring.compress(compressedJson);
+  return lzstring.compressToBase64(compressedJson);
 }
 
 export function uncompress(compressed: string): Record<any, any> {
-  const compressedString = lzstring.decompress(compressed);
+  const compressedString = lzstring.decompressFromBase64(compressed);
   return jsonpack.unpack(compressedString);
 }
