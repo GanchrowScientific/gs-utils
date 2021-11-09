@@ -1,4 +1,4 @@
-/* Copyright © 2017-2020 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2021 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import * as path from 'path';
@@ -32,6 +32,28 @@ class Concat extends Type {
       kind: 'sequence',
       construct(items) {
         return items.join('');
+      },
+      resolve(items) {
+        return Array.isArray(items);
+      }
+    });
+  }
+}
+
+/**
+ * A custom yaml type that loads an environment variable
+ * @type {LoadfromEnv}
+ */
+ class LoadFromEnv extends Type {
+  constructor() {
+    super('!loadFromEnv', {
+      kind: 'sequence',
+      construct(items) {
+        const [varName, fallback] = items;
+        if (process.env[varName] === undefined && fallback === undefined) {
+          throw Error(`${varName} does not exist and no fallback has been specified`);
+        }
+        return process.env[varName] ?? fallback;
       },
       resolve(items) {
         return Array.isArray(items);
@@ -189,6 +211,6 @@ export function schemaFactory(basePath: string) {
   // See https://github.com/DefinitelyTyped/DefinitelyTyped/pull/18978
   return (Schema as any).create(DEFAULT_SAFE_SCHEMA, [
     new Range(), new Path(basePath), new Flatten(), new YmdString(), new FromFile(basePath),
-    new RandomElement(), new YmdTimestamp(), new Concat(), new Expand()
+    new RandomElement(), new YmdTimestamp(), new Concat(), new Expand(), new LoadFromEnv()
   ]);
 }
