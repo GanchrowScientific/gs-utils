@@ -1,4 +1,4 @@
-/* Copyright © 2018-2020 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2021 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -372,6 +372,11 @@ export function shuffleArray(array: any[]): any[] {
 
 export function leftPad (n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
+}
+
+export function lastItem<T>(items: T | T[]): T {
+  items = toArray(items);
+  return items[items.length - 1];
 }
 
 export function isToday(utcMilliSeconds: number): boolean {
