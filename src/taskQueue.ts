@@ -12,9 +12,11 @@ export type TasksDump = {
   [index: number]: {type: string, task: any, seq: number}
 };
 
-export class TaskQueue {
-  private nextQueue = new IndexQueue<any>();
-  private pendantQueue = new IndexQueue<any>();
+type QueuedTask<T> = { type: string; task: T; seq: number };
+
+export class TaskQueue<T> {
+  private nextQueue = new IndexQueue<QueuedTask<T>>();
+  private pendantQueue = new IndexQueue<QueuedTask<T>>();
   private processingTypes: {[index: string]: boolean } = Object.create(null);
   private moreRecentTypes: {[index: string]: number } = Object.create(null);
   private handler: Handler;
@@ -42,12 +44,12 @@ export class TaskQueue {
     }
   }
 
-  public push(type: string, task: any): Promise<void> {
+  public push(type: string, task: T): Promise<void> {
     if (this.isDumping) {
       throw 'The queue has dumped the items and is unusable';
     }
     let seq = this.sequence++;
-    this.nextQueue.enqueue({task, type, seq});
+    this.nextQueue.enqueue({task, type, seq} as QueuedTask<T>);
     this.moreRecentTypes[type] = seq;
     if (!this.working) {
       return this.execute();
@@ -109,11 +111,11 @@ export class TaskQueue {
       });
   }
 
-  private pushBackFactory(type, task, seq): () => void {
+  private pushBackFactory(type: string, task: T, seq: number): () => Promise<void> {
     return () => {
-      this.pendantQueue.enqueue({task, type, seq});
+      this.pendantQueue.enqueue({task, type, seq} as QueuedTask<T>);
       if (!this.working) {
-        this.execute();
+        return this.execute();
       }
     };
   }
