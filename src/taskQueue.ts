@@ -1,4 +1,4 @@
-/* Copyright © 2020 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2020-2022 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import { delay } from './delay';
@@ -42,7 +42,7 @@ export class TaskQueue {
     }
   }
 
-  public push(type: string, task: any): void | never {
+  public push(type: string, task: any): Promise<void> {
     if (this.isDumping) {
       throw 'The queue has dumped the items and is unusable';
     }
@@ -50,7 +50,7 @@ export class TaskQueue {
     this.nextQueue.enqueue({task, type, seq});
     this.moreRecentTypes[type] = seq;
     if (!this.working) {
-      this.execute();
+      return this.execute();
     }
   }
 
