@@ -1,4 +1,4 @@
-/* Copyright © 2018-2021 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2023 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -324,6 +324,12 @@ export function arrayIsSubset(a: any[], b: any[]): boolean {
 
 export function arrayPartition<T>(array: T[], partition: (item: any) => boolean): [T[], T[]] {
   return array.reduce((part, item) => (part[partition(item) ? 0 : 1].push(item), part), [[], []] as [T[], T[]]);
+}
+
+export function arrayPartitionByFunction<T, U, V>(array: T[], p1: (item: T) => U[], p2: (item: T) => V[]): [U[], V[]][] {
+  return array.map(item => {
+    return [p1(item), p2(item)];
+  });
 }
 
 export function swapItems<T extends Array<any>>(item: T): T {
