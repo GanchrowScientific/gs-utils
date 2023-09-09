@@ -51,6 +51,6 @@
     "node": ">=8.0"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.com"
+    "registry": "https://registry.npmjs.org"
   }
 }
