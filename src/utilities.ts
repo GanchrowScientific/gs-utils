@@ -395,3 +395,14 @@ export function isToday(utcMilliSeconds: number): boolean {
 
   return todayMidnight.getTime() <= utcMilliSeconds && utcMilliSeconds < tomorrowMidnight.getTime();
 }
+
+export function countNotUndefinedProperties(obj: Record<any, any>): number {
+  return Object.values(obj || {}).filter(k => k !== undefined).length;
+}
+
+export function removeUndefined(obj: Record<any, any>): Record<any, any> {
+  let objCopy = dup(obj);
+  Object.keys(objCopy).forEach(key => objCopy[key] === undefined && delete objCopy[key]);
+  return objCopy;
+}
+
