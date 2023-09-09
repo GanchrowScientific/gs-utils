@@ -1,4 +1,4 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -6,16 +6,18 @@ import 'source-map-support/register';
 
 import * as sinon from 'sinon';
 import * as pq from 'proxyquire';
-import * as chalk from 'chalk';
+import * as brokenChalk from 'chalk';
 
 import 'jasmine';
 
-import {testWrapper} from '../src/jasmineTestWrapper';
+import { testWrapper } from '../src/jasmineTestWrapper';
 
-import {Logger, getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel}
+import { Logger, getLogger, Level, Emphasis, LoggerOptions, MSG_LEN_UNLIMITED, setGlobalLogLevel }
 from '../src/gsLogger';
 
 const test = testWrapper.init(expect);
+
+const chalk: any = brokenChalk;
 
 let proxyquire = pq.noPreserveCache();
 let mockConsole: sinon.SinonMock;

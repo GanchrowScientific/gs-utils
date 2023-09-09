@@ -1,12 +1,14 @@
-/* Copyright © 2016 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
-import * as chalk from 'chalk';
+import * as brokenChalk from 'chalk';
 import * as nodemailer from 'nodemailer';
-import {OptArgCbFunc, NoArgVoidFunc} from './utilities';
+import { OptArgCbFunc, NoArgVoidFunc } from './utilities';
 
 const SMTP_SERVER = 'smtp-relay.gmail.com';
+
+const chalk: any = brokenChalk;
 
 export const MSG_LEN_UNLIMITED = -1;
 
