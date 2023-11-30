@@ -1,4 +1,4 @@
-/* Copyright © 2016-2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -299,6 +299,23 @@ describe('ConfigLoader', () => {
         ]
       }
     );
+  });
+
+  it('should include yaml files correctly', () => {
+    let loader = new ConfigLoader();
+    let config = loader.loadConfig(getCompletePath('configWithIncludes'));
+    delete config.__INCLUDE_ME__;
+    test.deepEqual(config, {
+      key: {
+        prop1: 1,
+        prop2: {
+          prop2_1: [1, 2, 3],
+          prop2_2: [2, 3, 4]
+        },
+        foo: 1
+      },
+      bar: 123
+    });
   });
 
   it('should throw error when environment is missing in strict environment mode', () => {

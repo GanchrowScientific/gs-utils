@@ -1,12 +1,13 @@
-/* Copyright © 2016-2020 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as fs from 'fs';
-import {getLogger} from './gsLogger';
-import {schemaFactory} from './yamlExtensions';
+
+import { getLogger } from './gsLogger';
+import { schemaFactory } from './yamlExtensions';
 
 const EXECUTION_ENVIRONMENT = 'EXECUTION_ENVIRONMENT';
 const ENVIRONMENTS = 'ENVIRONMENTS';
@@ -16,6 +17,8 @@ const DEFAULT_EXECUTION_ENVIRONMENT = 'DEVELOPMENT';
 const STRICT_ENVIRONMENT_MODE = 'strict_environment_mode';
 
 const logger = getLogger('config-loader');
+
+const INCLUDE_PATTERN = /^#\s+include\s+(.*)\n/;
 
 class ConfigLoaderError extends Error {
   constructor(msg: string) {
@@ -34,7 +37,14 @@ export class ConfigLoader {
   }
 
   private static loadConfig(fileName: string, baseName = ''): any {
-    return ConfigLoader.loadConfigRaw(fs.readFileSync(fileName, 'utf-8'), baseName);
+    let yamlString = fs.readFileSync(fileName, 'utf-8');
+    if (INCLUDE_PATTERN.test(yamlString)) {
+      let baseYamlStringList = RegExp.$1.split(',').map(file => {
+        return fs.readFileSync(path.resolve(baseName, file.trim()), 'utf-8');
+      });
+      yamlString = baseYamlStringList.concat(yamlString).join('\n');
+    }
+    return ConfigLoader.loadConfigRaw(yamlString, baseName);
   }
 
   private static loadConfigRaw(yamlString: string, baseName = '') {

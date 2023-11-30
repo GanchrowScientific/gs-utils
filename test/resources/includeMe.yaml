@@ -1,0 +1,8 @@
+__INCLUDE_ME__: &INCLUDE_ME
+  prop1: 1
+  prop2:
+    prop2_1:
+      - 1
+      - 2
+      - 3
+    prop2_2: [2, 3, 4]
