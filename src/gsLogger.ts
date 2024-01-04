@@ -63,12 +63,16 @@ export class Logger {
 
   public static mailerOptions: MailerOptions;
 
+  private pid: string;
+
   constructor(
     private label: string,
     private logLevel: Level = Logger.defaultLogLevel,
     public maxDebugMessageLength: number = DEFAULT_MAX_DEBUG_MESSAGE_LENGTH,
     private mailer: {transporter?: nodemailer.Transporter, mailerOptions?: MailerOptions} = {}
-  ) { /* */ }
+  ) {
+    this.pid = process.env.GSLOGGER_HOSTNAME_AS_PID ? process.env.HOSTNAME || `${process.pid}` : `${process.pid}`;
+  }
 
   public debug(message: any, options?: LoggerOptions) {
     let emphasis: Emphasis = Emphasis.DEFAULT;
@@ -174,7 +178,7 @@ export class Logger {
     suppressTag = false): string {
     logPrefix = logPrefix ? `${logPrefix} ` : '';
     let messageTag = suppressTag ? '' :
-      `${Level[level]} [${new Date().toISOString()} #${process.pid}] ${this.label} --- `;
+      `${Level[level]} [${new Date().toISOString()} #${this.pid}] ${this.label} --- `;
 
     return `${messageTag}${logPrefix}`;
   }
