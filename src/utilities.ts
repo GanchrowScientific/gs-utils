@@ -1,4 +1,4 @@
-/* Copyright © 2018-2023 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2024 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -405,4 +405,3 @@ export function removeUndefined(obj: Record<any, any>): Record<any, any> {
   Object.keys(objCopy).forEach(key => objCopy[key] === undefined && delete objCopy[key]);
   return objCopy;
 }
-
