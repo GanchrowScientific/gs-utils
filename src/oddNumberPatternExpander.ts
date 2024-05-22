@@ -13,7 +13,7 @@ export const numbersPattern = /([0-9]+)(\s*[.-]+\s*([0-9]+))?/g;
  * @param  {string}   numbersString the pattern of numbers to expand
  * @return {number[]}               the expanded set of numbers
  */
-export function expand(numbersString: string): number[] {
+export function expand(numbersString: string, maxEvents: number = MAX_EVENTS): number[] {
   if (!numbersString) {
     return [];
   }
@@ -25,7 +25,7 @@ export function expand(numbersString: string): number[] {
     lastMatch.forEach(id => matches.add(id));
   } while (lastMatch.length);
   numbersPattern.lastIndex = 0;
-  return Array.from(matches).sort((x, y) => x - y).slice(0, MAX_EVENTS);
+  return Array.from(matches).sort((x, y) => x - y).slice(0, maxEvents);
 }
 
 function matchIteration(numbersString: string): number[] {

@@ -53,5 +53,8 @@ describe('OddNumberPatternExpander', () => {
     test.deepEqual(oddNumberPatternExpander.expand('   10   xxxx.-    13xxx'), [9, 13]);
     test.deepEqual(oddNumberPatternExpander.expand('1-   10   xxxx.-    13xxx'), [1, 3, 5, 7, 9, 13]);
     test.deepEqual(oddNumberPatternExpander.expand('1.5.9.13'), [1, 3, 5, 9, 11, 13]);
+
+    // Second parameter represents the max length of the output array
+    test.deepEqual(oddNumberPatternExpander.expand('1.5.9.13', 3), [1, 3, 5]);
   });
 });
