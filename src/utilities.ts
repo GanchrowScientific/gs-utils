@@ -322,8 +322,16 @@ export function arrayIsSubset(a: any[], b: any[]): boolean {
   return a.every(el => b.includes(el));
 }
 
-export function arrayPartition<T>(array: T[], partition: (item: any) => boolean): [T[], T[]] {
-  return array.reduce((part, item) => (part[partition(item) ? 0 : 1].push(item), part), [[], []] as [T[], T[]]);
+export function arrayPartition<T>(array: T[], partition: (item: any) => boolean, agnostic = false): [T[], T[]] {
+  return array.reduce((part, item) => {
+    let idx = partition(item);
+    if (agnostic) {
+      part[+idx || 0].push(item);
+    } else {
+      part[idx ? 0 : 1].push(item);
+    }
+    return part;
+  }, [[], []] as [T[], T[]]);
 }
 
 export function arrayPartitionByFunction<T, U, V>(array: T[], p1: (item: T) => U[], p2: (item: T) => V[]): [U[], V[]][] {
