@@ -14,6 +14,13 @@ function inheritProperty(to: Object, from: Object, inherit: string, arrayUnion?:
     ;
   } else if (isObject(from[inherit])) {
     to[inherit] = Object.assign({}, dup(from[inherit]), to[inherit]);
+    if (arrayUnion) {
+      arrayUnion.forEach(k => {
+        if (Array.isArray(from[inherit][k]) && Array.isArray(to[inherit][k])) {
+          to[inherit][k] = to[inherit][k].concat(from[inherit][k]);
+        }
+      });
+    }
   } else if (!(inherit in to)) {
     to[inherit] = from[inherit];
   }
