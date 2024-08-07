@@ -1,4 +1,4 @@
-/* Copyright © 2017-2018 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2024 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -28,6 +28,38 @@ describe('SelfExtender', () => {
       foo: {
         inherits: 'bar',
         array: [4]
+      },
+      bar: {
+        array: [4]
+      }
+    };
+
+    test.deepEqual(selfExtender(config), expectConfig);
+
+    // also test mutation
+
+    test.deepEqual(config, expectConfig);
+
+  });
+
+  it('should inherit and create a union of array properties', () => {
+    let config = {
+        foo: {
+          array: [1],
+          arrayUnion: ['array'],
+          inherits: 'bar'
+        },
+        bar: {
+          array: [4]
+        }
+      }
+    ;
+
+    let expectConfig = {
+      foo: {
+        inherits: 'bar',
+        arrayUnion: ['array'],
+        array: [1, 4]
       },
       bar: {
         array: [4]

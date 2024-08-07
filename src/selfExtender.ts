@@ -1,13 +1,17 @@
-/* Copyright © 2017 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2024 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import {dup, isObject, toArray} from './utilities';
 
 const INHERITS = 'inherits';
+const ARRAY_UNION = 'arrayUnion';
 
-function inheritProperty(to: Object, from: Object, inherit: string): void {
+function inheritProperty(to: Object, from: Object, inherit: string, arrayUnion?: string[]): void {
   if (Array.isArray(from[inherit])) {
-    to[inherit] = to[inherit] || dup(from[inherit]);
+    to[inherit] = (arrayUnion || []).includes(inherit) ?
+      (to[inherit] || []).concat(dup(from[inherit]))
+      : to[inherit] || dup(from[inherit])
+    ;
   } else if (isObject(from[inherit])) {
     to[inherit] = Object.assign({}, dup(from[inherit]), to[inherit]);
   } else if (!(inherit in to)) {
@@ -28,7 +32,7 @@ export function selfExtender(config: Object, noInheritKeys?: string[], innerProp
         }
 
         Object.keys(fromInnerConfig).filter(f => !noInheritKeys.includes(f)).forEach(inherit => {
-          inheritProperty(toInnerConfig, fromInnerConfig, inherit);
+          inheritProperty(toInnerConfig, fromInnerConfig, inherit, toInnerConfig && toInnerConfig[ARRAY_UNION]);
         });
       });
     }
