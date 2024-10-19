@@ -1,4 +1,4 @@
-/* Copyright © 2020-2022 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2020-2024 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import { delay } from './delay';
@@ -32,13 +32,17 @@ export class TaskQueue<T> {
   private sequence = 0;
   private shouldPause: Promise<void> = Promise.resolve();
   private eventEmitter = new EventEmitter();
+  private queueDelay: number;
 
-  constructor(concurrency: number, handler: Handler, handleError?: ErrorHandler, discardTask?: Handler, restoredTasks?: TasksDump) {
+  constructor(
+    concurrency: number, handler: Handler, handleError?: ErrorHandler, discardTask?: Handler, restoredTasks?: TasksDump, queueDelay?: number
+  ) {
     this.maxConcurrency = concurrency;
     this.realMaxConcurrency = concurrency;
     this.handler = handler;
     this.handleError = handleError;
     this.discardTask = discardTask;
+    this.queueDelay = queueDelay || 0;
     if (restoredTasks) {
       this.restore(restoredTasks);
     }
@@ -176,7 +180,7 @@ export class TaskQueue<T> {
         }
       }
       // this one is here to avoid blocking the eventloop.
-      await delay(0);
+      await delay(this.queueDelay);
     }
     this.working = false;
   }
