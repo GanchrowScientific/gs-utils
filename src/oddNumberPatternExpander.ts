@@ -20,10 +20,22 @@ export function expand(numbersString: string, maxEvents: number = MAX_EVENTS): n
   numbersPattern.lastIndex = 0;
   let matches: Set<number> = new Set();
   let lastMatch;
-  do {
-    lastMatch = matchIteration(numbersString);
-    lastMatch.forEach(id => matches.add(id));
-  } while (lastMatch.length);
+  try {
+    do {
+      lastMatch = matchIteration(numbersString);
+      lastMatch.forEach(id => matches.add(id));
+    } while (lastMatch.length);
+  } catch (e) {
+    if (e instanceof RangeError) {
+      console.error('Caught RangeError, size: ', matches.size,
+        'numbersString: ', numbersString, 'message: ', e.message
+      );
+    } else {
+      console.error('Caught', e.message, 'numbersString: ', numbersString,
+        'size: ', matches.size
+      );
+    }
+  }
   numbersPattern.lastIndex = 0;
   return Array.from(matches).sort((x, y) => x - y).slice(0, maxEvents);
 }
