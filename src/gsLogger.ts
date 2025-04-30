@@ -26,7 +26,7 @@ function levelString() {
 }
 
 const DEFAULT_LOG_LEVEL = Level.DEBUG;
-const DEFAULT_MAX_DEBUG_MESSAGE_LENGTH = 64;
+const DEFAULT_MAX_DEBUG_MESSAGE_LENGTH = 256;
 const transporter = nodemailer.createTransport({
   host: SMTP_SERVER,
   port: 465,
@@ -74,14 +74,16 @@ export class Logger {
     this.pid = process.env.GSLOGGER_HOSTNAME_AS_PID ? process.env.HOSTNAME || `${process.pid}` : `${process.pid}`;
   }
 
-  public debug(message: any, options?: LoggerOptions) {
+  public debug(message: any, options?: LoggerOptions | string) {
     let emphasis: Emphasis = Emphasis.DEFAULT;
     let maxLength: number;
     let logPrefix: string;
     let suppressTag: boolean;
     let callback: NoArgVoidFunc;
 
-    if (options) {
+    if (typeof options === 'string') {
+      logPrefix = options;
+    } else if (options) {
       if (options.emphasis) {
         emphasis = options.emphasis;
       }
@@ -96,20 +98,36 @@ export class Logger {
     this.logInternal(message, emphasis, Level.DEBUG, callback, maxLength, logPrefix, suppressTag);
   }
 
-  public info(message: any, callback?: NoArgVoidFunc) {
-    this.logInternal(message, Emphasis.NORMAL, Level.INFO, callback);
+  public info(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
+    if (typeof callbackOrPrefix === 'string') {
+      this.logInternal(message, Emphasis.NORMAL, Level.INFO, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
+    } else {
+      this.logInternal(message, Emphasis.NORMAL, Level.INFO, callbackOrPrefix);
+    }
   }
 
-  public warn(message: any, callback?: NoArgVoidFunc) {
-    this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callback);
+  public warn(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
+    if (typeof callbackOrPrefix === 'string') {
+      this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
+    } else {
+      this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callbackOrPrefix);
+    }
   }
 
-  public error(message: any, callback?: NoArgVoidFunc) {
-    this.logInternal(message, Emphasis.STRONG, Level.ERROR, callback);
+  public error(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
+    if (typeof callbackOrPrefix === 'string') {
+      this.logInternal(message, Emphasis.STRONG, Level.ERROR, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
+    } else {
+      this.logInternal(message, Emphasis.STRONG, Level.ERROR, callbackOrPrefix);
+    }
   }
 
-  public fatal(message: any, callback?: NoArgVoidFunc) {
-    this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callback);
+  public fatal(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
+    if (typeof callbackOrPrefix === 'string') {
+      this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
+    } else {
+      this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callbackOrPrefix);
+    }
   }
 
   public installUncaughtExceptionLogger() {
