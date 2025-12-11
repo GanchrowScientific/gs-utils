@@ -1,4 +1,4 @@
-/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2025 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -143,8 +143,9 @@ export class Logger {
       let stringMessage = this.stringify(message, maxLength);
       let fullMessage = this.generatePrefix(level, logPrefix, suppressTag) + stringMessage;
       let logMessage = this.colorMessage(fullMessage, emphasis);
+      let op = (process.env.IS_KUBERNETES || process.env.IS_K8S) && (level === Level.ERROR || level === Level.FATAL) ? 'error' : 'log';
       /* tslint:disable:no-console */
-      console.log(logMessage);
+      console[op](logMessage);
       /* tslint:enable:no-console */
       if (this.shouldSendMail(level)) {
         this.sendEmailNotification(fullMessage, level, callback);
@@ -174,7 +175,7 @@ export class Logger {
         stringMessage = message.toString();
         break;
     }
-    return maxLength === MSG_LEN_UNLIMITED ? stringMessage : stringMessage.substr(0, maxLength);
+    return maxLength === MSG_LEN_UNLIMITED ? stringMessage : stringMessage.slice(0, maxLength);
   }
 
   private colorMessage(fullMessage: string, emphasis: Emphasis): string {
@@ -205,18 +206,19 @@ export class Logger {
     return Math.max(globalLogLevel, this.logLevel);
   }
 
-  private sendEmailNotification(logMessage, level: Level, callback?: OptArgCbFunc) {
+  private sendEmailNotification(logMessage: string, level: Level, callback?: OptArgCbFunc) {
     let mailerOptions = this.mailer.mailerOptions || Logger.mailerOptions;
     (this.mailer.transporter || transporter).sendMail({
       from: mailerOptions.from,
       to: mailerOptions.to,
       subject: mailerOptions.subjectPrefix + ': ' + Level[level],
       text: logMessage
-    }, function (error, info) {
+    }, function (error: Error, info: any) {
       /* tslint:disable:no-console */
       if (error) {
-        console.log(`Failed to send email notification with mailer options: ${JSON.stringify(mailerOptions)}`);
-        console.log(error);
+        let op = process.env.IS_KUBERNETES || process.env.IS_K8S ? 'error' : 'log';
+        console[op](`Failed to send email notification with mailer options: ${JSON.stringify(mailerOptions)}`);
+        console[op](error);
       } else {
         console.log(`Email notification sent to '${mailerOptions.to}': ${info.response}`);
       }
