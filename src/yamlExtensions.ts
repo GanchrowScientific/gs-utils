@@ -1,4 +1,4 @@
-/* Copyright © 2017-2021 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2017-2026 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 import * as path from 'path';
@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { Type, Schema, DEFAULT_SAFE_SCHEMA } from 'js-yaml';
 
 import { RangeExclusive, RangeInclusive } from './range';
-import { isObject, shuffleArray, flattenArray as flatten } from './utilities';
+import { lastItem as last, isObject, shuffleArray, flattenArray as flatten } from './utilities';
 
 class RandomElement extends Type {
   constructor() {
@@ -53,7 +53,17 @@ class Concat extends Type {
         if (process.env[varName] === undefined && fallback === undefined) {
           throw Error(`${varName} does not exist and no fallback has been specified`);
         }
-        return process.env[varName] ?? fallback;
+        let res = process.env[varName];
+        if (!res) {
+          for (let i = 1; i < items.length - 1; i++) {
+            res = res || process.env[items[i]];
+            if (res) {
+              break;
+            }
+          }
+          res = res || last(items);
+        }
+        return res;
       },
       resolve(items) {
         return Array.isArray(items);
