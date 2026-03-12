@@ -9,7 +9,7 @@
     "config"
   ],
   "repository": "https://github.com/GanchrowScientific/gs-utils",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
@@ -50,8 +50,5 @@
   },
   "engines": {
     "node": ">=8.0"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
   }
 }

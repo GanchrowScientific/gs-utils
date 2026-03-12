@@ -1,0 +1,10 @@
+key1: !loadFromEnv
+  - value1
+  - value2
+  - value3
+  - value4
+  - value5
+key2: !loadFromEnv
+  - value1
+  - SHELL
+  - value3

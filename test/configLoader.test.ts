@@ -1,4 +1,4 @@
-/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2026 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -38,6 +38,14 @@ describe('ConfigLoader', () => {
       ConfigLoader.viewEnvironmentsRaw(fs.readFileSync(getCompletePath('configWithMultipleEnvironments'), 'utf-8')),
       ['DEVELOPMENT', 'STAGING']
     );
+  });
+
+  it('should load config from env', () => {
+    let config = loadConfig(getCompletePath('configWithLoadFromEnv'));
+    test.deepEqual(config, {
+      key1: 'value5',
+      key2: '/bin/bash'
+    });
   });
 
   it('should load config simple', () => {
