@@ -1,0 +1,93 @@
+include:
+  - project: 'ganchrow/utils/pipeline-templates'
+    ref: master
+    file: node-dependencies-cache.yml
+
+
+stages:
+  - install_dependencies
+  - post_install
+  - test
+  - publish
+
+variables: &default_variables
+  TAG_LATEST: latest
+  BRANCH_TAG_LATEST: $CI_COMMIT_REF_SLUG-$TAG_LATEST
+  TAG_COMMIT: $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  DOCKER_HOST: tcp://thedockerhost:2375/
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ''
+  FF_USE_FASTZIP: "true"
+  ARTIFACT_COMPRESSION_LEVEL: "fast"
+  CACHE_COMPRESSION_LEVEL: "fast"
+  GIT_SUBMODULE_STRATEGY: recursive
+  NPM_CONFIG_LOGLEVEL: verbose
+
+services:
+  - name: docker:dind
+    alias: thedockerhost
+    entrypoint: ["dockerd-entrypoint.sh"]
+    command: ["--tls=false"]
+
+image: registry-gitlab.ganchrow.com/ganchrow/gsdockerfiles:nodejs20-dev
+
+
+post_install:
+  stage: post_install
+  script:
+    - npm run prepare
+  dependencies:
+    - install_dependencies
+  artifacts:
+    when: always
+    paths:
+      - target/
+      - lib/
+
+test:
+  stage: test
+  script:
+    - ./scripts/test.sh
+  dependencies:
+    - post_install
+
+publish-new-patch:
+  variables:
+    <<: *default_variables
+    UPDATE_TYPE: patch
+  extends: .update-version
+
+publish-new-minor:
+  variables:
+    <<: *default_variables
+    UPDATE_TYPE: minor
+  extends: .update-version
+
+publish-new-major:
+  variables:
+    <<: *default_variables
+    UPDATE_TYPE: major
+  extends: .update-version
+
+.update-version:
+  stage: publish
+  before_script:
+    - git remote set-url origin https://oauth2:$GITLAB_PUBLISH_TOKEN@gitlab.ganchrow.com/ganchrow/gs-utils.git
+    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+    - git checkout $CI_COMMIT_REF_NAME
+  script:
+    - ls -la lib/
+    - VERSION=$(npm version "${UPDATE_TYPE}" -no-git-tag-version --force | cut -c 1-)
+    - echo $VERSION
+    - npm publish
+    - git add .
+    - git commit -m "[skip ci] - new version deploy $VERSION"
+    - git tag -a $VERSION -m "$VERSION"
+    - git push origin master --follow-tags
+  only:
+    - master
+    - tags
+  dependencies:
+    - post_install
+  when: manual
