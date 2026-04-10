@@ -1,4 +1,4 @@
-/* Copyright © 2016-2023 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2026 Ganchrow Scientific, SA all rights reserved */
 'use strict';
 
 // include this line to fix stack traces
@@ -38,6 +38,19 @@ describe('ConfigLoader', () => {
       ConfigLoader.viewEnvironmentsRaw(fs.readFileSync(getCompletePath('configWithMultipleEnvironments'), 'utf-8')),
       ['DEVELOPMENT', 'STAGING']
     );
+  });
+
+  it('should load config from env', () => {
+    process.env.TEST_VAR_SECOND = 'mocked-value';
+    try {
+      let config = loadConfig(getCompletePath('configWithLoadFromEnv'));
+      test.deepEqual(config, {
+        key1: 'value5',
+        key2: 'mocked-value'
+      });
+    } finally {
+      delete process.env.TEST_VAR_SECOND;
+    }
   });
 
   it('should load config simple', () => {
@@ -163,6 +176,100 @@ describe('ConfigLoader', () => {
       configPatterns = loader.loadConfig(getCompletePath('configPatterns'));
       test.deepEqual(configPatterns, {
         key1: ['value1', 'value2']
+      });
+    });
+  });
+
+  it('should load config with advanced patterns', () => {
+    // 1. `?` makes the group optional — both PRODUCTION_TEST and PRODUCTION_PROFILE_TEST match
+    ['PRODUCTION_PROFILE_TEST', 'PRODUCTION_TEST'].forEach((env) => {
+      const loader = new ConfigLoader(env);
+      const configPatterns = loader.loadConfig(getCompletePath('configAdvancedPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
+        key2: ['value2', 'value3'],
+        keyString: 'string',
+        keyNumber: 0,
+      });
+    });
+
+    // 2. Matches the PRODUCTION_PROFILE_* wildcard pattern
+    ['PRODUCTION_PROFILE_FOO', 'PRODUCTION_PROFILE_', 'PRODUCTION_PROFILE_ANYTHING'].forEach((env) => {
+      const loader = new ConfigLoader(env);
+      const configPatterns = loader.loadConfig(getCompletePath('configAdvancedPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
+        key3: ['value10', 'value11'],
+        keyNumber: 1,
+      });
+    });
+
+    // 3. No match → falls back to base config only
+    ['DEVELOPMENT', 'STAGING', 'PRODUCTIONTEST'].forEach((env) => {
+      const loader = new ConfigLoader(env);
+      const configPatterns = loader.loadConfig(getCompletePath('configAdvancedPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
+      });
+    });
+
+    // 4. Exact match takes priority over pattern match
+    {
+      const loader = new ConfigLoader('EXACT_ENV');
+      const config = loader.loadConfigRaw(yaml.dump({
+        key1: 'base',
+        ENVIRONMENTS: {
+          'EXACT_ENV': { key2: 'exact' },
+          'EXACT_*': { key2: 'pattern' },
+        }
+      }));
+      test.deepEqual(config, { key1: 'base', key2: 'exact' });
+    }
+
+    // 5. Anchored regex prevents substring matches
+    {
+      const loader = new ConfigLoader('XPRODUCTION_PROFILE_TESTY');
+      const configPatterns = loader.loadConfig(getCompletePath('configAdvancedPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
+      });
+    }
+
+    // 6. `?` on a single char (0 or 1 of preceding char)
+    {
+      const loaderA = new ConfigLoader('PRODUCTION_X');
+      const loaderB = new ConfigLoader('PRODCTION_X');
+      const data = yaml.dump({
+        key1: 'base',
+        ENVIRONMENTS: {
+          'PRODU?CTION_*': { key2: 'matched' },
+        }
+      });
+      test.deepEqual(loaderA.loadConfigRaw(data), { key1: 'base', key2: 'matched' });
+      test.deepEqual(loaderB.loadConfigRaw(data), { key1: 'base', key2: 'matched' });
+    }
+
+    // 7. First matching pattern wins (find returns first)
+    {
+      const loader = new ConfigLoader('PRODUCTION_ABC');
+      const config = loader.loadConfigRaw(yaml.dump({
+        key1: 'base',
+        ENVIRONMENTS: {
+          'PRODUCTION_*': { key2: 'first_pattern' },
+          'PRODUCTION_ABC*': { key2: 'second_pattern' },
+        }
+      }));
+      test.deepEqual(config, { key1: 'base', key2: 'first_pattern' });
+    }
+
+    // 8. Various anti-substring-match cases — padded strings must NOT match
+    [ 'XPRODUCTION_TEST', 'PRODUCTION_TESTX', 'XPRODUCTION_TESTY',
+     'XPRODUCTION_PROFILE_TEST', '  PRODUCTION_TEST', 'PRODUCTION_TEST  '
+    ].forEach((env) => {
+      const loader = new ConfigLoader(env);
+      const configPatterns = loader.loadConfig(getCompletePath('configAdvancedPatterns'));
+      test.deepEqual(configPatterns, {
+        key1: ['value1', 'value2'],
       });
     });
   });

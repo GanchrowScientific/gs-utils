@@ -98,7 +98,7 @@ export class ConfigLoader {
     if (allEnvironments[this.executionEnvironment]) {
       return allEnvironments[this.executionEnvironment];
     }
-    let possibleEnvironmentKeys = Object.keys(allEnvironments).filter(e => /\*$/.test(e));
+    let possibleEnvironmentKeys = Object.keys(allEnvironments).filter(e => /[*?]/.test(e));
     let curEnv = possibleEnvironmentKeys.find(env => this.generateEnvironmentExpression(env).test(this.executionEnvironment));
     let config = allEnvironments[curEnv];
     if (!config && strictEnvironmentMode) {
@@ -108,7 +108,7 @@ export class ConfigLoader {
   }
 
   private generateEnvironmentExpression(env: string): RegExp {
-    return new RegExp(env.replace(/[.]?\*$/, '.*'));
+    return new RegExp(`^${env.replace(/\*/, '.*')}$`);
   }
 }
 

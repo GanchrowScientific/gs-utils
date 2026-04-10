@@ -1,0 +1,15 @@
+key1:
+  - value1
+  - value2
+ENVIRONMENTS:
+  PRODUCTION_(PROFILE_)?TEST:
+    key2:
+      - value2
+      - value3
+    keyString: string
+    keyNumber: 0
+  PRODUCTION_PROFILE_*:
+    key3:
+      - value10
+      - value11
+    keyNumber: 1
