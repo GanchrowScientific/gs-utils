@@ -1,47 +1,29 @@
-include:
-  - project: 'ganchrow/utils/pipeline-templates'
-    ref: master
-    file: node-dependencies-cache.yml
-
-
 stages:
-  - install_dependencies
-  - post_install
+  - build
   - test
   - publish
 
 variables: &default_variables
-  TAG_LATEST: latest
-  BRANCH_TAG_LATEST: $CI_COMMIT_REF_SLUG-$TAG_LATEST
-  TAG_COMMIT: $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
-  DOCKER_HOST: tcp://thedockerhost:2375/
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ''
   FF_USE_FASTZIP: "true"
   ARTIFACT_COMPRESSION_LEVEL: "fast"
   CACHE_COMPRESSION_LEVEL: "fast"
-  GIT_SUBMODULE_STRATEGY: recursive
   NPM_CONFIG_LOGLEVEL: verbose
-
-services:
-  - name: docker:dind
-    alias: thedockerhost
-    entrypoint: ["dockerd-entrypoint.sh"]
-    command: ["--tls=false"]
 
 image: registry-gitlab.ganchrow.com/ganchrow/gsdockerfiles:nodejs20-dev
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
 
-post_install:
-  stage: post_install
+build:
+  stage: build
   script:
-    - npm install --ignore-scripts
-    - npm run prepare
-  dependencies:
-    - install_dependencies
+    - npm install
   artifacts:
     when: always
     paths:
+      - node_modules/
       - target/
       - lib/
 
@@ -50,7 +32,7 @@ test:
   script:
     - ./scripts/test.sh
   dependencies:
-    - post_install
+    - build
 
 publish-new-patch:
   variables:
@@ -90,5 +72,5 @@ publish-new-major:
     - master
     - tags
   dependencies:
-    - post_install
+    - build
   when: manual
