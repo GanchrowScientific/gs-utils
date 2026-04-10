@@ -5,6 +5,6 @@ key1: !loadFromEnv
   - value4
   - value5
 key2: !loadFromEnv
-  - value1
-  - SHELL
-  - value3
+  - TEST_VAR_FIRST
+  - TEST_VAR_SECOND
+  - fallback_value

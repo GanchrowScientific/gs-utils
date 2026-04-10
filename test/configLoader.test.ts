@@ -41,11 +41,16 @@ describe('ConfigLoader', () => {
   });
 
   it('should load config from env', () => {
-    let config = loadConfig(getCompletePath('configWithLoadFromEnv'));
-    test.deepEqual(config, {
-      key1: 'value5',
-      key2: '/bin/bash'
-    });
+    process.env.TEST_VAR_SECOND = 'mocked-value';
+    try {
+      let config = loadConfig(getCompletePath('configWithLoadFromEnv'));
+      test.deepEqual(config, {
+        key1: 'value5',
+        key2: 'mocked-value'
+      });
+    } finally {
+      delete process.env.TEST_VAR_SECOND;
+    }
   });
 
   it('should load config simple', () => {
