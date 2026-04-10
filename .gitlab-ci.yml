@@ -35,6 +35,7 @@ image: registry-gitlab.ganchrow.com/ganchrow/gsdockerfiles:nodejs20-dev
 post_install:
   stage: post_install
   script:
+    - npm ci --ignore-scripts
     - npm run prepare
   dependencies:
     - install_dependencies
