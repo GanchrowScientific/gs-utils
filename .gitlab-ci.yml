@@ -63,7 +63,7 @@ publish-new-major:
     - ls -la lib/
     - VERSION=$(npm version "${UPDATE_TYPE}" -no-git-tag-version --force | cut -c 1-)
     - echo $VERSION
-    - npm publish
+    - npm publish --ignore-scripts
     - git add .
     - git commit -m "[skip ci] - new version deploy $VERSION"
     - git tag -a $VERSION -m "$VERSION"
