@@ -168,7 +168,7 @@ class Expand extends Type {
       kind: 'mapping',
       construct(data: { expand: number; content: Object }) {
         return (new Array(data.expand)).fill(0).map((_, i) => {
-          return JSON.parse(JSON.stringify(data.content).replace(/%%%/g, `${i}`));
+          return JSON.parse(JSON.stringify(data.content).replace(/%%%/g, `${i}`).replace(/%expand%/g, `${data.expand}`));
         });
       },
       resolve(data) {
