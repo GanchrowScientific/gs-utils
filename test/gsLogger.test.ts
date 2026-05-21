@@ -436,7 +436,10 @@ let sendMailSpy: sinon.SinonSpy;
       it('error: accepts a LoggerOptions second arg with timestamp', () => {
         let logger = getLogger('per-call-error', Level.DEBUG);
 
-        mockConsole.expects('log').withExactArgs(chalk.red(
+        // ERROR/FATAL route to console.error when IS_KUBERNETES is truthy
+        // (see logInternal's `op` resolution). The existing "should return
+        // log level" test at the top of this file uses the same conditional.
+        mockConsole.expects(process.env.IS_KUBERNETES ? 'error' : 'log').withExactArgs(chalk.red(
           `ERROR [2026-05-21T10:00:00.000Z #${process.pid}] per-call-error --- msg`));
 
         logger.error('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
@@ -447,7 +450,7 @@ let sendMailSpy: sinon.SinonSpy;
       it('fatal: accepts a LoggerOptions second arg with timestamp', () => {
         let logger = getLogger('per-call-fatal', Level.DEBUG);
 
-        mockConsole.expects('log').withExactArgs(chalk.bgRed.white(
+        mockConsole.expects(process.env.IS_KUBERNETES ? 'error' : 'log').withExactArgs(chalk.bgRed.white(
           `FATAL [2026-05-21T10:00:00.000Z #${process.pid}] per-call-fatal --- msg`));
 
         logger.fatal('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
@@ -574,7 +577,8 @@ let sendMailSpy: sinon.SinonSpy;
       it('error: falls back to wall-clock on invalid timestamp', () => {
         let logger = getLogger('bad-error', Level.DEBUG);
 
-        mockConsole.expects('log').withExactArgs(chalk.red(
+        // ERROR routes to console.error under IS_KUBERNETES (see notes above).
+        mockConsole.expects(process.env.IS_KUBERNETES ? 'error' : 'log').withExactArgs(chalk.red(
           `ERROR [NotADate #${process.pid}] bad-error --- msg`));
 
         logger.error('msg', { timestamp: 'wat' });
@@ -585,7 +589,7 @@ let sendMailSpy: sinon.SinonSpy;
       it('fatal: falls back to wall-clock on invalid timestamp', () => {
         let logger = getLogger('bad-fatal', Level.DEBUG);
 
-        mockConsole.expects('log').withExactArgs(chalk.bgRed.white(
+        mockConsole.expects(process.env.IS_KUBERNETES ? 'error' : 'log').withExactArgs(chalk.bgRed.white(
           `FATAL [NotADate #${process.pid}] bad-fatal --- msg`));
 
         logger.fatal('msg', { timestamp: 'wat' });
@@ -605,7 +609,8 @@ let sendMailSpy: sinon.SinonSpy;
         });
 
         let logger = module.getLogger('mailer-per-call');
-        mockConsole.expects('log');
+        // FATAL routes to console.error under IS_KUBERNETES.
+        mockConsole.expects(process.env.IS_KUBERNETES ? 'error' : 'log');
         logger.fatal('boom', { timestamp: '2026-05-21T10:00:00.000Z' });
 
         test.strictEqual(sendMailSpy.callCount, 1);
