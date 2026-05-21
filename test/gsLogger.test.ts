@@ -403,24 +403,57 @@ let sendMailSpy: sinon.SinonSpy;
         mockConsole.verify();
       });
 
-      it.each(['info', 'warn', 'error', 'fatal'] as const)(
-        '%s: accepts a LoggerOptions second arg with timestamp',
-        (level) => {
-          let logger: any = getLogger(`per-call-${level}`, Level.DEBUG);
-          // Each level wraps its prefix differently via chalk; we only assert
-          // that the *stamp* appears in whatever console.log receives.
-          let captured: string | undefined;
-          mockConsole.expects('log').callsFake((line: string) => {
-            captured = line;
-          });
+      // One test per level — `it.each` isn't available in the jasmine
+      // version this repo uses, so we spell out info/warn/error/fatal
+      // separately. Each level wraps its prefix in a different chalk style
+      // (NORMAL -> stripColor, MEDIUM -> cyan, STRONG -> red, VERY_STRONG ->
+      // bgRed.white) and the assertions use that exact wrapper, matching
+      // the style of the legacy "should return log level" test at the top
+      // of this file.
 
-          logger[level]('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+      it('info: accepts a LoggerOptions second arg with timestamp', () => {
+        let logger = getLogger('per-call-info', Level.DEBUG);
 
-          mockConsole.verify();
-          test.ok(captured && captured.includes('2026-05-21T10:00:00.000Z'));
-          test.ok(captured && !captured.includes('NotADate'));
-        },
-      );
+        mockConsole.expects('log').withExactArgs(
+          `INFO [2026-05-21T10:00:00.000Z #${process.pid}] per-call-info --- msg`);
+
+        logger.info('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        mockConsole.verify();
+      });
+
+      it('warn: accepts a LoggerOptions second arg with timestamp', () => {
+        let logger = getLogger('per-call-warn', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.cyan(
+          `WARN [2026-05-21T10:00:00.000Z #${process.pid}] per-call-warn --- msg`));
+
+        logger.warn('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        mockConsole.verify();
+      });
+
+      it('error: accepts a LoggerOptions second arg with timestamp', () => {
+        let logger = getLogger('per-call-error', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.red(
+          `ERROR [2026-05-21T10:00:00.000Z #${process.pid}] per-call-error --- msg`));
+
+        logger.error('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        mockConsole.verify();
+      });
+
+      it('fatal: accepts a LoggerOptions second arg with timestamp', () => {
+        let logger = getLogger('per-call-fatal', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.bgRed.white(
+          `FATAL [2026-05-21T10:00:00.000Z #${process.pid}] per-call-fatal --- msg`));
+
+        logger.fatal('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        mockConsole.verify();
+      });
 
       it('info: preserves the legacy (message, logPrefix) two-arg form', () => {
         let logger = getLogger('legacy', Level.DEBUG);
@@ -511,21 +544,52 @@ let sendMailSpy: sinon.SinonSpy;
         mockConsole.verify();
       });
 
-      it('falls back to wall-clock on invalid timestamp via info/warn/error/fatal', () => {
-        let logger: any = getLogger('bad-stamp-levels', Level.DEBUG);
-        // Each level's wrapper (chalk colour) is verified loosely by
-        // checking the captured line contains the fallback marker.
-        for (const level of ['info', 'warn', 'error', 'fatal']) {
-          let captured: string | undefined;
-          mockConsole.expects('log').callsFake((line: string) => {
-            captured = line;
-          });
+      // Per-level fallback tests, one apiece (no it.each / for-loop) so
+      // failures point at the specific level that broke. Each asserts the
+      // chalk-wrapped output uses the wall-clock fallback (`NotADate`)
+      // when the supplied timestamp doesn't parse.
 
-          logger[level]('msg', { timestamp: 'wat' });
+      it('info: falls back to wall-clock on invalid timestamp', () => {
+        let logger = getLogger('bad-info', Level.DEBUG);
 
-          test.ok(captured && captured.includes('NotADate'));
-          test.ok(captured && !captured.includes('wat'));
-        }
+        mockConsole.expects('log').withExactArgs(
+          `INFO [NotADate #${process.pid}] bad-info --- msg`);
+
+        logger.info('msg', { timestamp: 'wat' });
+
+        mockConsole.verify();
+      });
+
+      it('warn: falls back to wall-clock on invalid timestamp', () => {
+        let logger = getLogger('bad-warn', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.cyan(
+          `WARN [NotADate #${process.pid}] bad-warn --- msg`));
+
+        logger.warn('msg', { timestamp: 'wat' });
+
+        mockConsole.verify();
+      });
+
+      it('error: falls back to wall-clock on invalid timestamp', () => {
+        let logger = getLogger('bad-error', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.red(
+          `ERROR [NotADate #${process.pid}] bad-error --- msg`));
+
+        logger.error('msg', { timestamp: 'wat' });
+
+        mockConsole.verify();
+      });
+
+      it('fatal: falls back to wall-clock on invalid timestamp', () => {
+        let logger = getLogger('bad-fatal', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(chalk.bgRed.white(
+          `FATAL [NotADate #${process.pid}] bad-fatal --- msg`));
+
+        logger.fatal('msg', { timestamp: 'wat' });
+
         mockConsole.verify();
       });
 
