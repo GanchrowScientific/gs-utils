@@ -373,6 +373,187 @@ let sendMailSpy: sinon.SinonSpy;
 
       mockConsole.verify();
     });
+
+    /**
+     * Tests for the per-call `timestamp` field on `LoggerOptions`. When the
+     * caller supplies it on a log call, the prefix uses that ISO verbatim;
+     * when omitted, the prefix falls back to `new Date().toISOString()` and
+     * the outer beforeEach's stub returns `NotADate`.
+     */
+    describe('per-call timestamp option', () => {
+      it('debug: uses the supplied timestamp instead of the wall-clock', () => {
+        let logger = getLogger('per-call', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `DEBUG [2026-05-21T10:00:00.000Z #${process.pid}] per-call --- with stamp`);
+
+        logger.debug('with stamp', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        mockConsole.verify();
+      });
+
+      it('debug: falls back to wall-clock when timestamp omitted', () => {
+        let logger = getLogger('per-call', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `DEBUG [NotADate #${process.pid}] per-call --- no stamp`);
+
+        logger.debug('no stamp');
+
+        mockConsole.verify();
+      });
+
+      it.each(['info', 'warn', 'error', 'fatal'] as const)(
+        '%s: accepts a LoggerOptions second arg with timestamp',
+        (level) => {
+          let logger: any = getLogger(`per-call-${level}`, Level.DEBUG);
+          // Each level wraps its prefix differently via chalk; we only assert
+          // that the *stamp* appears in whatever console.log receives.
+          let captured: string | undefined;
+          mockConsole.expects('log').callsFake((line: string) => {
+            captured = line;
+          });
+
+          logger[level]('msg', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+          mockConsole.verify();
+          test.ok(captured && captured.includes('2026-05-21T10:00:00.000Z'));
+          test.ok(captured && !captured.includes('NotADate'));
+        },
+      );
+
+      it('info: preserves the legacy (message, logPrefix) two-arg form', () => {
+        let logger = getLogger('legacy', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `INFO [NotADate #${process.pid}] legacy --- |pfx| hello`);
+
+        logger.info('hello', '|pfx|');
+
+        mockConsole.verify();
+      });
+
+      it('info: preserves the legacy (message, callback) two-arg form', done => {
+        let logger = getLogger('legacy-cb', Level.DEBUG);
+        mockConsole.expects('log').withExactArgs(
+          `INFO [NotADate #${process.pid}] legacy-cb --- hi`);
+
+        logger.info('hi', () => {
+          mockConsole.verify();
+          done();
+        });
+      });
+
+      it('info: LoggerOptions callback is invoked on next tick', done => {
+        let logger = getLogger('cb-in-opts', Level.DEBUG);
+        mockConsole.expects('log');
+        logger.info('hi', {
+          timestamp: '2026-05-21T10:00:00.000Z',
+          callback: () => {
+            mockConsole.verify();
+            done();
+          },
+        });
+      });
+
+      it('info: trailing callback still fires when LoggerOptions has no callback field', done => {
+        // Backward compat: callers historically pass the callback as the
+        // third positional arg. The new options form still respects that as
+        // a fallback when `options.callback` isn't provided.
+        let logger = getLogger('trailing-cb', Level.DEBUG);
+        mockConsole.expects('log');
+        logger.info('hi', { timestamp: '2026-05-21T10:00:00.000Z' }, () => {
+          mockConsole.verify();
+          done();
+        });
+      });
+
+      /**
+       * Validation: when the caller-supplied `timestamp` doesn't parse as a
+       * date, the prefix MUST fall back to the wall-clock (`NotADate` in
+       * these tests because of the outer toISOString stub). This protects
+       * downstream log aggregators from being fed garbage in the timestamp
+       * slot when a code path computes a malformed value.
+       */
+      it('falls back to wall-clock when timestamp is a non-date string', () => {
+        let logger = getLogger('bad-stamp', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `DEBUG [NotADate #${process.pid}] bad-stamp --- garbage in`);
+
+        logger.debug('garbage in', { timestamp: 'not a real date' });
+
+        mockConsole.verify();
+      });
+
+      it('falls back to wall-clock when timestamp is an empty string', () => {
+        let logger = getLogger('empty-stamp', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `DEBUG [NotADate #${process.pid}] empty-stamp --- empty`);
+
+        logger.debug('empty', { timestamp: '' });
+
+        mockConsole.verify();
+      });
+
+      it('falls back to wall-clock when timestamp is null/undefined-equivalent', () => {
+        // The Date constructor would treat `null` as the Unix epoch (valid
+        // but almost certainly unintended), so the normaliser short-circuits
+        // null/undefined to the default before touching `new Date(...)`.
+        let logger: any = getLogger('null-stamp', Level.DEBUG);
+
+        mockConsole.expects('log').withExactArgs(
+          `DEBUG [NotADate #${process.pid}] null-stamp --- null in`);
+
+        logger.debug('null in', { timestamp: null });
+
+        mockConsole.verify();
+      });
+
+      it('falls back to wall-clock on invalid timestamp via info/warn/error/fatal', () => {
+        let logger: any = getLogger('bad-stamp-levels', Level.DEBUG);
+        // Each level's wrapper (chalk colour) is verified loosely by
+        // checking the captured line contains the fallback marker.
+        for (const level of ['info', 'warn', 'error', 'fatal']) {
+          let captured: string | undefined;
+          mockConsole.expects('log').callsFake((line: string) => {
+            captured = line;
+          });
+
+          logger[level]('msg', { timestamp: 'wat' });
+
+          test.ok(captured && captured.includes('NotADate'));
+          test.ok(captured && !captured.includes('wat'));
+        }
+        mockConsole.verify();
+      });
+
+      it('passes the supplied timestamp to the mailed text body', () => {
+        // The email body comes from `fullMessage` which is built from
+        // generatePrefix — so the per-call stamp must appear there too.
+        let module = createMocks();
+        module.setUpMailer({
+          to: 'me',
+          from: 'you',
+          subjectPrefix: 'Prefix',
+          minLogLevel: module.Level.FATAL,
+        });
+
+        let logger = module.getLogger('mailer-per-call');
+        mockConsole.expects('log');
+        logger.fatal('boom', { timestamp: '2026-05-21T10:00:00.000Z' });
+
+        test.strictEqual(sendMailSpy.callCount, 1);
+        test.deepEqual(sendMailSpy.firstCall.args[0], {
+          from: 'you',
+          to: 'me',
+          subject: 'Prefix: FATAL',
+          text: `FATAL [2026-05-21T10:00:00.000Z #${process.pid}] mailer-per-call --- boom`,
+        });
+        mockConsole.verify();
+      });
+    });
   });
   process.env.IS_KUBERNETES = undefined;
 });

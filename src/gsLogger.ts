@@ -42,6 +42,21 @@ export interface LoggerOptions {
   emphasis?: Emphasis;
   suppressTag?: boolean;
   callback?: NoArgVoidFunc;
+  /**
+   * Optional ISO timestamp to embed in the log-line prefix instead of the
+   * wall-clock at emission. When omitted, the prefix uses
+   * `new Date().toISOString()` (legacy behaviour).
+   *
+   * Intended for callers that need the prefix timestamp to reflect a
+   * different moment than the emission instant — for example, recording the
+   * time a downstream operation actually started rather than the time the
+   * log line was flushed. Caller is responsible for producing a valid ISO
+   * string; nothing is validated here.
+   *
+   * Backward-compatible: pre-existing callers that don't pass this field
+   * keep the previous `new Date().toISOString()` behaviour exactly.
+   */
+  timestamp?: string;
 }
 
 export interface MailerOptions {
@@ -80,6 +95,7 @@ export class Logger {
     let logPrefix: string;
     let suppressTag: boolean;
     let callback: NoArgVoidFunc;
+    let timestamp: string;
 
     if (typeof options === 'string') {
       logPrefix = options;
@@ -91,43 +107,71 @@ export class Logger {
       logPrefix = options.logPrefix;
       suppressTag = options.suppressTag;
       callback = options.callback;
+      timestamp = options.timestamp;
     }
 
     maxLength = typeof maxLength === 'number' ? maxLength : this.maxDebugMessageLength;
 
-    this.logInternal(message, emphasis, Level.DEBUG, callback, maxLength, logPrefix, suppressTag);
+    this.logInternal(message, emphasis, Level.DEBUG, callback, maxLength, logPrefix, suppressTag, timestamp);
   }
 
-  public info(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
-    if (typeof callbackOrPrefix === 'string') {
-      this.logInternal(message, Emphasis.NORMAL, Level.INFO, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
-    } else {
-      this.logInternal(message, Emphasis.NORMAL, Level.INFO, callbackOrPrefix);
-    }
+  public info(message: any, callbackOrPrefixOrOptions?: string | NoArgVoidFunc | LoggerOptions, callback?: NoArgVoidFunc) {
+    const { logPrefix, cb, timestamp } = this.resolveLevelArgs(callbackOrPrefixOrOptions, callback);
+    this.logInternal(message, Emphasis.NORMAL, Level.INFO, cb, MSG_LEN_UNLIMITED, logPrefix, undefined, timestamp);
   }
 
-  public warn(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
-    if (typeof callbackOrPrefix === 'string') {
-      this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
-    } else {
-      this.logInternal(message, Emphasis.MEDIUM, Level.WARN, callbackOrPrefix);
-    }
+  public warn(message: any, callbackOrPrefixOrOptions?: string | NoArgVoidFunc | LoggerOptions, callback?: NoArgVoidFunc) {
+    const { logPrefix, cb, timestamp } = this.resolveLevelArgs(callbackOrPrefixOrOptions, callback);
+    this.logInternal(message, Emphasis.MEDIUM, Level.WARN, cb, MSG_LEN_UNLIMITED, logPrefix, undefined, timestamp);
   }
 
-  public error(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
-    if (typeof callbackOrPrefix === 'string') {
-      this.logInternal(message, Emphasis.STRONG, Level.ERROR, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
-    } else {
-      this.logInternal(message, Emphasis.STRONG, Level.ERROR, callbackOrPrefix);
-    }
+  public error(message: any, callbackOrPrefixOrOptions?: string | NoArgVoidFunc | LoggerOptions, callback?: NoArgVoidFunc) {
+    const { logPrefix, cb, timestamp } = this.resolveLevelArgs(callbackOrPrefixOrOptions, callback);
+    this.logInternal(message, Emphasis.STRONG, Level.ERROR, cb, MSG_LEN_UNLIMITED, logPrefix, undefined, timestamp);
   }
 
-  public fatal(message: any, callbackOrPrefix?: string | NoArgVoidFunc, callback?: NoArgVoidFunc) {
-    if (typeof callbackOrPrefix === 'string') {
-      this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callback, MSG_LEN_UNLIMITED, callbackOrPrefix);
-    } else {
-      this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, callbackOrPrefix);
+  public fatal(message: any, callbackOrPrefixOrOptions?: string | NoArgVoidFunc | LoggerOptions, callback?: NoArgVoidFunc) {
+    const { logPrefix, cb, timestamp } = this.resolveLevelArgs(callbackOrPrefixOrOptions, callback);
+    this.logInternal(message, Emphasis.VERY_STRONG, Level.FATAL, cb, MSG_LEN_UNLIMITED, logPrefix, undefined, timestamp);
+  }
+
+  /**
+   * Disambiguate the polymorphic second argument used by info/warn/error/fatal.
+   *
+   * Historical signature: `(message, prefixOrCallback?, callback?)` — the
+   * second arg could be a `logPrefix` string OR a `NoArgVoidFunc` callback.
+   * We extend it here so the second arg can ALSO be a `LoggerOptions` object,
+   * which lets callers pass `{ timestamp, logPrefix, callback }` per call
+   * without changing the existing call sites.
+   *
+   * Returns a normalised triple { logPrefix, cb, timestamp } that the level
+   * methods feed straight into `logInternal`. Keeping this in one place keeps
+   * info/warn/error/fatal short and identical in shape.
+   */
+  private resolveLevelArgs(
+    arg: string | NoArgVoidFunc | LoggerOptions | undefined,
+    cbArg: NoArgVoidFunc | undefined,
+  ): { logPrefix?: string; cb?: NoArgVoidFunc; timestamp?: string } {
+    if (typeof arg === 'string') {
+      // Legacy two-arg form: (message, logPrefix, callback?)
+      return { logPrefix: arg, cb: cbArg };
     }
+    if (typeof arg === 'function') {
+      // Legacy: (message, callback)
+      return { cb: arg };
+    }
+    if (arg && typeof arg === 'object') {
+      // New: (message, { timestamp, logPrefix, callback })
+      // Per-call `callback` on the options object wins over a trailing one,
+      // matching how `debug` already behaves when both are supplied.
+      return {
+        logPrefix: arg.logPrefix,
+        cb: arg.callback ?? cbArg,
+        timestamp: arg.timestamp,
+      };
+    }
+    // Nothing supplied (and no trailing callback either)
+    return { cb: cbArg };
   }
 
   public installUncaughtExceptionLogger() {
@@ -138,10 +182,10 @@ export class Logger {
   }
 
   private logInternal(message: any, emphasis: Emphasis, level: Level, callback?: NoArgVoidFunc,
-    maxLength = MSG_LEN_UNLIMITED, logPrefix?: string, suppressTag?: boolean) {
+    maxLength = MSG_LEN_UNLIMITED, logPrefix?: string, suppressTag?: boolean, timestamp?: string) {
     if (level >= this.getActualLogLevel()) {
       let stringMessage = this.stringify(message, maxLength);
-      let fullMessage = this.generatePrefix(level, logPrefix, suppressTag) + stringMessage;
+      let fullMessage = this.generatePrefix(level, logPrefix, suppressTag, timestamp) + stringMessage;
       let logMessage = this.colorMessage(fullMessage, emphasis);
       let op = (process.env.IS_KUBERNETES || process.env.IS_K8S) && (level === Level.ERROR || level === Level.FATAL) ? 'error' : 'log';
       /* tslint:disable:no-console */
@@ -194,12 +238,52 @@ export class Logger {
   }
 
   private generatePrefix(level: Level, logPrefix = '',
-    suppressTag = false): string {
+    suppressTag = false, timestamp?: string): string {
     logPrefix = logPrefix ? `${logPrefix} ` : '';
+    // When the caller passes a per-call `timestamp` (via the LoggerOptions
+    // overload on info/warn/error/fatal, or via `LoggerOptions.timestamp` on
+    // debug), embed it in the prefix — but only if it parses as a valid
+    // date. A bad value would silently corrupt every line for downstream
+    // log aggregators, so we treat invalid input as "no value supplied" and
+    // fall back to the wall-clock at emission (legacy behaviour).
+    const stamp = this.normalizeTimestamp(timestamp);
     let messageTag = suppressTag ? '' :
-      `${Level[level]} [${new Date().toISOString()} #${this.pid}] ${this.label} --- `;
+      `${Level[level]} [${stamp} #${this.pid}] ${this.label} --- `;
 
     return `${messageTag}${logPrefix}`;
+  }
+
+  /**
+   * Return the caller's `timestamp` verbatim when it parses as a valid date,
+   * else fall back to `new Date().toISOString()`.
+   *
+   * The validity check is `!Number.isNaN(new Date(value).getTime())`. This
+   * accepts ISO 8601 strings (the expected and most common input), and also
+   * RFC 2822 / locale-parseable forms — but those are tolerated, not
+   * encouraged: callers should pass ISO so the log prefix stays uniform.
+   *
+   * We intentionally **echo the caller's exact string** instead of
+   * round-tripping through `parsed.toISOString()`. Round-tripping would
+   * canonicalise alternate-but-valid forms (e.g. `'2026-05-21'` →
+   * `'2026-05-21T00:00:00.000Z'`) and silently truncate sub-millisecond
+   * precision — both surprising behaviours for a "just stamp this" API.
+   * If a caller passes a non-ISO valid date, they get exactly what they
+   * passed; the validation here exists only to keep garbage out.
+   *
+   * Empty string, null, and undefined are treated as "no timestamp
+   * supplied" without going through `new Date(...)`, because `new Date(null)`
+   * evaluates to the Unix epoch (valid but almost certainly unintended) and
+   * we want those to behave like omitting the field.
+   */
+  private normalizeTimestamp(timestamp?: string): string {
+    if (timestamp == null || timestamp === '') {
+      return new Date().toISOString();
+    }
+    const parsed = new Date(timestamp);
+    if (Number.isNaN(parsed.getTime())) {
+      return new Date().toISOString();
+    }
+    return timestamp;
   }
 
   private getActualLogLevel(): Level {
