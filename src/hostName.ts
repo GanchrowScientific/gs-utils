@@ -1,4 +1,4 @@
-/* Copyright © 2016-2021 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2016-2026 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -33,7 +33,7 @@ function isExactMatchWrap(item: any): (otherItem: any) => boolean {
 }
 
 function possibleLocalHostNames(): any[] {
-  return ['localhost', '127.0.0.1', os.hostname(), ...getNetworkIPs()];
+  return ['localhost', '127.0.0.1', os.hostname(), ...getNetworkIPs(), '::1'];
 }
 
 export function isRemoteHost(host: any): boolean {
