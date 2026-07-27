@@ -67,14 +67,53 @@ describe('hostname', () => {
       test.ok(isLocalHost('some.host'));
     });
 
+    it('should not resolve hostnames containing shell metacharacters', () => {
+      const resolveSpy = sinon.stub().returns('10.10.10.10');
+      const { isLocalHost } = createMocks(networkInterfacesSpy, resolveSpy);
+
+      // dns-sync builds an unquoted shell command, so these must never reach it
+      [
+        'a;id',
+        'a b',
+        'some.host;touch /tmp/pwn',
+        'some.host|id',
+        '$(id)',
+        '`id`',
+        'some.host\nid',
+        `${'a'.repeat(254)}`,
+        '-',
+        1234
+      ].forEach(host => {
+        test.ok(!isLocalHost(host as any), `resolved suspect host ${JSON.stringify(host)}`);
+      });
+
+      // falsy hosts keep their existing "treat as local" semantics, but still skip dns-sync
+      ['', null, undefined].forEach(host => {
+        test.ok(isLocalHost(host as any));
+      });
+
+      test.strictEqual(resolveSpy.callCount, 0);
+    });
+
+    it('should still resolve legitimate hostnames', () => {
+      const resolveSpy = sinon.stub().returns('10.10.10.10');
+      const { isLocalHost } = createMocks(networkInterfacesSpy, resolveSpy);
+
+      ['some.host', 'host-name', 'a.b.c.d.example.com', '10.8.0.9', 'HOST'].forEach(host => {
+        test.ok(isLocalHost(host), `failed to resolve valid host ${host}`);
+      });
+
+      test.strictEqual(resolveSpy.callCount, 5);
+    });
+
   });
 });
 
-function createMocks(networkInterfacesSpy) {
+function createMocks(networkInterfacesSpy, resolveSpy?) {
   return proxyquire('../src/hostName',
   {
     'dns-sync': {
-      resolve: (host) => host === 'some.host' ? '10.10.10.10' : null
+      resolve: resolveSpy || ((host) => host === 'some.host' ? '10.10.10.10' : null)
     },
     os:  {
       networkInterfaces: networkInterfacesSpy
