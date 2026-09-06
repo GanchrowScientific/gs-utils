@@ -1,4 +1,4 @@
-/* Copyright © 2018-2024 Ganchrow Scientific, SA all rights reserved */
+/* Copyright © 2018-2026 Ganchrow Scientific, SA all rights reserved */
 
 'use strict';
 
@@ -7,7 +7,9 @@ export const TYPEOF_NUMBER = 'number';
 export const TYPEOF_STRING = 'string';
 export const TYPEOF_OBJECT = 'object';
 export const TYPEOF_FUNCTION = 'function';
-export const NOOP = () => { /**/ };
+export const NOOP = () => {
+  /* no-op */
+};
 
 export type Bing = string | Buffer;
 
@@ -17,15 +19,15 @@ export const isJSON = Object.defineProperties(function (str: Bing): boolean {
 
   if (typeof str === 'string') {
     return (str === 'false') || (str === 'true') ||
-      (isJSON.BEGIN_OBJECT_JSON.test(str) && isJSON.END_OBJECT_JSON.test(str)) ||
-      (isJSON.BEGIN_ARRAY_JSON.test(str) && isJSON.END_ARRAY_JSON.test(str))
+      ((isJSON as any).BEGIN_OBJECT_JSON.test(str) && (isJSON as any).END_OBJECT_JSON.test(str)) ||
+      ((isJSON as any).BEGIN_ARRAY_JSON.test(str) && (isJSON as any).END_ARRAY_JSON.test(str))
     ;
 
   } else if (str instanceof Buffer) {
 
-    return isJSON.isFalseBuffer(str) || isJSON.isTrueBuffer(str) ||
-      (str[0] === isJSON.BUFFER_BEGIN_OBJECT_JSON && str[str.length - 1] === isJSON.BUFFER_END_OBJECT_JSON) ||
-      (str[0] === isJSON.BUFFER_BEGIN_ARRAY_JSON && str[str.length - 1] === isJSON.BUFFER_END_ARRAY_JSON)
+    return (isJSON as any).isFalseBuffer(str) || (isJSON as any).isTrueBuffer(str) ||
+      (str[0] === (isJSON as any).BUFFER_BEGIN_OBJECT_JSON && str[str.length - 1] === (isJSON as any).BUFFER_END_OBJECT_JSON) ||
+      (str[0] === (isJSON as any).BUFFER_BEGIN_ARRAY_JSON && str[str.length - 1] === (isJSON as any).BUFFER_END_ARRAY_JSON)
     ;
 
   }
@@ -35,8 +37,8 @@ export const isJSON = Object.defineProperties(function (str: Bing): boolean {
   {
     FALSE_BUFFER: { value: Buffer.from('false') },
     TRUE_BUFFER: { value: Buffer.from('true') },
-    isFalseBuffer: { value: (buf: Buffer) => isJSON.FALSE_BUFFER.every((b, i) => b === buf[i]) },
-    isTrueBuffer: { value: (buf: Buffer) => isJSON.TRUE_BUFFER.every((b, i) => b === buf[i]) },
+    isFalseBuffer: { value: (buf: Buffer) => (isJSON as any).FALSE_BUFFER.every((b: number, i: number) => b === buf[i]) },
+    isTrueBuffer: { value: (buf: Buffer) => (isJSON as any).TRUE_BUFFER.every((b: number, i: number) => b === buf[i]) },
     BEGIN_OBJECT_JSON: { value: /^\{/ },
     END_OBJECT_JSON: { value: /\}$/ },
     BEGIN_ARRAY_JSON: { value: /^\[/ },
@@ -52,11 +54,11 @@ export const isXML = Object.defineProperties(function (str: Bing): boolean {
 
   if (typeof str === 'string') {
 
-    return isXML.XML_REGEXP.test(str);
+    return (isXML as any).XML_REGEXP.test(str);
 
   } else if (str instanceof Buffer) {
 
-    return (str[0] === isXML.BUFFER_BEGIN_XML) && (str[str.length - 1] === isXML.BUFFER_END_XML);
+    return (str[0] === (isXML as any).BUFFER_BEGIN_XML) && (str[str.length - 1] === (isXML as any).BUFFER_END_XML);
 
   }
 
@@ -130,13 +132,28 @@ export function isStrictObject(obj: any): boolean {
 }
 
 export function ensureObject(obj: Object, field: string): Object {
-  return isStrictObject(obj[field]) && obj[field] || (obj[field] = {});
+  let value = obj[field];
+  return isStrictObject(value) && value || (obj[field] = {});
 }
 
+/**
+ * Walks `fields`, creating a plain object wherever one is missing, and returns the
+ * innermost object. A field that stringifies to '' stops the walk, returning
+ * whatever depth was reached.
+ *
+ * Walks the array in place rather than building a stringified copy and shifting
+ * through it: callers put this on hot paths, where the two per-call array allocations
+ * dominated the work actually being done.
+ */
 export function deepEnsureObject(obj: Object, fields: (string | number)[]): Object {
-  let field: string;
-  let stringifiedFields: string[] = fields.map(String);
-  while (field = stringifiedFields.shift()) {
+  for (let i = 0; i < fields.length; i++) {
+    let raw = fields[i];
+    // Property access stringifies anyway, and a number can never stringify to '',
+    // so only convert the exotic values whose stringification could halt the walk.
+    let field: any = typeof raw === 'string' || typeof raw === 'number' ? raw : String(raw);
+    if (field === '') {
+      break;
+    }
     obj = ensureObject(obj, field);
   }
   return obj;
@@ -182,7 +199,7 @@ export function safeSetProperty(obj: Object, val: any, ...fields: (string | numb
 }
 
 export function dup<T>(obj: T, ignoreKeys: string[] = [], exceptValues = {}): ParsedJson {
-  let cb = (k, v) => {
+  let cb = (k: string, v: any) => {
     if (ignoreKeys.includes(k)) {
       if (!(exceptValues[k] === v)) {
         return undefined;
@@ -196,7 +213,7 @@ export function dup<T>(obj: T, ignoreKeys: string[] = [], exceptValues = {}): Pa
     }
     return v;
   };
-  return JSON.parse(JSON.stringify(obj, cb), (k, v) => {
+  return JSON.parse(JSON.stringify(obj, cb), (_: string, v: any) => {
     if (v === '#∞#') {
       return Infinity;
     }
@@ -217,7 +234,7 @@ export function allArrayItemTypesMatch(array: Array<any>): boolean {
   return array.every(isSameTypeOf(array[0]));
 }
 
-export function isSameTypeOf(chkVal): (val) => boolean {
+export function isSameTypeOf(chkVal: any): (val: any) => boolean {
   return (val) => {
     return typeof chkVal === typeof val;
   };
@@ -256,7 +273,7 @@ export function flattenArray(ary: any[]): any[] {
 }
 
 export function stringifyJSONNoEmptyArrays(obj: any): string {
-  return JSON.stringify(obj, function (key: string, value: any): any {
+  return JSON.stringify(obj, function (_: string, value: any): any {
     if (!Array.isArray(value) || value.length) {
       return value;
     }

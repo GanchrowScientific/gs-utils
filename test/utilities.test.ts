@@ -88,6 +88,27 @@ const MODULE = {
     obj = {foo: 5};
     test.deepEqual(deepEnsureObject(obj, []), { foo: 5 });
     test.deepEqual(obj, { foo: 5 });
+
+    // a field that stringifies to '' halts the walk and yields what was reached
+    obj = {};
+    test.deepEqual(deepEnsureObject(obj, ['foo', '', 'baz']), {});
+    test.deepEqual(obj, { foo: {} });
+
+    obj = {};
+    test.deepEqual(deepEnsureObject(obj, ['']), {});
+    test.deepEqual(obj, {});
+
+    // anything that is not a plain object along the way is replaced
+    obj = { foo: 5, bar: { baz: [1, 2] } };
+    test.deepEqual(deepEnsureObject(obj, ['foo', 'inner']), {});
+    test.deepEqual(deepEnsureObject(obj, ['bar', 'baz']), {});
+    test.deepEqual(obj, { foo: { inner: {} }, bar: { baz: {} } });
+
+    // an existing plain object is returned, not replaced
+    let existing = { kept: 1 };
+    obj = { a: { b: existing } };
+    test.strictEqual(deepEnsureObject(obj, ['a', 'b']), existing);
+    test.deepEqual(obj, { a: { b: { kept: 1 } } });
     test.done();
   },
 
